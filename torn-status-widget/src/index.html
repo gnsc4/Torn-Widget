@@ -20,7 +20,7 @@
             padding: 10px !important;
             color: #ddd !important;
             font-size: 13px !important;
-            min-width: 225px !important;
+            min-width: 225px !important; /* Increased min-width slightly */
             box-shadow: 0 2px 15px rgba(0,0,0,0.6) !important;
             user-select: none !important;
             box-sizing: border-box !important;
@@ -89,7 +89,6 @@
         }
         .bar-link:hover, .refill-link:hover, .status-link:hover, .notification-link:hover { background-color: rgba(255, 255, 255, 0.05); }
 
-        /* Corrected and more specific selectors for labels */
         #torn-status-content > div > .status-link > span:first-child,
         #torn-status-content > div > .bar-link > span:first-child,
         #torn-status-refills > div > .refill-link > span:first-child,
@@ -101,8 +100,6 @@
             flex-shrink: 0;
         }
 
-
-        /* General style for value part of a status line (text or bar wrapper) */
         #torn-status-content .value-container,
         #torn-new-day-timer-container .value-container
         {
@@ -113,14 +110,12 @@
             overflow: hidden;
         }
 
-
         #torn-status-content .value {
              display: inline-block !important;
              text-align: right !important;
              margin-right: 5px !important;
              font-weight: bold !important;
         }
-        /* Specific value colors (for --/-- and "Ready"/"Active" text) */
         #torn-status-content .life-value { color: #ff7f7f !important; }
         #torn-status-content .energy-value { color: #99dd99 !important; }
         #torn-status-content .nerve-value { color: #ff6666 !important; }
@@ -129,8 +124,6 @@
         #torn-status-content .medical-value { color: #AFEEEE !important; }
         #torn-status-content .drug-value { color: #DDA0DD !important; }
 
-
-        /* === Health Bar Specific Styles === */
         .life-bar-wrapper {
             position: relative;
             flex-grow: 1;
@@ -177,9 +170,6 @@
             width: auto;
             white-space: nowrap;
         }
-         /* === End Health Bar Styles === */
-
-        /* === New Day Timer Styles === */
         #torn-new-day-timer-container {
             display: flex;
             align-items: center;
@@ -190,11 +180,9 @@
             margin-left: 5px;
         }
         #torn-new-day-timer-container .new-day-timer-value.new-day-warning {
-            color: #ff6666 !important; /* Red for warning */
+            color: #ff6666 !important;
         }
-         /* === End New Day Timer Styles === */
 
-        /* === Flashing Animation === */
         @keyframes flash {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
@@ -202,8 +190,6 @@
         .flashing {
             animation: flash 1s infinite;
         }
-        /* === End Flashing Animation === */
-
 
         #torn-status-notifications {
             display: flex;
@@ -244,7 +230,6 @@
         #torn-status-refills .refill-status.ready { color: #99dd99 !important; }
         #torn-status-refills .refill-status.used { color: #ff6666 !important; }
 
-        /* === Timer Countdown Styles === */
         #torn-status-content .timer {
             font-weight: bold !important;
             margin-left: 5px !important;
@@ -258,7 +243,6 @@
         #torn-status-content .booster-timer { color: #87CEFA !important; }
         #torn-status-content .medical-timer { color: #AFEEEE !important; }
         #torn-status-content .drug-timer { color: #DDA0DD !important; }
-        /* === End Timer Countdown Styles === */
 
         .error { color: #ff6666 !important; font-weight: bold !important; margin-top: 5px !important; }
 
@@ -294,7 +278,6 @@
             margin-right: 8px;
         }
 
-
         .section-divider {
             border-top: 1px dashed #555;
             margin-top: 8px;
@@ -329,6 +312,19 @@
         #widget-version a:hover {
             text-decoration: underline;
         }
+        #update-notification {
+            display: none; /* Hidden by default */
+            margin-left: 5px;
+            font-weight: bold;
+        }
+        #update-notification a {
+            color: #ffc107; /* Yellow/gold for update notice */
+            text-decoration: underline;
+        }
+         #update-notification a:hover {
+            color: #fff;
+        }
+
 
         /* Settings Panel Styles */
         #torn-status-settings-panel {
@@ -338,7 +334,7 @@
             right: -10px;
             bottom: -10px;
             background-color: rgba(40, 40, 40, 0.98); 
-            padding: 15px 10px; /* Adjusted: 15px top/bottom, 10px left/right */
+            padding: 15px 10px; 
             border-radius: 5px; 
             z-index: 100;
             display: none; 
@@ -407,7 +403,6 @@
             border-top: 1px solid #555; 
         }
 
-        /* Toggle Switch Styles for Link Preferences */
         .link-preference-item {
             display: flex;
             align-items: center;
@@ -687,7 +682,10 @@
                 </div>
             </div>
         </div>
-        <div id="widget-version"></div>
+        <div id="widget-version">
+            <span id="update-notification" style="display:none;"> <a href="#" target="_blank">New version available!</a>
+            </span>
+        </div>
     </div>
     <div id="custom-tooltip" style="display:none;"></div>
 
@@ -697,10 +695,13 @@
 
         (function() {
             'use strict';
-            const SCRIPT_VERSION = "1.0.18"; // Updated version
+            const SCRIPT_VERSION = "1.0.18"; // Current script version
             const FORUM_THREAD_URL = "https://www.torn.com/forums.php#/p=threads&f=67&t=16473214&b=0&a=0";
             const AUTHOR_NAME = "GNSC4 [268863]";
             const AUTHOR_URL = "https://www.torn.com/profiles.php?XID=268863";
+            const GITHUB_RELEASES_API_URL = "https://api.github.com/repos/gnsc4/Torn-Widget/releases/latest";
+            const GITHUB_RELEASES_PAGE_URL = "https://github.com/gnsc4/Torn-Widget/releases";
+
 
             const UPDATE_INTERVAL_MS = 15 * 1000;
             const API_KEY_STORAGE = 'torn_status_api_key_v1_widget';
@@ -714,7 +715,7 @@
             let lifeDisplayValue, energyDisplayValue, nerveDisplayValue, happinessDisplayValue, boosterDisplayValue, medicalDisplayValue, drugDisplayValue;
             let energyTimerDisplay, nerveTimerDisplay, happinessTimerDisplay, boosterTimerDisplay, medicalTimerDisplay, drugTimerDisplay;
             let newDayTimerDisplay;
-            let apiSetupDiv, statusDiv, refillsDiv, notificationsDiv, versionDiv;
+            let apiSetupDiv, statusDiv, refillsDiv, notificationsDiv, versionDiv, updateNotificationElement; // Added updateNotificationElement
             let energyRefillStatus, nerveRefillStatus, tokenRefillStatus;
             let messagesIconDisplay, messagesCountDisplay, eventsIconDisplay, eventsCountDisplay;
             let closeButton, settingsButton;
@@ -896,6 +897,7 @@
                 settingsButton = document.getElementById('torn-status-settings-btn');
                 customTooltipElement = document.getElementById('custom-tooltip');
                 versionDiv = document.getElementById('widget-version');
+                updateNotificationElement = document.getElementById('update-notification'); // Cache update notification element
 
                 apiSetupDiv = document.getElementById('torn-status-api-setup');
                 apiKeyInputMain = document.getElementById('torn-api-key-input-main');
@@ -915,8 +917,11 @@
                 if (!guiContainer) return;
 
                 if (versionDiv) {
-                    versionDiv.innerHTML = `Author: <a href="${AUTHOR_URL}" target="_blank" title="View Author's Profile">${AUTHOR_NAME}</a> | <a href="${FORUM_THREAD_URL}" target="_blank" title="Go to Forum Thread">v${SCRIPT_VERSION}</a>`;
+                     // Initial population of versionDiv, update notification will be added if needed
+                    versionDiv.innerHTML = `Author: <a href="${AUTHOR_URL}" target="_blank" title="View Author's Profile">${AUTHOR_NAME}</a> | <a href="${FORUM_THREAD_URL}" target="_blank" title="Go to Forum Thread">v${SCRIPT_VERSION}</a><span id="update-notification" style="display:none;"> <a href="#" target="_blank">New version available!</a></span>`;
+                    updateNotificationElement = document.getElementById('update-notification'); // Re-cache after innerHTML rewrite
                 }
+
 
                 if (isMinimized) {
                     guiContainer.classList.add('minimized');
@@ -1616,6 +1621,47 @@
                 }
             }
 
+            // --- Version Check Functions ---
+            function isNewerVersion(latestVersionTag, currentVersion) {
+                const latest = latestVersionTag.replace(/^v/, '').split('.').map(Number);
+                const current = currentVersion.replace(/^v/, '').split('.').map(Number);
+
+                for (let i = 0; i < Math.max(latest.length, current.length); i++) {
+                    const latestPart = latest[i] || 0;
+                    const currentPart = current[i] || 0;
+                    if (latestPart > currentPart) return true;
+                    if (latestPart < currentPart) return false;
+                }
+                return false; // Versions are identical
+            }
+
+            async function checkForUpdates() {
+                try {
+                    const response = await fetch(GITHUB_RELEASES_API_URL);
+                    if (!response.ok) {
+                        console.error(`GitHub API error: ${response.status}`);
+                        return;
+                    }
+                    const releaseData = await response.json();
+                    const latestVersionTag = releaseData.tag_name;
+
+                    if (latestVersionTag && isNewerVersion(latestVersionTag, SCRIPT_VERSION)) {
+                        if (updateNotificationElement) {
+                            const updateLink = updateNotificationElement.querySelector('a');
+                            if (updateLink) {
+                                updateLink.href = GITHUB_RELEASES_PAGE_URL;
+                                updateLink.textContent = `Update to ${latestVersionTag} available!`;
+                            }
+                            updateNotificationElement.style.display = 'inline'; // Show the notification
+                            resizeWindowToContent(); // Adjust window size if notification makes it taller
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to check for updates:", error);
+                }
+            }
+            // --- End Version Check Functions ---
+
             async function init() {
                 apiKey = localStorage.getItem(API_KEY_STORAGE) || null;
                 isMinimized = localStorage.getItem(GUI_MINIMIZED_STORAGE) === 'true';
@@ -1624,6 +1670,7 @@
                 await initializeAutostart();
                 initializeLinkTypeSettings(); 
                 startNewDayTimer(); 
+                checkForUpdates(); // Check for updates on init
 
                 if(!guiContainer) return;
 
