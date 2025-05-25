@@ -20,7 +20,7 @@
             padding: 10px !important;
             color: #ddd !important;
             font-size: 13px !important;
-            min-width: 200px !important;
+            min-width: 225px !important;
             box-shadow: 0 2px 15px rgba(0,0,0,0.6) !important;
             user-select: none !important;
             box-sizing: border-box !important;
@@ -34,10 +34,10 @@
         }
         #torn-status-gui.minimized #torn-status-content-area,
         #torn-status-gui.minimized #torn-status-header h3,
-        #torn-status-gui.minimized #torn-status-settings-btn, /* Changed from torn-status-change-key-btn */
+        #torn-status-gui.minimized #torn-status-settings-btn,
         #torn-status-gui.minimized #torn-status-close-btn,
         #torn-status-gui.minimized #widget-version,
-        #torn-status-gui.minimized #torn-status-settings-panel /* Hide settings panel when minimized */
+        #torn-status-gui.minimized #torn-status-settings-panel
         { display: none !important; }
 
         #torn-status-gui.minimized #torn-status-header {
@@ -75,9 +75,11 @@
         }
 
         #torn-status-notifications,
-        #torn-status-content > div,
+        #torn-status-content > div, /* Each status row */
         #torn-status-api-setup div,
-        #torn-status-refills > div { margin-bottom: 5px !important; line-height: 1.4 !important; }
+        #torn-status-refills > div,
+        #torn-new-day-timer-container /* Style for new day timer */
+        { margin-bottom: 5px !important; line-height: 1.4 !important; }
 
         .bar-link, .refill-link, .status-link, .notification-link {
             display: flex;
@@ -87,16 +89,38 @@
         }
         .bar-link:hover, .refill-link:hover, .status-link:hover, .notification-link:hover { background-color: rgba(255, 255, 255, 0.05); }
 
-        #torn-status-content span:first-child,
-        #torn-status-refills span:first-child {
-            display: inline-block !important; min-width: 60px !important;
-            font-weight: bold !important; color: #aaa !important;
+        /* Corrected and more specific selectors for labels */
+        #torn-status-content > div > .status-link > span:first-child,
+        #torn-status-content > div > .bar-link > span:first-child,
+        #torn-status-refills > div > .refill-link > span:first-child,
+        #torn-new-day-timer-container > span:first-child {
+            display: inline-block !important;
+            min-width: 60px !important;
+            font-weight: bold !important;
+            color: #aaa !important;
+            flex-shrink: 0;
         }
 
-        #torn-status-content .value {
-             display: inline-block !important; min-width: 70px !important;
-             text-align: right !important; margin-right: 5px !important; font-weight: bold !important;
+
+        /* General style for value part of a status line (text or bar wrapper) */
+        #torn-status-content .value-container,
+        #torn-new-day-timer-container .value-container
+        {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            margin-left: 8px;
+            overflow: hidden;
         }
+
+
+        #torn-status-content .value {
+             display: inline-block !important;
+             text-align: right !important;
+             margin-right: 5px !important;
+             font-weight: bold !important;
+        }
+        /* Specific value colors (for --/-- and "Ready"/"Active" text) */
         #torn-status-content .life-value { color: #ff7f7f !important; }
         #torn-status-content .energy-value { color: #99dd99 !important; }
         #torn-status-content .nerve-value { color: #ff6666 !important; }
@@ -104,6 +128,82 @@
         #torn-status-content .booster-value { color: #87CEFA !important; }
         #torn-status-content .medical-value { color: #AFEEEE !important; }
         #torn-status-content .drug-value { color: #DDA0DD !important; }
+
+
+        /* === Health Bar Specific Styles === */
+        .life-bar-wrapper {
+            position: relative;
+            flex-grow: 1;
+            height: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .health-bar-container {
+            width: 100%;
+            height: 100%;
+            background-color: #444;
+            border: 1px solid #666;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .health-bar-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #28a745;
+            border-radius: 2px;
+            transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out;
+        }
+
+        .life-value-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff !important;
+            text-shadow:
+                -1px -1px 0 #000,
+                 1px -1px 0 #000,
+                -1px  1px 0 #000,
+                 1px  1px 0 #000,
+                 0px 0px 3px rgba(0,0,0,0.8);
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 1;
+            pointer-events: none;
+            margin-right: 0 !important;
+            width: auto;
+            white-space: nowrap;
+        }
+         /* === End Health Bar Styles === */
+
+        /* === New Day Timer Styles === */
+        #torn-new-day-timer-container {
+            display: flex;
+            align-items: center;
+        }
+        #torn-new-day-timer-container .new-day-timer-value {
+            font-weight: bold;
+            color: #FFD700;
+            margin-left: 5px;
+        }
+        #torn-new-day-timer-container .new-day-timer-value.new-day-warning {
+            color: #ff6666 !important; /* Red for warning */
+        }
+         /* === End New Day Timer Styles === */
+
+        /* === Flashing Animation === */
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .flashing {
+            animation: flash 1s infinite;
+        }
+        /* === End Flashing Animation === */
+
 
         #torn-status-notifications {
             display: flex;
@@ -144,10 +244,22 @@
         #torn-status-refills .refill-status.ready { color: #99dd99 !important; }
         #torn-status-refills .refill-status.used { color: #ff6666 !important; }
 
+        /* === Timer Countdown Styles === */
         #torn-status-content .timer {
-            font-weight: bold !important; color: #99dd99 !important; margin-left: 5px !important;
+            font-weight: bold !important;
+            margin-left: 5px !important;
+            white-space: nowrap;
         }
         #torn-status-content .timer.full { color: #ffff99 !important; }
+
+        #torn-status-content .energy-timer { color: #99dd99 !important; }
+        #torn-status-content .nerve-timer { color: #ff6666 !important; }
+        #torn-status-content .happy-timer { color: #ffff99 !important; }
+        #torn-status-content .booster-timer { color: #87CEFA !important; }
+        #torn-status-content .medical-timer { color: #AFEEEE !important; }
+        #torn-status-content .drug-timer { color: #DDA0DD !important; }
+        /* === End Timer Countdown Styles === */
+
         .error { color: #ff6666 !important; font-weight: bold !important; margin-top: 5px !important; }
 
         #torn-status-api-setup { padding-top: 5px !important; }
@@ -167,7 +279,6 @@
         #torn-status-api-setup a { color:#aaa!important; text-decoration:underline!important }
         #torn-status-api-setup a:hover { color:#ccc!important }
 
-        /* First run autostart option */
         #first-run-autostart-option {
             margin-top: 10px;
             padding-top: 8px;
@@ -222,15 +333,15 @@
         /* Settings Panel Styles */
         #torn-status-settings-panel {
             position: absolute;
-            top: -10px;
+            top: -10px; 
             left: -10px;
             right: -10px;
             bottom: -10px;
-            background-color: rgba(40, 40, 40, 0.98);
-            padding: 15px;
-            border-radius: 5px;
+            background-color: rgba(40, 40, 40, 0.98); 
+            padding: 15px 10px; /* Adjusted: 15px top/bottom, 10px left/right */
+            border-radius: 5px; 
             z-index: 100;
-            display: none;
+            display: none; 
             flex-direction: column;
             font-size: 13px;
         }
@@ -245,13 +356,16 @@
         .settings-section {
             margin-bottom: 15px;
         }
+         .settings-section:last-of-type { 
+            margin-bottom: 10px;
+        }
         .settings-section p {
             margin: 0 0 5px 0;
             font-size: 12px;
             color: #ccc;
         }
         .settings-section input[type="text"] {
-            width: calc(100% - 75px);
+            width: calc(100% - 75px); 
             padding: 4px 6px !important;
             border: 1px solid #888 !important;
             border-radius: 3px !important;
@@ -280,18 +394,95 @@
             align-items: center;
             cursor: pointer;
             font-size: 13px;
+            color: #ddd; 
         }
          #settings-autostart-checkbox {
             margin-right: 8px;
         }
 
         #settings-close-btn-container {
-            margin-top: auto;
+            margin-top: auto; 
             text-align: right;
+            padding-top: 10px; 
+            border-top: 1px solid #555; 
+        }
+
+        /* Toggle Switch Styles for Link Preferences */
+        .link-preference-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; 
+            margin-bottom: 10px;
+        }
+        .link-preference-item-label { 
+            min-width: 60px; 
+            color: #ddd;
+            font-size: 13px;
+            margin-right: 5px; 
+            flex-shrink: 0; 
+        }
+        .toggle-group { 
+            display: flex;
+            align-items: center;
+        }
+        .toggle-option-label {
+            font-size: 12px;
+            color: #999;
+            cursor: default;
+            transition: color 0.3s ease, font-weight 0.3s ease;
+            white-space: nowrap; 
+        }
+        .toggle-option-label.personal-label { margin-right: 6px; } 
+        .toggle-option-label.faction-label { margin-left: 6px; } 
+
+        .toggle-option-label.active-preference {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px; 
+            height: 20px; 
+            flex-shrink: 0; 
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider-round {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #777; 
+            transition: .4s;
+            border-radius: 20px; 
+        }
+        .slider-round:before {
+            position: absolute;
+            content: "";
+            height: 14px; 
+            width: 14px;  
+            left: 3px;    
+            bottom: 3px;  
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider-round {
+            background-color: #28a745; 
+        }
+        input:checked + .slider-round:before {
+            transform: translateX(20px); 
         }
 
     </style>
-  <script type="module" crossorigin src="/assets/index-QiOVSvUi.js"></script>
+  <script type="module" crossorigin src="/assets/index-B2gRgmoA.js"></script>
 </head>
 <body>
     <div id="torn-status-gui">
@@ -330,63 +521,84 @@
             </div>
 
             <div id="torn-status-content" class="section-divider" style="display: none;">
-                <div>
-                    <a href="https://www.torn.com/item.php#medical-items" target="_blank" class="status-link" title="Go to Medical Items">
-                        <span>Life:</span><span class="value life-value">--/--</span>
+                <div> <a id="life-link" href="https://www.torn.com/item.php#medical-items" target="_blank" class="status-link" title="Go to Medical Items">
+                        <span>Life:</span>
+                        <div class="value-container life-bar-wrapper"> <div class="health-bar-container">
+                                <div class="health-bar-fill"></div>
+                            </div>
+                            <span class="value life-value life-value-overlay">--/--</span>
+                        </div>
                     </a>
                 </div>
-                <div>
-                    <a href="https://www.torn.com/gym.php" target="_blank" class="bar-link timer-hover-area" title="Go to Gym">
-                        <span>Energy:</span><span class="value energy-value">--/--</span>
-                        <span class="timer energy-timer" data-tooltip-content="">--:--:--</span>
+                <div> <a href="https://www.torn.com/gym.php" target="_blank" class="bar-link timer-hover-area" title="Go to Gym">
+                        <span>Energy:</span>
+                        <div class="value-container"> <span class="value energy-value">--/--</span>
+                           <span class="timer energy-timer" data-tooltip-content="">--:--:--</span>
+                        </div>
                     </a>
                 </div>
-                <div>
-                    <a href="https://www.torn.com/loader.php?sid=crimes#/" target="_blank" class="bar-link timer-hover-area" title="Go to Crimes">
-                        <span>Nerve:</span><span class="value nerve-value">--/--</span>
-                        <span class="timer nerve-timer" data-tooltip-content="">--:--:--</span>
+                <div> <a href="https://www.torn.com/loader.php?sid=crimes#/" target="_blank" class="bar-link timer-hover-area" title="Go to Crimes">
+                        <span>Nerve:</span>
+                        <div class="value-container">
+                            <span class="value nerve-value">--/--</span>
+                            <span class="timer nerve-timer" data-tooltip-content="">--:--:--</span>
+                        </div>
                     </a>
                 </div>
-                <div>
-                    <a href="https://www.torn.com/item.php#candy-items" target="_blank" class="status-link timer-hover-area" title="Go to Candy Items">
-                        <span>Happy:</span><span class="value happy-value">--/--</span>
-                        <span class="timer happy-timer" data-tooltip-content="">--:--:--</span>
+                <div> <a href="https://www.torn.com/item.php#candy-items" target="_blank" class="status-link timer-hover-area" title="Go to Candy Items">
+                        <span>Happy:</span>
+                        <div class="value-container">
+                            <span class="value happy-value">--/--</span>
+                            <span class="timer happy-timer" data-tooltip-content="">--:--:--</span>
+                        </div>
                     </a>
                 </div>
                 <div class="section-divider"></div>
-                <div>
-                    <a href="https://www.torn.com/item.php#energy-d-items" target="_blank" class="bar-link timer-hover-area" title="Go to Boosters/Energy Drinks">
-                        <span>Booster:</span><span class="value booster-value">Ready</span>
-                        <span class="timer booster-timer" data-tooltip-content="">--:--:--</span>
+                <div> <a id="booster-cooldown-link" href="https://www.torn.com/item.php#energy-d-items" target="_blank" class="bar-link timer-hover-area" title="Go to Boosters/Energy Drinks">
+                        <span>Booster:</span>
+                        <div class="value-container">
+                            <span class="value booster-value">Ready</span>
+                            <span class="timer booster-timer" data-tooltip-content="">--:--:--</span>
+                        </div>
                     </a>
                 </div>
-                <div>
-                    <a href="https://www.torn.com/item.php#medical-items" target="_blank" class="bar-link timer-hover-area" title="Go to Medical Items">
-                        <span>Medical:</span><span class="value medical-value">Ready</span>
-                        <span class="timer medical-timer" data-tooltip-content="">--:--:--</span>
+                <div> <a id="medical-cooldown-link" href="https://www.torn.com/item.php#medical-items" target="_blank" class="bar-link timer-hover-area" title="Go to Medical Items">
+                        <span>Medical:</span>
+                        <div class="value-container">
+                            <span class="value medical-value">Ready</span>
+                            <span class="timer medical-timer" data-tooltip-content="">--:--:--</span>
+                        </div>
                     </a>
                 </div>
-                <div>
-                    <a href="https://www.torn.com/item.php#drugs-items" target="_blank" class="bar-link timer-hover-area" title="Go to Drugs">
-                        <span>Drug:</span><span class="value drug-value">Ready</span>
-                        <span class="timer drug-timer" data-tooltip-content="">--:--:--</span>
+                <div> <a id="drug-cooldown-link" href="https://www.torn.com/item.php#drugs-items" target="_blank" class="bar-link timer-hover-area" title="Go to Drugs">
+                        <span>Drug:</span>
+                        <div class="value-container">
+                            <span class="value drug-value">Ready</span>
+                            <span class="timer drug-timer" data-tooltip-content="">--:--:--</span>
+                        </div>
                     </a>
                 </div>
                 <div class="error status-error"></div>
             </div>
+
             <div id="torn-status-refills" class="section-divider" style="display: none;">
+                 <div id="torn-new-day-timer-container"> <span>New Day:</span>
+                    <div class="value-container">
+                        <span class="new-day-timer-value">--:--:--</span>
+                    </div>
+                </div>
                  <div>
-                    <a href="https://www.torn.com/page.php?sid=points" target="_blank" class="refill-link" title="Go to Points Building">
+                    <a id="energy-refill-link" href="https://www.torn.com/page.php?sid=points" target="_blank" class="refill-link" title="Go to Points Building">
                         <span>E Refill:</span><span class="refill-status energy-refill-status">--</span>
                     </a>
                 </div>
                  <div>
-                    <a href="https://www.torn.com/page.php?sid=points" target="_blank" class="refill-link" title="Go to Points Building">
+                    <a id="nerve-refill-link" href="https://www.torn.com/page.php?sid=points" target="_blank" class="refill-link" title="Go to Points Building">
                         <span>N Refill:</span><span class="refill-status nerve-refill-status">--</span>
                     </a>
                 </div>
                  <div>
-                    <a href="https://www.torn.com/page.php?sid=points" target="_blank" class="refill-link" title="Go to Points Building">
+                    <a id="token-refill-link" href="https://www.torn.com/page.php?sid=points" target="_blank" class="refill-link" title="Go to Points Building">
                         <span>T Refill:</span><span class="refill-status token-refill-status">--</span>
                     </a>
                 </div>
@@ -400,6 +612,70 @@
                     <button id="torn-api-key-save-btn-settings">Save Key</button>
                     <button id="torn-api-key-clear-btn-settings" style="margin-left: 5px; background-color: #d44a4a !important;">Clear Key</button>
                     <div class="error api-error-settings"></div>
+                </div>
+
+                <div class="settings-section" id="link-preferences-section">
+                    <p style="margin: 0 0 10px 0; font-size: 13px; color: #eee; font-weight:bold;">Item Link Destinations:</p>
+
+                    <div class="link-preference-item">
+                        <span class="link-preference-item-label">Drugs:</span>
+                        <div class="toggle-group">
+                            <span class="toggle-option-label personal-label" id="drug-personal-label">Personal</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="drug-link-type-toggle">
+                                <span class="slider-round"></span>
+                            </label>
+                            <span class="toggle-option-label faction-label" id="drug-faction-label">Faction</span>
+                        </div>
+                    </div>
+
+                    <div class="link-preference-item">
+                        <span class="link-preference-item-label">Boosters:</span>
+                        <div class="toggle-group">
+                            <span class="toggle-option-label personal-label" id="booster-personal-label">Personal</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="booster-link-type-toggle">
+                                <span class="slider-round"></span>
+                            </label>
+                            <span class="toggle-option-label faction-label" id="booster-faction-label">Faction</span>
+                        </div>
+                    </div>
+
+                    <div class="link-preference-item">
+                        <span class="link-preference-item-label">Medical:</span>
+                        <div class="toggle-group">
+                            <span class="toggle-option-label personal-label" id="medical-personal-label">Personal</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="medical-link-type-toggle">
+                                <span class="slider-round"></span>
+                            </label>
+                            <span class="toggle-option-label faction-label" id="medical-faction-label">Faction</span>
+                        </div>
+                    </div>
+
+                    <div class="link-preference-item">
+                        <span class="link-preference-item-label">E Refill:</span>
+                        <div class="toggle-group">
+                            <span class="toggle-option-label personal-label" id="energyRefill-personal-label">Personal</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="energyRefill-link-type-toggle">
+                                <span class="slider-round"></span>
+                            </label>
+                            <span class="toggle-option-label faction-label" id="energyRefill-faction-label">Faction</span>
+                        </div>
+                    </div>
+
+                    <div class="link-preference-item">
+                        <span class="link-preference-item-label">N Refill:</span>
+                        <div class="toggle-group">
+                            <span class="toggle-option-label personal-label" id="nerveRefill-personal-label">Personal</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="nerveRefill-link-type-toggle">
+                                <span class="slider-round"></span>
+                            </label>
+                            <span class="toggle-option-label faction-label" id="nerveRefill-faction-label">Faction</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="settings-section">
                     <label class="settings-autostart-label">
