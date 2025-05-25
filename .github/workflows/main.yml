@@ -62,6 +62,9 @@ jobs:
 
       # Step 6: Use the official Tauri action to build the application
       # This action handles installing Tauri CLI, building the frontend, and then building the Tauri app.
+      # By removing `tauriScript`, the action will use its default behavior,
+      # which typically involves running `npm run tauri build` (or equivalent for other package managers)
+      # within the `projectPath`.
       - name: Build Tauri application
         uses: tauri-apps/tauri-action@v0 # Using v0 for the latest release of the action
         env:
@@ -71,10 +74,6 @@ jobs:
         with:
           # Path to the directory containing your tauri.conf.json and package.json for the widget
           projectPath: './torn-status-widget'
-          # Explicitly tell the action how to run the tauri CLI using npx.
-          # npx will find and execute tauri from the local node_modules (installed in step 5)
-          # or fetch it if not found locally.
-          tauriScript: 'npx tauri'
           # The tauri-action will automatically build for the runner's OS (Linux)
           # and produce .deb and .AppImage by default.
           # You can specify targets: 'deb,appimage' if you want to be explicit.
