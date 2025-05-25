@@ -20,7 +20,7 @@
             padding: 10px !important;
             color: #ddd !important;
             font-size: 13px !important;
-            min-width: 200px !important;
+            min-width: 220px !important; 
             box-shadow: 0 2px 15px rgba(0,0,0,0.6) !important;
             user-select: none !important;
             box-sizing: border-box !important;
@@ -34,10 +34,10 @@
         }
         #torn-status-gui.minimized #torn-status-content-area,
         #torn-status-gui.minimized #torn-status-header h3,
-        #torn-status-gui.minimized #torn-status-settings-btn, /* Changed from torn-status-change-key-btn */
+        #torn-status-gui.minimized #torn-status-settings-btn,
         #torn-status-gui.minimized #torn-status-close-btn,
         #torn-status-gui.minimized #widget-version,
-        #torn-status-gui.minimized #torn-status-settings-panel /* Hide settings panel when minimized */
+        #torn-status-gui.minimized #torn-status-settings-panel
         { display: none !important; }
 
         #torn-status-gui.minimized #torn-status-header {
@@ -75,9 +75,11 @@
         }
 
         #torn-status-notifications,
-        #torn-status-content > div,
+        #torn-status-content > div, /* Each status row */
         #torn-status-api-setup div,
-        #torn-status-refills > div { margin-bottom: 5px !important; line-height: 1.4 !important; }
+        #torn-status-refills > div,
+        #torn-new-day-timer-container /* Style for new day timer */
+        { margin-bottom: 5px !important; line-height: 1.4 !important; }
 
         .bar-link, .refill-link, .status-link, .notification-link {
             display: flex;
@@ -87,23 +89,121 @@
         }
         .bar-link:hover, .refill-link:hover, .status-link:hover, .notification-link:hover { background-color: rgba(255, 255, 255, 0.05); }
 
-        #torn-status-content span:first-child,
-        #torn-status-refills span:first-child {
-            display: inline-block !important; min-width: 60px !important;
-            font-weight: bold !important; color: #aaa !important;
+        /* Corrected and more specific selectors for labels */
+        #torn-status-content > div > .status-link > span:first-child,
+        #torn-status-content > div > .bar-link > span:first-child,
+        #torn-status-refills > div > .refill-link > span:first-child,
+        #torn-new-day-timer-container > span:first-child {
+            display: inline-block !important;
+            min-width: 60px !important;
+            font-weight: bold !important;
+            color: #aaa !important;
+            flex-shrink: 0;
         }
 
-        #torn-status-content .value {
-             display: inline-block !important; min-width: 70px !important;
-             text-align: right !important; margin-right: 5px !important; font-weight: bold !important;
+
+        /* General style for value part of a status line (text or bar wrapper) */
+        #torn-status-content .value-container,
+        #torn-new-day-timer-container .value-container 
+        {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            margin-left: 8px; 
+            overflow: hidden; 
         }
-        #torn-status-content .life-value { color: #ff7f7f !important; }
+
+
+        #torn-status-content .value { 
+             display: inline-block !important;
+             text-align: right !important;
+             margin-right: 5px !important; 
+             font-weight: bold !important;
+        }
+        /* Specific value colors (for --/-- and "Ready"/"Active" text) */
+        #torn-status-content .life-value { color: #ff7f7f !important; } 
         #torn-status-content .energy-value { color: #99dd99 !important; }
         #torn-status-content .nerve-value { color: #ff6666 !important; }
         #torn-status-content .happy-value { color: #ffff99 !important; }
         #torn-status-content .booster-value { color: #87CEFA !important; }
         #torn-status-content .medical-value { color: #AFEEEE !important; }
         #torn-status-content .drug-value { color: #DDA0DD !important; }
+
+
+        /* === Health Bar Specific Styles === */
+        .life-bar-wrapper { 
+            position: relative; 
+            flex-grow: 1;       
+            height: 18px; 
+            display: flex;
+            align-items: center;
+        }
+
+        .health-bar-container { 
+            width: 100%;
+            height: 100%;
+            background-color: #444;
+            border: 1px solid #666;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .health-bar-fill {
+            height: 100%;
+            width: 0%; 
+            background-color: #28a745; 
+            border-radius: 2px; 
+            transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out;
+        }
+
+        .life-value-overlay { 
+            position: absolute;
+            top: 50%;
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            color: #fff !important; 
+            text-shadow: 
+                -1px -1px 0 #000,  
+                 1px -1px 0 #000,
+                -1px  1px 0 #000,
+                 1px  1px 0 #000,
+                 0px 0px 3px rgba(0,0,0,0.8); 
+            font-size: 11px; 
+            font-weight: bold;
+            text-align: center; 
+            z-index: 1;
+            pointer-events: none;
+            margin-right: 0 !important;
+            width: auto; 
+            white-space: nowrap; 
+        }
+         /* === End Health Bar Styles === */
+
+        /* === New Day Timer Styles === */
+        #torn-new-day-timer-container {
+            display: flex; 
+            align-items: center;
+        }
+        #torn-new-day-timer-container .new-day-timer-value {
+            font-weight: bold;
+            color: #FFD700; 
+            margin-left: 5px;
+        }
+        #torn-new-day-timer-container .new-day-timer-value.new-day-warning {
+            color: #ff6666 !important; /* Red for warning */
+        }
+         /* === End New Day Timer Styles === */
+
+        /* === Flashing Animation === */
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .flashing {
+            animation: flash 1s infinite;
+        }
+        /* === End Flashing Animation === */
+
 
         #torn-status-notifications {
             display: flex;
@@ -144,10 +244,22 @@
         #torn-status-refills .refill-status.ready { color: #99dd99 !important; }
         #torn-status-refills .refill-status.used { color: #ff6666 !important; }
 
+        /* === Timer Countdown Styles === */
         #torn-status-content .timer {
-            font-weight: bold !important; color: #99dd99 !important; margin-left: 5px !important;
+            font-weight: bold !important; 
+            margin-left: 5px !important;
+            white-space: nowrap; 
         }
-        #torn-status-content .timer.full { color: #ffff99 !important; }
+        #torn-status-content .timer.full { color: #ffff99 !important; } 
+
+        #torn-status-content .energy-timer { color: #99dd99 !important; } 
+        #torn-status-content .nerve-timer { color: #ff6666 !important; } 
+        #torn-status-content .happy-timer { color: #ffff99 !important; } 
+        #torn-status-content .booster-timer { color: #87CEFA !important; } 
+        #torn-status-content .medical-timer { color: #AFEEEE !important; } 
+        #torn-status-content .drug-timer { color: #DDA0DD !important; } 
+        /* === End Timer Countdown Styles === */
+
         .error { color: #ff6666 !important; font-weight: bold !important; margin-top: 5px !important; }
 
         #torn-status-api-setup { padding-top: 5px !important; }
@@ -167,7 +279,6 @@
         #torn-status-api-setup a { color:#aaa!important; text-decoration:underline!important }
         #torn-status-api-setup a:hover { color:#ccc!important }
 
-        /* First run autostart option */
         #first-run-autostart-option {
             margin-top: 10px;
             padding-top: 8px;
@@ -329,51 +440,72 @@
             </div>
 
             <div id="torn-status-content" class="section-divider" style="display: none;">
-                <div>
-                    <a href="https://www.torn.com/item.php#medical-items" target="_blank" class="status-link" title="Go to Medical Items">
-                        <span>Life:</span><span class="value life-value">--/--</span>
+                <div> <a href="https://www.torn.com/item.php#medical-items" target="_blank" class="status-link" title="Go to Medical Items">
+                        <span>Life:</span>
+                        <div class="value-container life-bar-wrapper"> <div class="health-bar-container">
+                                <div class="health-bar-fill"></div>
+                            </div>
+                            <span class="value life-value life-value-overlay">--/--</span>
+                        </div>
                     </a>
                 </div>
-                <div>
-                    <a href="https://www.torn.com/gym.php" target="_blank" class="bar-link timer-hover-area" title="Go to Gym">
-                        <span>Energy:</span><span class="value energy-value">--/--</span>
-                        <span class="timer energy-timer" data-tooltip-content="">--:--:--</span>
+                <div> <a href="https://www.torn.com/gym.php" target="_blank" class="bar-link timer-hover-area" title="Go to Gym">
+                        <span>Energy:</span>
+                        <div class="value-container"> <span class="value energy-value">--/--</span>
+                           <span class="timer energy-timer" data-tooltip-content="">--:--:--</span>
+                        </div>
                     </a>
                 </div>
-                <div>
-                    <a href="https://www.torn.com/loader.php?sid=crimes#/" target="_blank" class="bar-link timer-hover-area" title="Go to Crimes">
-                        <span>Nerve:</span><span class="value nerve-value">--/--</span>
-                        <span class="timer nerve-timer" data-tooltip-content="">--:--:--</span>
+                <div> <a href="https://www.torn.com/loader.php?sid=crimes#/" target="_blank" class="bar-link timer-hover-area" title="Go to Crimes">
+                        <span>Nerve:</span>
+                        <div class="value-container">
+                            <span class="value nerve-value">--/--</span>
+                            <span class="timer nerve-timer" data-tooltip-content="">--:--:--</span>
+                        </div>
                     </a>
                 </div>
-                <div>
-                    <a href="https://www.torn.com/item.php#candy-items" target="_blank" class="status-link timer-hover-area" title="Go to Candy Items">
-                        <span>Happy:</span><span class="value happy-value">--/--</span>
-                        <span class="timer happy-timer" data-tooltip-content="">--:--:--</span>
+                <div> <a href="https://www.torn.com/item.php#candy-items" target="_blank" class="status-link timer-hover-area" title="Go to Candy Items">
+                        <span>Happy:</span>
+                        <div class="value-container">
+                            <span class="value happy-value">--/--</span>
+                            <span class="timer happy-timer" data-tooltip-content="">--:--:--</span>
+                        </div>
                     </a>
                 </div>
                 <div class="section-divider"></div>
-                <div>
-                    <a href="https://www.torn.com/item.php#energy-d-items" target="_blank" class="bar-link timer-hover-area" title="Go to Boosters/Energy Drinks">
-                        <span>Booster:</span><span class="value booster-value">Ready</span>
-                        <span class="timer booster-timer" data-tooltip-content="">--:--:--</span>
+                <div> <a href="https://www.torn.com/item.php#energy-d-items" target="_blank" class="bar-link timer-hover-area" title="Go to Boosters/Energy Drinks">
+                        <span>Booster:</span>
+                        <div class="value-container">
+                            <span class="value booster-value">Ready</span>
+                            <span class="timer booster-timer" data-tooltip-content="">--:--:--</span>
+                        </div>
                     </a>
                 </div>
-                <div>
-                    <a href="https://www.torn.com/item.php#medical-items" target="_blank" class="bar-link timer-hover-area" title="Go to Medical Items">
-                        <span>Medical:</span><span class="value medical-value">Ready</span>
-                        <span class="timer medical-timer" data-tooltip-content="">--:--:--</span>
+                <div> <a href="https://www.torn.com/item.php#medical-items" target="_blank" class="bar-link timer-hover-area" title="Go to Medical Items">
+                        <span>Medical:</span>
+                        <div class="value-container">
+                            <span class="value medical-value">Ready</span>
+                            <span class="timer medical-timer" data-tooltip-content="">--:--:--</span>
+                        </div>
                     </a>
                 </div>
-                <div>
-                    <a href="https://www.torn.com/item.php#drugs-items" target="_blank" class="bar-link timer-hover-area" title="Go to Drugs">
-                        <span>Drug:</span><span class="value drug-value">Ready</span>
-                        <span class="timer drug-timer" data-tooltip-content="">--:--:--</span>
+                <div> <a href="https://www.torn.com/item.php#drugs-items" target="_blank" class="bar-link timer-hover-area" title="Go to Drugs">
+                        <span>Drug:</span>
+                        <div class="value-container">
+                            <span class="value drug-value">Ready</span>
+                            <span class="timer drug-timer" data-tooltip-content="">--:--:--</span>
+                        </div>
                     </a>
                 </div>
                 <div class="error status-error"></div>
             </div>
+
             <div id="torn-status-refills" class="section-divider" style="display: none;">
+                 <div id="torn-new-day-timer-container"> <span>New Day:</span>
+                    <div class="value-container">
+                        <span class="new-day-timer-value">--:--:--</span>
+                    </div>
+                </div>
                  <div>
                     <a href="https://www.torn.com/page.php?sid=points" target="_blank" class="refill-link" title="Go to Points Building">
                         <span>E Refill:</span><span class="refill-status energy-refill-status">--</span>
@@ -421,31 +553,33 @@
 
         (function() {
             'use strict';
-            const SCRIPT_VERSION = "1.0.2";
+            const SCRIPT_VERSION = "1.0.14"; // Updated version
             const FORUM_THREAD_URL = "https://www.torn.com/forums.php#/p=threads&f=67&t=16473214&b=0&a=0";
             const AUTHOR_NAME = "GNSC4 [268863]";
             const AUTHOR_URL = "https://www.torn.com/profiles.php?XID=268863";
 
-            const UPDATE_INTERVAL_MS = 2 * 60 * 1000;
+            const UPDATE_INTERVAL_MS = 15 * 1000; 
             const API_KEY_STORAGE = 'torn_status_api_key_v1_widget';
             const GUI_MINIMIZED_STORAGE = 'torn_status_gui_minimized_v1_widget';
             const AUTOSTART_PREFERENCE_STORAGE = 'torn_autostart_preference_v1_widget';
 
             let apiKey, isMinimized;
-            let intervals = { update:null,energy:null,nerve:null,happiness:null, booster:null, medical:null, drug:null };
+            let intervals = { update:null,energy:null,nerve:null,happiness:null, booster:null, medical:null, drug:null, newDay: null }; 
             let guiContainer, minimizeButton, customTooltipElement;
             let lifeDisplayValue, energyDisplayValue, nerveDisplayValue, happinessDisplayValue, boosterDisplayValue, medicalDisplayValue, drugDisplayValue;
             let energyTimerDisplay, nerveTimerDisplay, happinessTimerDisplay, boosterTimerDisplay, medicalTimerDisplay, drugTimerDisplay;
+            let newDayTimerDisplay; 
             let apiSetupDiv, statusDiv, refillsDiv, notificationsDiv, versionDiv;
             let energyRefillStatus, nerveRefillStatus, tokenRefillStatus;
             let messagesIconDisplay, messagesCountDisplay, eventsIconDisplay, eventsCountDisplay;
             let closeButton, settingsButton;
+            let healthBarFillDisplay; 
 
             let apiKeyInputMain, apiKeySaveButtonMain, apiErrorMain, firstRunAutostartOptionDiv, firstRunAutostartCheckbox;
             let settingsPanel, settingsApiKeyInput, settingsApiKeySaveButton, settingsApiKeyClearButton, settingsApiError, settingsAutostartCheckbox, settingsPanelCloseButton;
 
-            let userMaxBoosterCooldownSeconds = 48 * 3600;
-            let userMaxMedicalCooldownSeconds = 6 * 3600;
+            let userMaxBoosterCooldownSeconds = 48 * 3600; 
+            let userMaxMedicalCooldownSeconds = 6 * 3600; 
 
             const mailIconSVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="16px" height="16px"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`;
             const eventIconSVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="16px" height="16px"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
@@ -484,11 +618,11 @@
 
                 const wasGuiHidden = guiContainer.style.display === 'none';
                 if (wasGuiHidden) {
-                    guiContainer.style.visibility = 'hidden';
+                    guiContainer.style.visibility = 'hidden'; 
                     guiContainer.style.display = 'block';
                 }
                 
-                guiContainer.offsetHeight; // Force reflow
+                guiContainer.offsetHeight; 
 
                 const header = document.getElementById('torn-status-header');
                 let calculatedInnerHeight = 0;
@@ -512,14 +646,14 @@
                             if (!isFirstVisibleInSection) {
                                 mainContentActualHeight += Math.max(previousMarginBottom, currentMarginTop);
                             } else {
-                                mainContentActualHeight += currentMarginTop;
+                                mainContentActualHeight += currentMarginTop; 
                             }
                             mainContentActualHeight += section.offsetHeight;
                             previousMarginBottom = parseInt(sectionStyle.marginBottom) || 0;
                             isFirstVisibleInSection = false; 
                         }
                     }
-                    if (!isFirstVisibleInSection) {
+                    if (!isFirstVisibleInSection) { 
                         mainContentActualHeight += previousMarginBottom;
                     }
                     calculatedInnerHeight += mainContentActualHeight;
@@ -535,24 +669,22 @@
                                      (parseInt(guiStyle.borderTopWidth) || 0) +
                                      (parseInt(guiStyle.borderBottomWidth) || 0) +
                                      10; 
-
-                // Use offsetWidth for a more stable width calculation
-                let finalWindowWidth = guiContainer.offsetWidth;
-                finalWindowWidth += 2; // Minimal buffer
-
-                if (wasGuiHidden) {
+                
+                if (wasGuiHidden) { 
                     guiContainer.style.display = 'none';
                     guiContainer.style.visibility = 'visible';
                 }
-
-                try {
-                    if (finalWindowHeight > 0 && finalWindowWidth > 0) {
-                        // console.log(`Resizing to: W ${Math.ceil(finalWindowWidth)} x H ${Math.ceil(finalWindowHeight)}`);
-                        await appWindow.setSize(new LogicalSize(Math.ceil(finalWindowWidth), Math.ceil(finalWindowHeight)));
+                requestAnimationFrame(async () => {
+                    try {
+                        const currentWidth = guiContainer.offsetWidth; 
+                        
+                        if (finalWindowHeight > 0 && currentWidth > 0) {
+                            await appWindow.setSize(new LogicalSize(Math.ceil(currentWidth), Math.ceil(finalWindowHeight)));
+                        }
+                    } catch (e) {
+                        console.error("Error resizing window (RAF):", e);
                     }
-                } catch (e) {
-                    console.error("Error resizing window:", e);
-                }
+                });
             }
 
             function formatSecondsToHMS(totalSeconds) {
@@ -600,7 +732,8 @@
                     if(minimizeButton) { minimizeButton.textContent = '−'; minimizeButton.title = 'Minimize'; }
                 }
 
-                lifeDisplayValue = guiContainer.querySelector('.life-value');
+                lifeDisplayValue = guiContainer.querySelector('.life-value-overlay'); 
+                healthBarFillDisplay = guiContainer.querySelector('.health-bar-fill');
                 energyDisplayValue = guiContainer.querySelector('.energy-value');
                 nerveDisplayValue = guiContainer.querySelector('.nerve-value');
                 happinessDisplayValue = guiContainer.querySelector('.happy-value');
@@ -614,6 +747,7 @@
                 boosterTimerDisplay = guiContainer.querySelector('.booster-timer');
                 medicalTimerDisplay = guiContainer.querySelector('.medical-timer');
                 drugTimerDisplay = guiContainer.querySelector('.drug-timer');
+                newDayTimerDisplay = guiContainer.querySelector('.new-day-timer-value'); 
 
                 notificationsDiv = document.getElementById('torn-status-notifications');
                 statusDiv = document.getElementById('torn-status-content');
@@ -668,7 +802,7 @@
                     if(settingsApiKeyInput) settingsApiKeyInput.value = '';
                     if(settingsApiError) settingsApiError.textContent = '';
                 }
-                setTimeout(resizeWindowToContent, 50);
+                resizeWindowToContent(); 
             }
 
             async function handleAutostartChange(event) {
@@ -689,7 +823,7 @@
                 let shouldEnablePlugin = false;
 
                 if (autostartPreference === null) {
-                    shouldEnablePlugin = true;
+                    shouldEnablePlugin = true; 
                     localStorage.setItem(AUTOSTART_PREFERENCE_STORAGE, 'true');
                     autostartPreference = 'true';
                 } else {
@@ -699,9 +833,7 @@
                 if (shouldEnablePlugin) {
                     await enablePluginAutostart();
                 }
-
                 const isChecked = autostartPreference === 'true';
-
                 if(firstRunAutostartCheckbox) firstRunAutostartCheckbox.checked = isChecked;
                 if(settingsAutostartCheckbox) settingsAutostartCheckbox.checked = isChecked;
             }
@@ -752,7 +884,7 @@
             async function fetchData(){
                 if(!apiKey){updateDisplay({error:"API Key needed",target:'api_main'});switchView(false);return}
                 const url=`https://api.torn.com/user/?selections=bars,cooldowns,refills,personalstats,notifications&key=${apiKey}&comment=TornStatusWidget_v${SCRIPT_VERSION}`;
-                const controller=new AbortController();const timeoutId=setTimeout(()=>controller.abort(),15000);
+                const controller=new AbortController();const timeoutId=setTimeout(()=>controller.abort(),10000); 
                 try{
                     const response=await fetch(url,{method:'GET',signal:controller.signal});clearTimeout(timeoutId);
                     if(!response.ok){
@@ -800,17 +932,18 @@
                     if (data.target === 'api_main' && apiErrorMain) errTargetDiv = apiErrorMain;
                     else if (data.target === 'api_settings' && settingsApiError) errTargetDiv = settingsApiError;
                     else if (data.target === 'status' && statusErrDiv) errTargetDiv = statusErrDiv;
-                    else if (currentApiErrorDiv) errTargetDiv = currentApiErrorDiv;
+                    else if (currentApiErrorDiv) errTargetDiv = currentApiErrorDiv; 
 
                     if(errTargetDiv) errTargetDiv.textContent=`Error: ${data.error}`;
 
                     if(lifeDisplayValue) lifeDisplayValue.textContent = '--/--';
+                    if(healthBarFillDisplay) healthBarFillDisplay.style.width = '0%'; 
                     if(energyDisplayValue)energyDisplayValue.textContent='--/--';
                     if(nerveDisplayValue)nerveDisplayValue.textContent='--/--';
                     if(happinessDisplayValue)happinessDisplayValue.textContent='--/--';
-                    if(boosterDisplayValue)boosterDisplayValue.textContent='--';
-                    if(medicalDisplayValue)medicalDisplayValue.textContent='--';
-                    if(drugDisplayValue)drugDisplayValue.textContent='--';
+                    if(boosterDisplayValue)boosterDisplayValue.textContent='--'; 
+                    if(medicalDisplayValue)medicalDisplayValue.textContent='--'; 
+                    if(drugDisplayValue)drugDisplayValue.textContent='--';       
                     if(messagesIconDisplay) messagesIconDisplay.innerHTML = mailIconSVG;
                     if(messagesCountDisplay) {messagesCountDisplay.textContent = '--'; messagesIconDisplay.className = 'notification-icon messages-icon green'; messagesCountDisplay.className = 'notification-count messages-count green';}
                     if(eventsIconDisplay) eventsIconDisplay.innerHTML = eventIconSVG;
@@ -824,14 +957,11 @@
 
                 if (data.personalstats && typeof data.personalstats.boosters_max_cooldown_hours === 'number') {
                     userMaxBoosterCooldownSeconds = data.personalstats.boosters_max_cooldown_hours * 3600;
-                } else {
-                    userMaxBoosterCooldownSeconds = 48 * 3600;
-                }
+                } 
 
                 if (data.notifications) {
                     const msgCount = data.notifications.messages || 0;
                     const evtCount = data.notifications.events || 0;
-
                     if (messagesIconDisplay) messagesIconDisplay.innerHTML = mailIconSVG;
                     if (messagesCountDisplay) {
                         messagesCountDisplay.textContent = msgCount;
@@ -851,38 +981,79 @@
                     if(eventsCountDisplay) { eventsCountDisplay.textContent = 'N/A'; eventsIconDisplay.className = 'notification-icon events-icon green'; eventsCountDisplay.className = 'notification-count events-count green';}
                 }
 
-                if(lifeDisplayValue&&data.life&&typeof data.life.current!=='undefined')lifeDisplayValue.textContent=`${data.life.current}/${data.life.maximum}`;else if(lifeDisplayValue)lifeDisplayValue.textContent='N/A';
+                if(lifeDisplayValue && data.life && typeof data.life.current !=='undefined' && typeof data.life.maximum !=='undefined' && data.life.maximum > 0){
+                    lifeDisplayValue.textContent=`${data.life.current}/${data.life.maximum}`;
+                    if (healthBarFillDisplay) {
+                        const percentage = (data.life.current / data.life.maximum) * 100;
+                        healthBarFillDisplay.style.width = `${Math.max(0, Math.min(100, percentage))}%`;
+                        if (percentage <= 25) {
+                            healthBarFillDisplay.style.backgroundColor = '#dc3545'; 
+                        } else if (percentage <= 50) {
+                            healthBarFillDisplay.style.backgroundColor = '#ffc107'; 
+                        } else {
+                            healthBarFillDisplay.style.backgroundColor = '#28a745'; 
+                        }
+                    }
+                } else if (lifeDisplayValue) {
+                    lifeDisplayValue.textContent='N/A';
+                    if (healthBarFillDisplay) {
+                         healthBarFillDisplay.style.width = '0%';
+                         healthBarFillDisplay.style.backgroundColor = '#444'; 
+                    }
+                }
+
                 if(energyDisplayValue&&data.energy&&typeof data.energy.current!=='undefined')energyDisplayValue.textContent=`${data.energy.current}/${data.energy.maximum}`;else if(energyDisplayValue)energyDisplayValue.textContent='N/A';
                 if(nerveDisplayValue&&data.nerve&&typeof data.nerve.current!=='undefined')nerveDisplayValue.textContent=`${data.nerve.current}/${data.nerve.maximum}`;else if(nerveDisplayValue)nerveDisplayValue.textContent='N/A';
                 if(happinessDisplayValue&&data.happy&&typeof data.happy.current!=='undefined')happinessDisplayValue.textContent=`${data.happy.current}/${data.happy.maximum}`;else if(happinessDisplayValue)happinessDisplayValue.textContent='N/A';
 
                 if (data.cooldowns) {
                     if (boosterDisplayValue) {
-                        if (data.cooldowns.booster > 0) { boosterDisplayValue.textContent = 'Active'; boosterDisplayValue.style.color = '#FFA500'; }
-                        else { boosterDisplayValue.textContent = 'Ready'; boosterDisplayValue.style.color = '#99dd99'; }
+                        boosterDisplayValue.textContent = data.cooldowns.booster > 0 ? 'Active' : 'Ready';
+                        if (data.cooldowns.booster === 0) {
+                            boosterDisplayValue.classList.add('flashing');
+                            if (boosterTimerDisplay) boosterTimerDisplay.classList.add('flashing');
+                        } else {
+                            boosterDisplayValue.classList.remove('flashing');
+                            if (boosterTimerDisplay) boosterTimerDisplay.classList.remove('flashing');
+                        }
                     }
                     if (medicalDisplayValue) {
-                        if (data.cooldowns.medical > 0) { medicalDisplayValue.textContent = 'Active'; medicalDisplayValue.style.color = '#FFA500'; }
-                        else { medicalDisplayValue.textContent = 'Ready'; medicalDisplayValue.style.color = '#AFEEEE'; }
+                        medicalDisplayValue.textContent = data.cooldowns.medical > 0 ? 'Active' : 'Ready';
+                        // Medical cooldowns usually don't need flashing when ready, but you can add if desired
+                         if (data.cooldowns.medical === 0) {
+                            // medicalDisplayValue.classList.add('flashing'); // Optional: if you want medical ready to flash
+                            // if (medicalTimerDisplay) medicalTimerDisplay.classList.add('flashing');
+                        } else {
+                            // medicalDisplayValue.classList.remove('flashing');
+                            // if (medicalTimerDisplay) medicalTimerDisplay.classList.remove('flashing');
+                        }
                     }
                     if (drugDisplayValue) {
-                        if (data.cooldowns.drug > 0) { drugDisplayValue.textContent = 'Active'; drugDisplayValue.style.color = '#FFA500'; }
-                        else { drugDisplayValue.textContent = 'Ready'; drugDisplayValue.style.color = '#DDA0DD'; }
+                        drugDisplayValue.textContent = data.cooldowns.drug > 0 ? 'Active' : 'Ready';
+                        if (data.cooldowns.drug === 0) {
+                            drugDisplayValue.classList.add('flashing');
+                            if (drugTimerDisplay) drugTimerDisplay.classList.add('flashing');
+                        } else {
+                            drugDisplayValue.classList.remove('flashing');
+                            if (drugTimerDisplay) drugTimerDisplay.classList.remove('flashing');
+                        }
                     }
                 } else {
-                    if(boosterDisplayValue) boosterDisplayValue.textContent = 'N/A';
-                    if(medicalDisplayValue) medicalDisplayValue.textContent = 'N/A';
-                    if(drugDisplayValue) drugDisplayValue.textContent = 'N/A';
+                    if(boosterDisplayValue) { boosterDisplayValue.textContent = 'N/A'; boosterDisplayValue.classList.remove('flashing'); if(boosterTimerDisplay) boosterTimerDisplay.classList.remove('flashing');}
+                    if(medicalDisplayValue) { medicalDisplayValue.textContent = 'N/A'; medicalDisplayValue.classList.remove('flashing'); if(medicalTimerDisplay) medicalTimerDisplay.classList.remove('flashing');}
+                    if(drugDisplayValue) { drugDisplayValue.textContent = 'N/A'; drugDisplayValue.classList.remove('flashing'); if(drugTimerDisplay) drugTimerDisplay.classList.remove('flashing');}
                 }
 
                 if (data.refills) {
                     if (energyRefillStatus) {
                         energyRefillStatus.textContent = data.refills.energy_refill_used ? 'Used' : 'Ready';
                         energyRefillStatus.className = data.refills.energy_refill_used ? 'refill-status used' : 'refill-status ready';
+                        // Flashing for refills is handled by startNewDayTimer
                     }
                     if (nerveRefillStatus) {
                         nerveRefillStatus.textContent = data.refills.nerve_refill_used ? 'Used' : 'Ready';
                         nerveRefillStatus.className = data.refills.nerve_refill_used ? 'refill-status used' : 'refill-status ready';
+                        // Flashing for refills is handled by startNewDayTimer
                     }
                     if (tokenRefillStatus) {
                         tokenRefillStatus.textContent = data.refills.token_refill_used ? 'Used' : 'Ready';
@@ -897,100 +1068,216 @@
             }
 
             function startTimers(data){
-                clearAllTimers();
+                clearAllTimers(); 
                 if(data.energy&&typeof data.energy.fulltime!=='undefined'&&energyTimerDisplay)updateTimer('energy',data.energy.fulltime,energyTimerDisplay, 0);else if(energyTimerDisplay){energyTimerDisplay.textContent="N/A";energyTimerDisplay.classList.remove('full')}
                 if(data.nerve&&typeof data.nerve.fulltime!=='undefined'&&nerveTimerDisplay)updateTimer('nerve',data.nerve.fulltime,nerveTimerDisplay, 0);else if(nerveTimerDisplay){nerveTimerDisplay.textContent="N/A";nerveTimerDisplay.classList.remove('full')}
                 if(data.happy&&typeof data.happy.fulltime!=='undefined'&&happinessTimerDisplay)updateTimer('happiness',data.happy.fulltime,happinessTimerDisplay, 0);else if(happinessTimerDisplay){happinessTimerDisplay.textContent="N/A";happinessTimerDisplay.classList.remove('full')}
 
                 if (data.cooldowns) {
                     if (typeof data.cooldowns.booster !== 'undefined' && boosterTimerDisplay) {
-                        if (data.cooldowns.booster > 0) updateTimer('booster', data.cooldowns.booster, boosterTimerDisplay, userMaxBoosterCooldownSeconds);
-                        else { boosterTimerDisplay.textContent = 'Ready'; boosterTimerDisplay.classList.add('full'); boosterTimerDisplay.dataset.tooltipContent = `Ready\nMax Duration: ${formatSecondsToHMS(userMaxBoosterCooldownSeconds)}`;}
-                    } else if (boosterTimerDisplay) { boosterTimerDisplay.textContent = "N/A"; boosterTimerDisplay.classList.remove('full'); boosterTimerDisplay.dataset.tooltipContent = "Booster: N/A"; }
+                        if (data.cooldowns.booster > 0) {
+                            updateTimer('booster', data.cooldowns.booster, boosterTimerDisplay, userMaxBoosterCooldownSeconds);
+                        } else { 
+                            boosterTimerDisplay.textContent = formatSecondsToHMS(userMaxBoosterCooldownSeconds); 
+                            boosterTimerDisplay.classList.add('full'); // This class makes it yellow
+                            boosterTimerDisplay.classList.add('flashing'); // Add flashing when ready
+                            if(boosterDisplayValue) boosterDisplayValue.classList.add('flashing');
+                            boosterTimerDisplay.dataset.tooltipContent = `Ready\nMax Duration: ${formatSecondsToHMS(userMaxBoosterCooldownSeconds)}`;
+                        }
+                    } else if (boosterTimerDisplay) { 
+                        boosterTimerDisplay.textContent = "N/A"; 
+                        boosterTimerDisplay.classList.remove('full','flashing'); 
+                        if(boosterDisplayValue) boosterDisplayValue.classList.remove('flashing');
+                        boosterTimerDisplay.dataset.tooltipContent = "Booster: N/A"; 
+                    }
 
                     if (typeof data.cooldowns.medical !== 'undefined' && medicalTimerDisplay) {
-                        if (data.cooldowns.medical > 0) updateTimer('medical', data.cooldowns.medical, medicalTimerDisplay, userMaxMedicalCooldownSeconds);
-                        else { medicalTimerDisplay.textContent = 'Ready'; medicalTimerDisplay.classList.add('full'); medicalTimerDisplay.dataset.tooltipContent = `Ready\nMax Duration: ${formatSecondsToHMS(userMaxMedicalCooldownSeconds)}`;}
-                    } else if (medicalTimerDisplay) { medicalTimerDisplay.textContent = "N/A"; medicalTimerDisplay.classList.remove('full'); medicalTimerDisplay.dataset.tooltipContent = "Medical: N/A"; }
+                        if (data.cooldowns.medical > 0) {
+                            updateTimer('medical', data.cooldowns.medical, medicalTimerDisplay, userMaxMedicalCooldownSeconds);
+                        } else { 
+                            medicalTimerDisplay.textContent = formatSecondsToHMS(userMaxMedicalCooldownSeconds); 
+                            medicalTimerDisplay.classList.add('full');
+                            // medicalTimerDisplay.classList.add('flashing'); // Optional: if you want medical ready to flash
+                            // if(medicalDisplayValue) medicalDisplayValue.classList.add('flashing');
+                            medicalTimerDisplay.dataset.tooltipContent = `Ready\nMax Duration: ${formatSecondsToHMS(userMaxMedicalCooldownSeconds)}`;
+                        }
+                    } else if (medicalTimerDisplay) { 
+                        medicalTimerDisplay.textContent = "N/A"; 
+                        medicalTimerDisplay.classList.remove('full','flashing'); 
+                        if(medicalDisplayValue) medicalDisplayValue.classList.remove('flashing');
+                        medicalTimerDisplay.dataset.tooltipContent = "Medical: N/A"; 
+                    }
 
                     if (typeof data.cooldowns.drug !== 'undefined' && drugTimerDisplay) {
-                        if (data.cooldowns.drug > 0) updateTimer('drug', data.cooldowns.drug, drugTimerDisplay, 0);
-                        else { drugTimerDisplay.textContent = 'Ready'; drugTimerDisplay.classList.add('full'); drugTimerDisplay.dataset.tooltipContent = `Ready`;}
-                    } else if (drugTimerDisplay) { drugTimerDisplay.textContent = "N/A"; drugTimerDisplay.classList.remove('full'); drugTimerDisplay.dataset.tooltipContent = "Drug: N/A"; }
-                }
-            }
-
-            function updateTimer(barName,initialSecondsRemaining,displayElement, maxCooldownSeconds){
-                if(!displayElement)return;
-                if(intervals[barName]) clearTimeout(intervals[barName]);
-
-                let secondsRemaining=Number(initialSecondsRemaining);
-                if(isNaN(secondsRemaining)){displayElement.textContent="Error";displayElement.classList.remove('full');intervals[barName]=null;return}
-
-                function updateTooltipContent() {
-                    let tooltipText = '';
-                    if (secondsRemaining > 0) {
-                        const endsTimestamp = new Date(Date.now() + secondsRemaining * 1000).toLocaleString();
-                        tooltipText = `Ends: ${endsTimestamp}`;
-                        if (barName === 'booster' || barName === 'medical') {
-                             const availableSeconds = Math.max(0, maxCooldownSeconds - secondsRemaining);
-                             tooltipText += `\nAvailable: ${formatSecondsToHMS(availableSeconds)}`;
+                        if (data.cooldowns.drug > 0) {
+                             updateTimer('drug', data.cooldowns.drug, drugTimerDisplay, 0); 
+                        } else { 
+                            drugTimerDisplay.textContent = 'Ready'; 
+                            drugTimerDisplay.classList.add('full'); // This class makes it yellow
+                            drugTimerDisplay.classList.add('flashing'); // Add flashing when ready
+                            if(drugDisplayValue) drugDisplayValue.classList.add('flashing');
+                            drugTimerDisplay.dataset.tooltipContent = `Ready`;
                         }
+                    } else if (drugTimerDisplay) { 
+                        drugTimerDisplay.textContent = "N/A"; 
+                        drugTimerDisplay.classList.remove('full','flashing'); 
+                        if(drugDisplayValue) drugDisplayValue.classList.remove('flashing');
+                        drugTimerDisplay.dataset.tooltipContent = "Drug: N/A"; 
+                    }
+                }
+                startNewDayTimer();
+            }
+            
+            function startNewDayTimer() {
+                if (intervals.newDay) clearInterval(intervals.newDay);
+                if (!newDayTimerDisplay) return;
+
+                function update() {
+                    const now = new Date();
+                    const tomorrowUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0, 0));
+                    const diffSeconds = Math.floor((tomorrowUTC.getTime() - now.getTime()) / 1000);
+
+                    const isWarningPeriod = diffSeconds < 3600 && diffSeconds >= 0;
+
+                    if (isWarningPeriod) {
+                        newDayTimerDisplay.classList.add('new-day-warning');
                     } else {
-                        tooltipText = `Ready`;
-                        if (barName === 'booster' || barName === 'medical') {
-                            tooltipText += `\nMax Duration: ${formatSecondsToHMS(maxCooldownSeconds)}`;
+                        newDayTimerDisplay.classList.remove('new-day-warning');
+                    }
+                    
+                    newDayTimerDisplay.textContent = formatSecondsToHMS(diffSeconds >= 0 ? diffSeconds : 0);
+
+                    let newDayShouldFlash = false;
+                    if (energyRefillStatus) {
+                        if (isWarningPeriod && energyRefillStatus.textContent === 'Ready') {
+                            energyRefillStatus.classList.add('flashing');
+                            newDayShouldFlash = true;
+                        } else {
+                            energyRefillStatus.classList.remove('flashing');
                         }
                     }
-                    displayElement.dataset.tooltipContent = tooltipText;
+                    if (nerveRefillStatus) {
+                        if (isWarningPeriod && nerveRefillStatus.textContent === 'Ready') {
+                            nerveRefillStatus.classList.add('flashing');
+                            newDayShouldFlash = true;
+                        } else {
+                            nerveRefillStatus.classList.remove('flashing');
+                        }
+                    }
+
+                    if (newDayShouldFlash && isWarningPeriod) { 
+                        newDayTimerDisplay.classList.add('flashing');
+                    } else {
+                        newDayTimerDisplay.classList.remove('flashing');
+                    }
+                }
+                update(); 
+                intervals.newDay = setInterval(update, 1000); 
+            }
+
+
+            function updateTimer(barName, initialSecondsRemaining, displayElement, maxCooldownSeconds) {
+                if (!displayElement) return;
+                if (intervals[barName]) clearTimeout(intervals[barName]);
+
+                let secondsRemaining = Number(initialSecondsRemaining);
+                if (isNaN(secondsRemaining)) {
+                    displayElement.textContent = "Error";
+                    displayElement.classList.remove('full', 'flashing');
+                    if (barName === 'booster' && boosterDisplayValue) boosterDisplayValue.classList.remove('flashing');
+                    if (barName === 'drug' && drugDisplayValue) drugDisplayValue.classList.remove('flashing');
+                    displayElement.dataset.tooltipContent = "Error";
+                    intervals[barName] = null;
+                    return;
                 }
 
-                function tick(){
-                    updateTooltipContent();
-                    if(secondsRemaining<=0){
-                        displayElement.textContent="Ready";
-                        displayElement.classList.add('full');
-                        intervals[barName]=null;
+                let valueDisplayElement = null;
+                if (barName === 'booster') valueDisplayElement = boosterDisplayValue;
+                else if (barName === 'medical') valueDisplayElement = medicalDisplayValue; // Though medical flashing is optional
+                else if (barName === 'drug') valueDisplayElement = drugDisplayValue;
 
-                        let correspondingValueDisplay;
-                        let readyColor = '#99dd99';
-                        switch(barName) {
-                            case 'booster': correspondingValueDisplay = boosterDisplayValue; readyColor = '#99dd99'; break;
-                            case 'medical': correspondingValueDisplay = medicalDisplayValue; readyColor = '#AFEEEE'; break;
-                            case 'drug': correspondingValueDisplay = drugDisplayValue; readyColor = '#DDA0DD'; break;
-                            default: correspondingValueDisplay = null;
+
+                function tick() {
+                    let currentTooltipText = '';
+                    const now = Date.now(); 
+
+                    if (secondsRemaining <= 0) { 
+                        displayElement.classList.add('full');
+                        intervals[barName] = null;
+
+                        if ((barName === 'booster' || barName === 'medical' || barName === 'drug')) {
+                             if (valueDisplayElement) valueDisplayElement.textContent = 'Ready';
+                             if (barName === 'booster' || barName === 'drug') { // Only flash booster and drug when ready
+                                if (valueDisplayElement) valueDisplayElement.classList.add('flashing');
+                                displayElement.classList.add('flashing');
+                             }
                         }
-                        if (correspondingValueDisplay) {
-                             correspondingValueDisplay.textContent = 'Ready';
-                             correspondingValueDisplay.style.color = readyColor;
-                        } else if (barName !== 'energy' && barName !== 'nerve' && barName !== 'happiness') {
-                             displayElement.textContent="Full";
+
+                        if ((barName === 'booster' || barName === 'medical') && maxCooldownSeconds > 0) {
+                            displayElement.textContent = formatSecondsToHMS(maxCooldownSeconds); 
+                            currentTooltipText = `Ready\nMax Duration: ${formatSecondsToHMS(maxCooldownSeconds)}`;
+                        } else if (barName === 'drug') {
+                            displayElement.textContent = "Ready";
+                            currentTooltipText = `Ready`;
+                        } else { 
+                            displayElement.textContent = "Full";
+                            currentTooltipText = `Full`;
                         }
-                        updateTooltipContent();
-                    }else{
-                        displayElement.classList.remove('full');
-                        displayElement.textContent = formatSecondsToHMS(secondsRemaining);
+                        displayElement.dataset.tooltipContent = currentTooltipText;
+                        
+                    } else { 
+                        displayElement.classList.remove('full', 'flashing');
+                        if (valueDisplayElement) valueDisplayElement.classList.remove('flashing');
+                        if (valueDisplayElement && (barName === 'booster' || barName === 'medical' || barName === 'drug')){
+                             valueDisplayElement.textContent = 'Active';
+                        }
+
+                        const endsTimestamp = new Date(now + secondsRemaining * 1000).toLocaleString([], {dateStyle: 'short', timeStyle: 'medium'});
+
+                        if ((barName === 'booster' || barName === 'medical') && maxCooldownSeconds > 0) {
+                            const availableSeconds = Math.max(0, maxCooldownSeconds - secondsRemaining);
+                            displayElement.textContent = formatSecondsToHMS(availableSeconds); 
+                            currentTooltipText = `Ends: ${endsTimestamp}\nUsed: ${formatSecondsToHMS(secondsRemaining)}`; 
+                        } else if (barName === 'drug') { 
+                            displayElement.textContent = formatSecondsToHMS(secondsRemaining);
+                            currentTooltipText = `Ends: ${endsTimestamp}\n(Drug active)`;
+                        } else { 
+                            displayElement.textContent = formatSecondsToHMS(secondsRemaining);
+                            currentTooltipText = `Ends: ${endsTimestamp}`;
+                        }
+                        displayElement.dataset.tooltipContent = currentTooltipText;
                         secondsRemaining--;
-                        intervals[barName]=setTimeout(tick,1000);
+                        intervals[barName] = setTimeout(tick, 1000);
                     }
                 }
                 tick();
             }
 
+
             function clearAllTimers(){
                 Object.keys(intervals).forEach(key => {
-                    if (key !== 'update' && intervals[key]) {
-                        clearTimeout(intervals[key]);
+                    if (intervals[key]) { 
+                        clearInterval(intervals[key]); 
                         intervals[key] = null;
                     }
+                });
+                const elementsToClearFlash = [
+                    energyRefillStatus, nerveRefillStatus, newDayTimerDisplay,
+                    boosterDisplayValue, boosterTimerDisplay,
+                    drugDisplayValue, drugTimerDisplay,
+                    medicalDisplayValue, medicalTimerDisplay // Include medical if it might flash
+                ];
+                elementsToClearFlash.forEach(el => {
+                    if (el) el.classList.remove('flashing', 'new-day-warning');
                 });
 
                 const timersToReset = [
                     energyTimerDisplay, nerveTimerDisplay, happinessTimerDisplay,
-                    boosterTimerDisplay, medicalTimerDisplay, drugTimerDisplay
+                    boosterTimerDisplay, medicalTimerDisplay, drugTimerDisplay,
+                    newDayTimerDisplay 
                 ];
                 timersToReset.forEach(timer => {
-                    if(timer){ timer.textContent='--:--:--'; timer.classList.remove('full'); timer.dataset.tooltipContent = "";}
+                    if(timer){ timer.textContent='--:--:--'; if(timer.classList) timer.classList.remove('full'); if(timer.dataset) timer.dataset.tooltipContent = "";}
                 });
             }
             function clearErrorMessages(){
@@ -1007,9 +1294,9 @@
                 localStorage.setItem(GUI_MINIMIZED_STORAGE,isMinimized.toString());
 
                 if (!isMinimized && settingsPanel && settingsPanel.style.display === 'flex') {
-                    toggleSettingsPanel();
+                    toggleSettingsPanel(); 
                 } else {
-                    setTimeout(resizeWindowToContent, 50);
+                     resizeWindowToContent();
                 }
 
                 if(!isMinimized && apiKey) {
@@ -1027,12 +1314,12 @@
                     localStorage.setItem(API_KEY_STORAGE, apiKey);
                     inputElement.value = '';
                     clearErrorMessages();
-                    switchView(true);
-                    if(intervals.update) clearInterval(intervals.update);
-                    fetchData();
-                    intervals.update = setInterval(fetchData, UPDATE_INTERVAL_MS);
+                    switchView(true); 
+                    if(intervals.update) clearInterval(intervals.update); 
+                    fetchData(); 
+                    intervals.update = setInterval(fetchData, UPDATE_INTERVAL_MS); 
                     if(fromSettings) {
-                        toggleSettingsPanel();
+                        toggleSettingsPanel(); 
                     }
                 } else {
                     errorElement.textContent = "Invalid Key format (16 letters/numbers)";
@@ -1048,27 +1335,28 @@
                 }
                 clearAllTimers();
                 updateDisplay({ error: "API Key cleared. Enter new key.", target: 'api_settings' });
-                if(settingsApiKeyInput) settingsApiKeyInput.value = '';
+                if(settingsApiKeyInput) settingsApiKeyInput.value = ''; 
             }
+
 
             function switchView(showStatus) {
                 if (!apiSetupDiv || !notificationsDiv || !statusDiv || !refillsDiv || !guiContainer || !firstRunAutostartOptionDiv) return;
 
-                if (showStatus && apiKey) {
+                if (showStatus && apiKey) { 
                     notificationsDiv.style.setProperty('display', 'flex', 'important');
                     statusDiv.style.setProperty('display', 'block', 'important');
                     refillsDiv.style.setProperty('display', 'block', 'important');
                     apiSetupDiv.style.setProperty('display', 'none', 'important');
                     firstRunAutostartOptionDiv.style.display = 'none';
-                } else {
+                } else { 
                     apiSetupDiv.style.setProperty('display', 'block', 'important');
                     notificationsDiv.style.setProperty('display', 'none', 'important');
                     statusDiv.style.setProperty('display', 'none', 'important');
                     refillsDiv.style.setProperty('display', 'none', 'important');
-                    firstRunAutostartOptionDiv.style.display = apiKey ? 'none' : 'block';
+                    firstRunAutostartOptionDiv.style.display = apiKey ? 'none' : 'block'; 
                 }
                 if (!(settingsPanel && settingsPanel.style.display === 'flex')) {
-                    setTimeout(resizeWindowToContent, 50);
+                    resizeWindowToContent();
                 }
             }
 
@@ -1076,41 +1364,40 @@
                 apiKey = localStorage.getItem(API_KEY_STORAGE) || null;
                 isMinimized = localStorage.getItem(GUI_MINIMIZED_STORAGE) === 'true';
 
-                cacheGUIElements();
-                await initializeAutostart();
+                cacheGUIElements(); 
+                await initializeAutostart(); 
+                startNewDayTimer(); 
 
-                if(!guiContainer) return;
+                if(!guiContainer) return; 
 
-                const requiresApiSetup=!apiKey;
+                const requiresApiSetup = !apiKey;
                 if(requiresApiSetup){
-                    if(!isMinimized){ switchView(false); }
-                    else{
+                    if(!isMinimized){ switchView(false); } 
+                    else{ 
                         if(apiSetupDiv) apiSetupDiv.style.setProperty('display','block','important');
                         if(notificationsDiv) notificationsDiv.style.setProperty('display','none','important');
                         if(statusDiv) statusDiv.style.setProperty('display','none','important');
                         if(refillsDiv) refillsDiv.style.setProperty('display','none','important');
                         if(firstRunAutostartOptionDiv) firstRunAutostartOptionDiv.style.display = 'block';
-                        setTimeout(resizeWindowToContent, 50);
+                        resizeWindowToContent();
                     }
                 }
-                else{
-                    if(intervals.update) clearInterval(intervals.update);
-                    fetchData();
-                    intervals.update=setInterval(fetchData,UPDATE_INTERVAL_MS);
-                    if(!isMinimized){ switchView(true); }
-                    else{
+                else{ 
+                    if(intervals.update) clearInterval(intervals.update); 
+                    fetchData(); 
+                    intervals.update=setInterval(fetchData,UPDATE_INTERVAL_MS); 
+                    if(!isMinimized){ switchView(true); } 
+                    else{ 
                         if(notificationsDiv) notificationsDiv.style.setProperty('display','flex','important');
                         if(statusDiv) statusDiv.style.setProperty('display','block','important');
                         if(refillsDiv) refillsDiv.style.setProperty('display','block','important');
                         if(apiSetupDiv) apiSetupDiv.style.setProperty('display','none','important');
                         if(firstRunAutostartOptionDiv) firstRunAutostartOptionDiv.style.display = 'none';
-                        setTimeout(resizeWindowToContent, 50);
+                        resizeWindowToContent();
                     }
                 }
-                if (!isMinimized || apiKey) {
-                    if (!(settingsPanel && settingsPanel.style.display === 'flex')) {
-                         setTimeout(resizeWindowToContent, 100);
-                    }
+                if (!isMinimized || (apiKey && !(settingsPanel && settingsPanel.style.display === 'flex'))) {
+                     resizeWindowToContent();
                 }
             }
 
