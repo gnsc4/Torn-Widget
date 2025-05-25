@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torn Status Monitor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif !important;
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+            overflow: hidden;
+        }
+
+        #torn-status-gui {
+            background-color: rgba(30, 30, 30, 0.95) !important;
+            border: 1px solid #999 !important;
+            border-radius: 5px !important;
+            padding: 10px !important;
+            color: #ddd !important;
+            font-size: 13px !important;
+            min-width: 200px !important;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.6) !important;
+            user-select: none !important;
+            box-sizing: border-box !important;
+            display: flex;
+            flex-direction: column;
+        }
+        #torn-status-gui.minimized {
+            padding: 0 !important; min-width: 0 !important;
+            width: 35px !important; height: 35px !important;
+            overflow: hidden !important; cursor: pointer !important;
+        }
+        #torn-status-gui.minimized #torn-status-content-area,
+        #torn-status-gui.minimized #torn-status-header h3,
+        #torn-status-gui.minimized #torn-status-settings-btn, /* Changed from torn-status-change-key-btn */
+        #torn-status-gui.minimized #torn-status-close-btn,
+        #torn-status-gui.minimized #widget-version,
+        #torn-status-gui.minimized #torn-status-settings-panel /* Hide settings panel when minimized */
+        { display: none !important; }
+
+        #torn-status-gui.minimized #torn-status-header {
+             padding: 0 !important; margin: 0 !important; border-bottom: none !important;
+             min-height: 35px !important; display: flex !important;
+             align-items: center !important; justify-content: center !important;
+        }
+        #torn-status-gui.minimized #torn-status-minimize-btn {
+             position: static !important; margin: 0 !important; padding: 5px !important;
+             font-size: 17px !important;
+             line-height: 1 !important;
+        }
+        #torn-status-header {
+            display: flex !important; justify-content: space-between !important;
+            align-items: center !important; border-bottom: 1px solid #666 !important;
+            margin-bottom: 8px !important; padding-bottom: 8px !important;
+            cursor: grab !important;
+        }
+        #torn-status-header h3 {
+             margin: 0 !important; font-size: 15px !important;
+             font-weight: bold !important; color: #fff !important; flex-grow: 1;
+             pointer-events: none !important;
+        }
+        .header-button {
+            background: #555 !important; border: 1px solid #777 !important; color: #fff !important;
+            cursor: pointer !important; padding: 3px 6px !important; border-radius: 3px !important;
+            font-weight: bold !important; line-height: 1 !important; margin-left: 5px !important;
+            font-size: 13px;
+        }
+        .header-button:hover { background: #777 !important; }
+
+        #torn-status-content-area {
+            flex-grow: 1;
+            position: relative; /* For positioning settings panel */
+        }
+
+        #torn-status-notifications,
+        #torn-status-content > div,
+        #torn-status-api-setup div,
+        #torn-status-refills > div { margin-bottom: 5px !important; line-height: 1.4 !important; }
+
+        .bar-link, .refill-link, .status-link, .notification-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none; color: inherit;
+            cursor: pointer; padding: 2px 0; border-radius: 3px;
+        }
+        .bar-link:hover, .refill-link:hover, .status-link:hover, .notification-link:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+        #torn-status-content span:first-child,
+        #torn-status-refills span:first-child {
+            display: inline-block !important; min-width: 60px !important;
+            font-weight: bold !important; color: #aaa !important;
+        }
+
+        #torn-status-content .value {
+             display: inline-block !important; min-width: 70px !important;
+             text-align: right !important; margin-right: 5px !important; font-weight: bold !important;
+        }
+        #torn-status-content .life-value { color: #ff7f7f !important; }
+        #torn-status-content .energy-value { color: #99dd99 !important; }
+        #torn-status-content .nerve-value { color: #ff6666 !important; }
+        #torn-status-content .happy-value { color: #ffff99 !important; }
+        #torn-status-content .booster-value { color: #87CEFA !important; }
+        #torn-status-content .medical-value { color: #AFEEEE !important; }
+        #torn-status-content .drug-value { color: #DDA0DD !important; }
+
+        #torn-status-notifications {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .notification-item {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        .notification-item:last-child {
+            margin-right: 0;
+        }
+        .notification-icon svg {
+            width: 17px;
+            height: 17px;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+        .notification-count {
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .notification-icon.green, .notification-count.green {
+            fill: #28a745;
+            color: #28a745 !important;
+        }
+        .notification-icon.red, .notification-count.red {
+            fill: #dc3545;
+            color: #dc3545 !important;
+        }
+
+        #torn-status-refills .refill-status {
+            display: inline-block !important; min-width: 70px !important;
+            text-align: right !important; margin-right: 5px !important; font-weight: bold !important;
+        }
+        #torn-status-refills .refill-status.ready { color: #99dd99 !important; }
+        #torn-status-refills .refill-status.used { color: #ff6666 !important; }
+
+        #torn-status-content .timer {
+            font-weight: bold !important; color: #99dd99 !important; margin-left: 5px !important;
+        }
+        #torn-status-content .timer.full { color: #ffff99 !important; }
+        .error { color: #ff6666 !important; font-weight: bold !important; margin-top: 5px !important; }
+
+        #torn-status-api-setup { padding-top: 5px !important; }
+        #torn-status-api-setup input[type="text"] {
+            padding:4px 6px!important; border:1px solid #888!important; border-radius:3px!important;
+            margin-right:5px!important; width:calc(100% - 80px)!important;
+            background-color:#fff!important; font-size: 13px;
+            color:#000!important; box-sizing:border-box!important
+        }
+        #torn-status-api-setup button {
+            padding:4px 10px!important; border:1px solid #999!important; border-radius:3px!important;
+            background-color:#ccc!important; color:#000!important; cursor:pointer!important;
+            font-weight:bold!important; box-sizing:border-box!important; font-size: 13px;
+        }
+        #torn-status-api-setup button:hover { background-color:#ddd!important }
+        #torn-status-api-setup p { margin-bottom:8px!important; font-size:12px!important; color:#ccc!important }
+        #torn-status-api-setup a { color:#aaa!important; text-decoration:underline!important }
+        #torn-status-api-setup a:hover { color:#ccc!important }
+
+        /* First run autostart option */
+        #first-run-autostart-option {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed #555;
+            font-size: 12px;
+        }
+        #first-run-autostart-option label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        #first-run-autostart-checkbox {
+            margin-right: 8px;
+        }
+
+
+        .section-divider {
+            border-top: 1px dashed #555;
+            margin-top: 8px;
+            padding-top: 8px;
+        }
+        #custom-tooltip {
+            position: fixed;
+            display: none;
+            background-color: rgba(10, 10, 10, 0.9);
+            color: #eee;
+            border: 1px solid #555;
+            border-radius: 4px;
+            padding: 5px 8px;
+            font-size: 12px;
+            z-index: 100000;
+            pointer-events: none;
+            white-space: pre-line;
+            max-width: 250px;
+        }
+        #widget-version {
+            font-size: 11px;
+            color: #777;
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 5px;
+            border-top: 1px solid #444;
+        }
+        #widget-version a {
+            color: #88aaff;
+            text-decoration: none;
+        }
+        #widget-version a:hover {
+            text-decoration: underline;
+        }
+
+        /* Settings Panel Styles */
+        #torn-status-settings-panel {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background-color: rgba(40, 40, 40, 0.98);
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            font-size: 13px;
+        }
+        #torn-status-settings-panel h4 {
+            margin: 0 0 10px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #666;
+            font-size: 15px;
+            color: #fff;
+            text-align: center;
+        }
+        .settings-section {
+            margin-bottom: 15px;
+        }
+        .settings-section p {
+            margin: 0 0 5px 0;
+            font-size: 12px;
+            color: #ccc;
+        }
+        .settings-section input[type="text"] {
+            width: calc(100% - 75px);
+            padding: 4px 6px !important;
+            border: 1px solid #888 !important;
+            border-radius: 3px !important;
+            margin-right: 5px !important;
+            background-color: #fff !important;
+            color: #000 !important;
+            box-sizing: border-box !important;
+            font-size: 13px;
+        }
+        .settings-section button {
+            padding: 4px 10px !important;
+            border: 1px solid #999 !important;
+            border-radius: 3px !important;
+            background-color: #ccc !important;
+            color: #000 !important;
+            cursor: pointer !important;
+            font-weight: bold !important;
+            box-sizing: border-box !important;
+            font-size: 13px;
+        }
+        .settings-section button:hover { background-color: #ddd !important; }
+        .settings-section .error { margin-top: 5px; font-size: 12px; }
+
+        .settings-autostart-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 13px;
+        }
+         #settings-autostart-checkbox {
+            margin-right: 8px;
+        }
+
+        #settings-close-btn-container {
+            margin-top: auto;
+            text-align: right;
+        }
+
+    </style>
+  <script type="module" crossorigin src="/assets/index-QiOVSvUi.js"></script>
+</head>
+<body>
+    <div id="torn-status-gui">
+        <div id="torn-status-header" data-tauri-drag-region>
+            <h3>Status</h3>
+            <button id="torn-status-settings-btn" class="header-button" title="Settings">⚙️</button>
+            <button id="torn-status-minimize-btn" class="header-button" title="Minimize">−</button>
+            <button id="torn-status-close-btn" class="header-button" title="Close Widget">×</button>
+        </div>
+
+        <div id="torn-status-content-area">
+            <div id="torn-status-api-setup" style="display: none;">
+                <p>Enter Torn API Key (<a href="https://www.torn.com/preferences.php#tab=api" target="_blank" title="Go to API Key settings">Get Key</a>):</p>
+                <div>
+                    <input type="text" id="torn-api-key-input-main" placeholder="Your API Key">
+                    <button id="torn-api-key-save-btn-main">Save</button>
+                </div>
+                <div class="error api-error-main"></div>
+                <div id="first-run-autostart-option" style="display: none;">
+                    <label>
+                        <input type="checkbox" id="first-run-autostart-checkbox">
+                        Start widget on system boot
+                    </label>
+                </div>
+            </div>
+
+            <div id="torn-status-notifications" style="display: none;">
+                <a href="https://www.torn.com/messages.php" target="_blank" class="notification-link notification-item" title="Go to Messages">
+                    <span class="notification-icon messages-icon"></span>
+                    <span class="notification-count messages-count">--</span>
+                </a>
+                <a href="https://www.torn.com/events.php" target="_blank" class="notification-link notification-item" title="Go to Events">
+                    <span class="notification-icon events-icon"></span>
+                    <span class="notification-count events-count">--</span>
+                </a>
+            </div>
+
+            <div id="torn-status-content" class="section-divider" style="display: none;">
+                <div>
+                    <a href="https://www.torn.com/item.php#medical-items" target="_blank" class="status-link" title="Go to Medical Items">
+                        <span>Life:</span><span class="value life-value">--/--</span>
+                    </a>
+                </div>
+                <div>
+                    <a href="https://www.torn.com/gym.php" target="_blank" class="bar-link timer-hover-area" title="Go to Gym">
+                        <span>Energy:</span><span class="value energy-value">--/--</span>
+                        <span class="timer energy-timer" data-tooltip-content="">--:--:--</span>
+                    </a>
+                </div>
+                <div>
+                    <a href="https://www.torn.com/loader.php?sid=crimes#/" target="_blank" class="bar-link timer-hover-area" title="Go to Crimes">
+                        <span>Nerve:</span><span class="value nerve-value">--/--</span>
+                        <span class="timer nerve-timer" data-tooltip-content="">--:--:--</span>
+                    </a>
+                </div>
+                <div>
+                    <a href="https://www.torn.com/item.php#candy-items" target="_blank" class="status-link timer-hover-area" title="Go to Candy Items">
+                        <span>Happy:</span><span class="value happy-value">--/--</span>
+                        <span class="timer happy-timer" data-tooltip-content="">--:--:--</span>
+                    </a>
+                </div>
+                <div class="section-divider"></div>
+                <div>
+                    <a href="https://www.torn.com/item.php#energy-d-items" target="_blank" class="bar-link timer-hover-area" title="Go to Boosters/Energy Drinks">
+                        <span>Booster:</span><span class="value booster-value">Ready</span>
+                        <span class="timer booster-timer" data-tooltip-content="">--:--:--</span>
+                    </a>
+                </div>
+                <div>
+                    <a href="https://www.torn.com/item.php#medical-items" target="_blank" class="bar-link timer-hover-area" title="Go to Medical Items">
+                        <span>Medical:</span><span class="value medical-value">Ready</span>
+                        <span class="timer medical-timer" data-tooltip-content="">--:--:--</span>
+                    </a>
+                </div>
+                <div>
+                    <a href="https://www.torn.com/item.php#drugs-items" target="_blank" class="bar-link timer-hover-area" title="Go to Drugs">
+                        <span>Drug:</span><span class="value drug-value">Ready</span>
+                        <span class="timer drug-timer" data-tooltip-content="">--:--:--</span>
+                    </a>
+                </div>
+                <div class="error status-error"></div>
+            </div>
+            <div id="torn-status-refills" class="section-divider" style="display: none;">
+                 <div>
+                    <a href="https://www.torn.com/page.php?sid=points" target="_blank" class="refill-link" title="Go to Points Building">
+                        <span>E Refill:</span><span class="refill-status energy-refill-status">--</span>
+                    </a>
+                </div>
+                 <div>
+                    <a href="https://www.torn.com/page.php?sid=points" target="_blank" class="refill-link" title="Go to Points Building">
+                        <span>N Refill:</span><span class="refill-status nerve-refill-status">--</span>
+                    </a>
+                </div>
+                 <div>
+                    <a href="https://www.torn.com/page.php?sid=points" target="_blank" class="refill-link" title="Go to Points Building">
+                        <span>T Refill:</span><span class="refill-status token-refill-status">--</span>
+                    </a>
+                </div>
+            </div>
+
+            <div id="torn-status-settings-panel" style="display: none;">
+                <h4>Settings</h4>
+                <div class="settings-section">
+                    <p>API Key Management:</p>
+                    <input type="text" id="torn-api-key-input-settings" placeholder="Enter new API Key (optional)">
+                    <button id="torn-api-key-save-btn-settings">Save Key</button>
+                    <button id="torn-api-key-clear-btn-settings" style="margin-left: 5px; background-color: #d44a4a !important;">Clear Key</button>
+                    <div class="error api-error-settings"></div>
+                </div>
+                <div class="settings-section">
+                    <label class="settings-autostart-label">
+                        <input type="checkbox" id="settings-autostart-checkbox">
+                        Start widget on system boot
+                    </label>
+                </div>
+                 <div id="settings-close-btn-container">
+                    <button id="settings-panel-close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+        <div id="widget-version"></div>
+    </div>
+    <div id="custom-tooltip" style="display:none;"></div>
+
+</body>
+</html>
