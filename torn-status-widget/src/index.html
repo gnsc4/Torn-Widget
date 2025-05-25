@@ -222,15 +222,15 @@
         /* Settings Panel Styles */
         #torn-status-settings-panel {
             position: absolute;
-            top: -10px; 
-            left: -10px; 
-            right: -10px; 
-            bottom: -10px; 
-            background-color: rgba(40, 40, 40, 0.98); 
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background-color: rgba(40, 40, 40, 0.98);
             padding: 15px;
             border-radius: 5px;
             z-index: 100;
-            display: none; 
+            display: none;
             flex-direction: column;
             font-size: 13px;
         }
@@ -251,7 +251,7 @@
             color: #ccc;
         }
         .settings-section input[type="text"] {
-            width: calc(100% - 75px); 
+            width: calc(100% - 75px);
             padding: 4px 6px !important;
             border: 1px solid #888 !important;
             border-radius: 3px !important;
@@ -286,7 +286,7 @@
         }
 
         #settings-close-btn-container {
-            margin-top: auto; 
+            margin-top: auto;
             text-align: right;
         }
 
@@ -500,7 +500,7 @@
                     calculatedInnerHeight += settingsPanel.offsetHeight;
                 } else {
                     let mainContentActualHeight = 0;
-                    const mainSections = [apiSetupDiv, notificationsDiv, statusDiv, refillsDiv, firstRunAutostartOptionDiv]; // Added firstRunAutostartOptionDiv
+                    const mainSections = [apiSetupDiv, notificationsDiv, statusDiv, refillsDiv, firstRunAutostartOptionDiv];
                     let isFirstVisibleInSection = true;
                     let previousMarginBottom = 0;
 
@@ -510,18 +510,16 @@
                             const currentMarginTop = parseInt(sectionStyle.marginTop) || 0;
                             
                             if (!isFirstVisibleInSection) {
-                                // Add the larger of the previous bottom margin or current top margin (simplified non-collapsing)
                                 mainContentActualHeight += Math.max(previousMarginBottom, currentMarginTop);
                             } else {
-                                mainContentActualHeight += currentMarginTop; // Add top margin of the first visible section
+                                mainContentActualHeight += currentMarginTop;
                             }
                             mainContentActualHeight += section.offsetHeight;
                             previousMarginBottom = parseInt(sectionStyle.marginBottom) || 0;
                             isFirstVisibleInSection = false; 
                         }
                     }
-                     // Add the bottom margin of the last visible element in the content area
-                    if (!isFirstVisibleInSection) { // This means at least one section was visible
+                    if (!isFirstVisibleInSection) {
                         mainContentActualHeight += previousMarginBottom;
                     }
                     calculatedInnerHeight += mainContentActualHeight;
@@ -536,12 +534,11 @@
                                      (parseInt(guiStyle.paddingBottom) || 0) +
                                      (parseInt(guiStyle.borderTopWidth) || 0) +
                                      (parseInt(guiStyle.borderBottomWidth) || 0) +
-                                     10; // Final buffer
+                                     10; 
 
-                const finalWindowWidth = guiContainer.scrollWidth + 
-                                    (parseInt(guiStyle.borderLeftWidth) || 0) +
-                                    (parseInt(guiStyle.borderRightWidth) || 0) +
-                                    10; // Buffer for width, scrollWidth includes padding
+                // Use offsetWidth for a more stable width calculation
+                let finalWindowWidth = guiContainer.offsetWidth;
+                finalWindowWidth += 2; // Minimal buffer
 
                 if (wasGuiHidden) {
                     guiContainer.style.display = 'none';
