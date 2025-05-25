@@ -1,0 +1,117 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devPath": "http://localhost:5173",
+    "distDir": "../dist",
+    "withGlobalTauri": true
+  },
+  "package": {
+    "productName": "torn-status-widget",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "fs": {
+        "all": false,
+        "readFile": true,
+        "writeFile": true,
+        "exists": true,
+        "scope": [
+          "$APPCONFIG/*"
+        ]
+      },
+      "path": {
+        "all": true
+      },
+      "window": {
+        "all": false,
+        "create": false,
+        "center": false,
+        "requestUserAttention": false,
+        "setResizable": false,
+        "setMinimizable": false,
+        "setMaximizable": false,
+        "setClosable": false,
+        "setTitle": false,
+        "maximize": false,
+        "unmaximize": false,
+        "minimize": false,
+        "unminimize": false,
+        "show": true,
+        "hide": true,
+        "close": true,
+        "setDecorations": false,
+        "setAlwaysOnTop": true,
+        "setSize": true,
+        "setMinSize": false,
+        "setMaxSize": false,
+        "setPosition": true,
+        "setFullscreen": false,
+        "setFocus": false,
+        "setIcon": false,
+        "setSkipTaskbar": true,
+        "setCursorGrab": false,
+        "setCursorVisible": false,
+        "setCursorIcon": false,
+        "setCursorPosition": false,
+        "setIgnoreCursorEvents": false,
+        "startDragging": true,
+        "print": false
+      },
+      "dialog": {
+        "all": false,
+        "message": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.torn.status.widget",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "windows": {
+        "wix": null,
+        "nsis": {
+          "installerIcon": "icons/icon.ico"
+        }
+      }
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": false,
+        "title": "Torn Status Widget",
+        "width": 220,
+        "height": 150,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": true
+      }
+    ],
+    "updater": {
+      "active": false
+    },
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
+    "macOSPrivateApi": true
+  }
+}
