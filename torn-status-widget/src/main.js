@@ -5,7 +5,7 @@ const invoke = window.__TAURI__.tauri.invoke;
 
 (function() {
     'use strict';
-    const SCRIPT_VERSION = "1.0.30"; // UPDATED SCRIPT VERSION
+    const SCRIPT_VERSION = "1.0.31"; // UPDATED SCRIPT VERSION
     const FORUM_THREAD_URL = "https://www.torn.com/forums.php#/p=threads&f=67&t=16473214&b=0&a=0";
     const AUTHOR_NAME = "GNSC4 [268863]";
     const AUTHOR_URL = "https://www.torn.com/profiles.php?XID=268863";
@@ -17,6 +17,7 @@ const invoke = window.__TAURI__.tauri.invoke;
     const API_KEY_STORAGE = 'torn_status_api_key_v1_widget';
     const GUI_MINIMIZED_STORAGE = 'torn_status_gui_minimized_v1_widget';
     const AUTOSTART_PREFERENCE_STORAGE = 'torn_autostart_preference_v1_widget';
+    const ALWAYS_ON_TOP_PREFERENCE_STORAGE = 'torn_always_on_top_preference_v1_widget'; // New storage key
     const LINK_TYPE_SETTINGS_PREFIX = 'torn_link_type_v1_widget_';
     const TOS_ACCEPTED_STORAGE = 'torn_tos_accepted_v1_widget'; 
 
@@ -41,7 +42,7 @@ const invoke = window.__TAURI__.tauri.invoke;
     let raceStatusDiv, raceLinkElement, raceLabelElement, raceInfoValue, raceTimerDisplay, raceErrorDiv;
 
     let apiKeyInputMain, apiKeySaveButtonMain, apiErrorMain, firstRunAutostartOptionDiv, firstRunAutostartCheckbox;
-    let settingsPanel, settingsApiKeyInput, settingsApiKeySaveButton, settingsApiKeyClearButton, settingsApiError, settingsAutostartCheckbox, settingsPanelCloseButton;
+    let settingsPanel, settingsApiKeyInput, settingsApiKeySaveButton, settingsApiKeyClearButton, settingsApiError, settingsAutostartCheckbox, settingsAlwaysOnTopCheckbox, settingsPanelCloseButton; // Added settingsAlwaysOnTopCheckbox
 
     let tosSection, tosCheckbox;
 
@@ -241,6 +242,7 @@ const invoke = window.__TAURI__.tauri.invoke;
         settingsApiKeyClearButton = document.getElementById('torn-api-key-clear-btn-settings');
         settingsApiError = settingsPanel.querySelector('.api-error-settings');
         settingsAutostartCheckbox = document.getElementById('settings-autostart-checkbox');
+        settingsAlwaysOnTopCheckbox = document.getElementById('settings-always-on-top-checkbox'); // Cache new element
         settingsPanelCloseButton = document.getElementById('settings-panel-close-btn');
 
         travelStatusDiv = document.getElementById('torn-travel-status');
@@ -336,6 +338,7 @@ const invoke = window.__TAURI__.tauri.invoke;
 
         if(firstRunAutostartCheckbox) firstRunAutostartCheckbox.addEventListener('change', handleAutostartChange);
         if(settingsAutostartCheckbox) settingsAutostartCheckbox.addEventListener('change', handleAutostartChange);
+        if(settingsAlwaysOnTopCheckbox) settingsAlwaysOnTopCheckbox.addEventListener('change', handleAlwaysOnTopChange); // Add event listener for new toggle
 
         const widgetHeader = document.getElementById('torn-status-header');
         if (widgetHeader) {
@@ -384,12 +387,26 @@ const invoke = window.__TAURI__.tauri.invoke;
         if(settingsAutostartCheckbox) settingsAutostartCheckbox.checked = isEnabled;
     }
 
+    // New handler for Always on Top toggle
+    async function handleAlwaysOnTopChange(event) {
+        const isEnabled = event.target.checked;
+        localStorage.setItem(ALWAYS_ON_TOP_PREFERENCE_STORAGE, isEnabled.toString());
+        try {
+            await appWindow.setAlwaysOnTop(isEnabled);
+            console.log(`Always on Top ${isEnabled ? 'enabled' : 'disabled'}`);
+        } catch (e) {
+            console.error('Failed to set always on top:', e);
+        }
+        if(settingsAlwaysOnTopCheckbox) settingsAlwaysOnTopCheckbox.checked = isEnabled;
+    }
+
+
     async function initializeAutostart() {
         let autostartPreference = localStorage.getItem(AUTOSTART_PREFERENCE_STORAGE);
         let shouldEnablePlugin = false;
 
-        if (autostartPreference === null) {
-            shouldEnablePlugin = true;
+        if (autostartPreference === null) { // Default to true on first run
+            shouldEnablePlugin = true; 
             localStorage.setItem(AUTOSTART_PREFERENCE_STORAGE, 'true');
             autostartPreference = 'true';
         } else {
@@ -398,11 +415,37 @@ const invoke = window.__TAURI__.tauri.invoke;
 
         if (shouldEnablePlugin) {
             await enablePluginAutostart();
-        }
+        } // else: if it was false, it's already disabled or will be by the plugin check
+        
         const isChecked = autostartPreference === 'true';
         if(firstRunAutostartCheckbox) firstRunAutostartCheckbox.checked = isChecked;
         if(settingsAutostartCheckbox) settingsAutostartCheckbox.checked = isChecked;
     }
+
+    // New function to initialize Always on Top setting
+    async function initializeAlwaysOnTop() {
+        let alwaysOnTopPreference = localStorage.getItem(ALWAYS_ON_TOP_PREFERENCE_STORAGE);
+        let shouldBeOnTop = true; // Default to true
+
+        if (alwaysOnTopPreference === null) {
+            // If no preference is stored, default to true (on) and store it.
+            localStorage.setItem(ALWAYS_ON_TOP_PREFERENCE_STORAGE, 'true');
+        } else {
+            shouldBeOnTop = alwaysOnTopPreference === 'true';
+        }
+
+        try {
+            await appWindow.setAlwaysOnTop(shouldBeOnTop);
+            console.log(`Initial Always on Top set to: ${shouldBeOnTop}`);
+        } catch (e) {
+            console.error('Failed to set initial always on top state:', e);
+        }
+
+        if (settingsAlwaysOnTopCheckbox) {
+            settingsAlwaysOnTopCheckbox.checked = shouldBeOnTop;
+        }
+    }
+
 
     function updateLinkPreferenceUI(itemKey, isFaction) {
         const toggleInfo = linkToggleElements[itemKey];
@@ -442,10 +485,10 @@ const invoke = window.__TAURI__.tauri.invoke;
             }
 
             const savedSetting = localStorage.getItem(LINK_TYPE_SETTINGS_PREFIX + itemKey);
-            const isFaction = savedSetting === 'faction';
+            const isFaction = savedSetting === 'faction'; // Default to personal if not set or invalid
 
             toggleInfo.input.checked = isFaction;
-            applyLinkPreference(itemKey, isFaction);
+            applyLinkPreference(itemKey, isFaction); // Apply loaded or default setting
 
             toggleInfo.input.addEventListener('change', (event) => {
                 const newIsFaction = event.target.checked;
@@ -1446,6 +1489,7 @@ const invoke = window.__TAURI__.tauri.invoke;
 
         cacheGUIElements();
         await initializeAutostart();
+        await initializeAlwaysOnTop(); // Initialize Always on Top setting
         initializeLinkTypeSettings();
         checkForUpdates(); 
 

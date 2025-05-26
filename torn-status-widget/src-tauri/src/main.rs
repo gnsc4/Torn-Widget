@@ -21,19 +21,23 @@ fn main() {
         .setup(|app| {
             use tauri::Manager;
 
-            let window = app.get_window("main").ok_or_else(|| "Failed to get main window")?;
+            // Prefix the window variable with an underscore to signify it might be unused
+            // depending on the compilation target.
+            let _window = app.get_window("main").ok_or_else(|| "Failed to get main window")?;
 
             #[cfg(target_os = "macos")]
             {
                 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
-                apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None)
+                // Use the corrected variable name _window
+                apply_vibrancy(&_window, NSVisualEffectMaterial::HudWindow, None, None)
                   .expect("Unsupported platform! 'apply_vibrancy' is only Ssupported on macOS");
             }
 
             #[cfg(target_os = "windows")]
             {
+                // If you uncomment this section, ensure to use _window as well.
                 // use window_vibrancy::apply_blur;
-                // apply_blur(&window, Some((18, 18, 18, 125)))
+                // apply_blur(&_window, Some((18, 18, 18, 125)))
                 //   .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
             }
             
