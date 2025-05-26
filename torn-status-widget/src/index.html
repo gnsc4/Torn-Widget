@@ -329,15 +329,15 @@
         /* Settings Panel Styles */
         #torn-status-settings-panel {
             position: absolute;
-            top: -10px; 
+            top: -10px;
             left: -10px;
             right: -10px;
             bottom: -10px;
-            background-color: rgba(40, 40, 40, 0.98); 
-            padding: 15px 10px; 
-            border-radius: 5px; 
+            background-color: rgba(40, 40, 40, 0.98);
+            padding: 15px 10px;
+            border-radius: 5px;
             z-index: 100;
-            display: none; 
+            display: none;
             flex-direction: column;
             font-size: 13px;
         }
@@ -352,7 +352,7 @@
         .settings-section {
             margin-bottom: 15px;
         }
-         .settings-section:last-of-type { 
+         .settings-section:last-of-type {
             margin-bottom: 10px;
         }
         .settings-section p {
@@ -361,7 +361,7 @@
             color: #ccc;
         }
         .settings-section input[type="text"] {
-            width: calc(100% - 75px); 
+            width: calc(100% - 75px);
             padding: 4px 6px !important;
             border: 1px solid #888 !important;
             border-radius: 3px !important;
@@ -390,33 +390,33 @@
             align-items: center;
             cursor: pointer;
             font-size: 13px;
-            color: #ddd; 
+            color: #ddd;
         }
          #settings-autostart-checkbox {
             margin-right: 8px;
         }
 
         #settings-close-btn-container {
-            margin-top: auto; 
+            margin-top: auto;
             text-align: right;
-            padding-top: 10px; 
-            border-top: 1px solid #555; 
+            padding-top: 10px;
+            border-top: 1px solid #555;
         }
 
         .link-preference-item {
             display: flex;
             align-items: center;
-            justify-content: space-between; 
+            justify-content: space-between;
             margin-bottom: 10px;
         }
-        .link-preference-item-label { 
-            min-width: 60px; 
+        .link-preference-item-label {
+            min-width: 60px;
             color: #ddd;
             font-size: 13px;
-            margin-right: 5px; 
-            flex-shrink: 0; 
+            margin-right: 5px;
+            flex-shrink: 0;
         }
-        .toggle-group { 
+        .toggle-group {
             display: flex;
             align-items: center;
         }
@@ -425,10 +425,10 @@
             color: #999;
             cursor: default;
             transition: color 0.3s ease, font-weight 0.3s ease;
-            white-space: nowrap; 
+            white-space: nowrap;
         }
-        .toggle-option-label.personal-label { margin-right: 6px; } 
-        .toggle-option-label.faction-label { margin-left: 6px; } 
+        .toggle-option-label.personal-label { margin-right: 6px; }
+        .toggle-option-label.faction-label { margin-left: 6px; }
 
         .toggle-option-label.active-preference {
             color: #fff;
@@ -438,9 +438,9 @@
         .toggle-switch {
             position: relative;
             display: inline-block;
-            width: 40px; 
-            height: 20px; 
-            flex-shrink: 0; 
+            width: 40px;
+            height: 20px;
+            flex-shrink: 0;
         }
         .toggle-switch input {
             opacity: 0;
@@ -454,26 +454,26 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #777; 
+            background-color: #777;
             transition: .4s;
-            border-radius: 20px; 
+            border-radius: 20px;
         }
         .slider-round:before {
             position: absolute;
             content: "";
-            height: 14px; 
-            width: 14px;  
-            left: 3px;    
-            bottom: 3px;  
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
         }
         input:checked + .slider-round {
-            background-color: #28a745; 
+            background-color: #28a745;
         }
         input:checked + .slider-round:before {
-            transform: translateX(20px); 
+            transform: translateX(20px);
         }
 
     </style>
@@ -695,7 +695,7 @@
 
         (function() {
             'use strict';
-            const SCRIPT_VERSION = "1.0.18"; // Current script version
+            const SCRIPT_VERSION = "1.0.19"; // Current script version - UPDATED
             const FORUM_THREAD_URL = "https://www.torn.com/forums.php#/p=threads&f=67&t=16473214&b=0&a=0";
             const AUTHOR_NAME = "GNSC4 [268863]";
             const AUTHOR_URL = "https://www.torn.com/profiles.php?XID=268863";
@@ -814,7 +814,7 @@
                     guiContainer.style.display = 'block';
                 }
 
-                guiContainer.offsetHeight; 
+                guiContainer.offsetHeight;
 
                 const header = document.getElementById('torn-status-header');
                 let calculatedInnerHeight = 0;
@@ -863,7 +863,7 @@
                                      (parseInt(guiStyle.paddingBottom) || 0) +
                                      (parseInt(guiStyle.borderTopWidth) || 0) +
                                      (parseInt(guiStyle.borderBottomWidth) || 0) +
-                                     ( (settingsPanel && settingsPanel.style.display === 'flex') ? 0 : 10); 
+                                     ( (settingsPanel && settingsPanel.style.display === 'flex') ? 0 : 10);
 
                 if (wasGuiHidden) {
                     guiContainer.style.display = 'none';
@@ -1012,7 +1012,7 @@
                 if (!settingsPanel) return;
                 const isVisible = settingsPanel.style.display === 'flex';
                 settingsPanel.style.display = isVisible ? 'none' : 'flex';
-                if (!isVisible) { 
+                if (!isVisible) {
                     if(settingsApiKeyInput) settingsApiKeyInput.value = '';
                     if(settingsApiError) settingsApiError.textContent = '';
                 }
@@ -1090,7 +1090,7 @@
                     }
 
                     const savedSetting = localStorage.getItem(LINK_TYPE_SETTINGS_PREFIX + itemKey);
-                    const isFaction = savedSetting === 'faction'; 
+                    const isFaction = savedSetting === 'faction';
 
                     toggleInfo.input.checked = isFaction;
                     applyLinkPreference(itemKey, isFaction);
@@ -1147,44 +1147,89 @@
                 customTooltipElement.style.top = `${newY}px`;
             }
 
+            // --- MODIFIED fetchData FUNCTION ---
             async function fetchData(){
-                if(!apiKey){updateDisplay({error:"API Key needed",target:'api_main'});switchView(false);return}
+                if(!apiKey){
+                    updateDisplay({error:"API Key needed",target:'api_main'});
+                    switchView(false);
+                    // Ensure update interval is cleared if no API key
+                    if (intervals.update) {
+                        clearInterval(intervals.update);
+                        intervals.update = null;
+                    }
+                    clearDataDisplayTimers(); // Clear only data specific timers
+                    return;
+                }
                 const url=`https://api.torn.com/user/?selections=bars,cooldowns,refills,personalstats,notifications&key=${apiKey}&comment=TornStatusWidget_v${SCRIPT_VERSION}`;
-                const controller=new AbortController();const timeoutId=setTimeout(()=>controller.abort(),10000);
+                const controller=new AbortController();
+                const timeoutId=setTimeout(()=>controller.abort(),10000);
+
                 try{
-                    const response=await fetch(url,{method:'GET',signal:controller.signal});clearTimeout(timeoutId);
+                    const response=await fetch(url,{method:'GET',signal:controller.signal});
+                    clearTimeout(timeoutId);
+
                     if(!response.ok){
-                        let errorData;try{errorData=await response.json()}catch(parseErr){throw new Error(`HTTP error ${response.status}`)}
-                        if(errorData&&errorData.error){
+                        let errorData;
+                        try{ errorData=await response.json(); }
+                        catch(parseErr){ throw new Error(`HTTP error ${response.status}`); }
+
+                        if(errorData && errorData.error){
                             const errMessage=`API Error ${errorData.error.code}`;
                             const errorTarget = (settingsPanel && settingsPanel.style.display === 'flex') ? 'api_settings' : 'api_main';
-                            updateDisplay({error:errMessage,target: errorTarget });
-                            if(errorData.error.code===2){ 
-                                apiKey=null;localStorage.removeItem(API_KEY_STORAGE);
-                                if(intervals.update)clearInterval(intervals.update);intervals.update=null;
+                            updateDisplay({error:errMessage, target: errorTarget });
+
+                            if(errorData.error.code===2){ // Invalid API key
+                                apiKey=null;
+                                localStorage.removeItem(API_KEY_STORAGE);
+                                if(intervals.update) { clearInterval(intervals.update); intervals.update=null; }
                                 switchView(false);
-                                if(settingsPanel && settingsPanel.style.display === 'flex') toggleSettingsPanel(); 
+                                if(settingsPanel && settingsPanel.style.display === 'flex') toggleSettingsPanel();
+                                clearAllTimers(); // Clear all timers for invalid key
+                            } else {
+                                // For other API errors, clear data display timers but keep main update interval
+                                clearDataDisplayTimers();
                             }
-                        }else{throw new Error(`HTTP error ${response.status}`)}
-                        clearAllTimers();return
+                        }else{
+                            throw new Error(`HTTP error ${response.status}`);
+                        }
+                        return; // Return after handling HTTP error with JSON body
                     }
+
                     const data=await response.json();
                     if(data.error){
                         const errMessage=`API Error ${data.error.code}`;
                         const errorTarget = (settingsPanel && settingsPanel.style.display === 'flex') ? 'api_settings' : 'api_main';
                         updateDisplay({error:errMessage, target: errorTarget});
-                        if(data.error.code===2){ 
-                            apiKey=null;localStorage.removeItem(API_KEY_STORAGE);
-                            if(intervals.update)clearInterval(intervals.update);intervals.update=null;
+
+                        if(data.error.code===2){ // Invalid API key
+                            apiKey=null;
+                            localStorage.removeItem(API_KEY_STORAGE);
+                            if(intervals.update) { clearInterval(intervals.update); intervals.update=null; }
                             switchView(false);
-                             if(settingsPanel && settingsPanel.style.display === 'flex') toggleSettingsPanel(); 
-                        }clearAllTimers()
+                            if(settingsPanel && settingsPanel.style.display === 'flex') toggleSettingsPanel();
+                            clearAllTimers(); // Clear all timers for invalid key
+                        } else {
+                            // For other API errors from data.error, clear data display timers
+                            clearDataDisplayTimers();
+                        }
                     }else{
-                        updateDisplay(data);startTimers(data);clearErrorMessages();
+                        updateDisplay(data);
+                        startTimers(data); // This also clears previous data timers
+                        clearErrorMessages();
                         if(!isMinimized && !(settingsPanel && settingsPanel.style.display === 'flex')) switchView(true);
                     }
-                }catch(error){clearTimeout(timeoutId);if(error.name==='AbortError'){updateDisplay({error:"Timeout",target:'status'})}else{updateDisplay({error:error.message||"Network Error",target:'status'})}clearAllTimers()}
+                }catch(error){ // Catches network errors, aborts, or non-JSON HTTP errors
+                    clearTimeout(timeoutId);
+                    if(error.name==='AbortError'){
+                        updateDisplay({error:"Timeout",target:'status'});
+                    }else{
+                        updateDisplay({error:error.message||"Network Error",target:'status'});
+                    }
+                    // For network errors/timeouts, clear data display timers but keep main update interval
+                    clearDataDisplayTimers();
+                }
             }
+
 
             function updateDisplay(data){
                 const currentApiErrorDiv = (settingsPanel && settingsPanel.style.display === 'flex') ? settingsApiError : apiErrorMain;
@@ -1198,25 +1243,12 @@
                     if (data.target === 'api_main' && apiErrorMain) errTargetDiv = apiErrorMain;
                     else if (data.target === 'api_settings' && settingsApiError) errTargetDiv = settingsApiError;
                     else if (data.target === 'status' && statusErrDiv) errTargetDiv = statusErrDiv;
-                    else if (currentApiErrorDiv) errTargetDiv = currentApiErrorDiv; 
+                    else if (currentApiErrorDiv) errTargetDiv = currentApiErrorDiv;
 
                     if(errTargetDiv) errTargetDiv.textContent=`Error: ${data.error}`;
 
-                    if(lifeDisplayValue) lifeDisplayValue.textContent = '--/--';
-                    if(healthBarFillDisplay) healthBarFillDisplay.style.width = '0%';
-                    if(energyDisplayValue)energyDisplayValue.textContent='--/--';
-                    if(nerveDisplayValue)nerveDisplayValue.textContent='--/--';
-                    if(happinessDisplayValue)happinessDisplayValue.textContent='--/--';
-                    if(boosterDisplayValue)boosterDisplayValue.textContent='--';
-                    if(medicalDisplayValue)medicalDisplayValue.textContent='--';
-                    if(drugDisplayValue)drugDisplayValue.textContent='--';
-                    if(messagesIconDisplay) messagesIconDisplay.innerHTML = mailIconSVG;
-                    if(messagesCountDisplay) {messagesCountDisplay.textContent = '--'; messagesIconDisplay.className = 'notification-icon messages-icon green'; messagesCountDisplay.className = 'notification-count messages-count green';}
-                    if(eventsIconDisplay) eventsIconDisplay.innerHTML = eventIconSVG;
-                    if(eventsCountDisplay) {eventsCountDisplay.textContent = '--'; eventsIconDisplay.className = 'notification-icon events-icon green'; eventsCountDisplay.className = 'notification-count events-count green';}
-                    if(energyRefillStatus) energyRefillStatus.textContent = '--';
-                    if(nerveRefillStatus) nerveRefillStatus.textContent = '--';
-                    if(tokenRefillStatus) tokenRefillStatus.textContent = '--';
+                    // Don't reset display elements here if we want them to persist through transient errors
+                    // This will be handled by clearDataDisplayTimers if needed, or overwritten by new data
                     resizeWindowToContent();
                     return;
                 }
@@ -1254,18 +1286,18 @@
                         const percentage = (data.life.current / data.life.maximum) * 100;
                         healthBarFillDisplay.style.width = `${Math.max(0, Math.min(100, percentage))}%`;
                         if (percentage <= 25) {
-                            healthBarFillDisplay.style.backgroundColor = '#dc3545'; 
+                            healthBarFillDisplay.style.backgroundColor = '#dc3545';
                         } else if (percentage <= 50) {
-                            healthBarFillDisplay.style.backgroundColor = '#ffc107'; 
+                            healthBarFillDisplay.style.backgroundColor = '#ffc107';
                         } else {
-                            healthBarFillDisplay.style.backgroundColor = '#28a745'; 
+                            healthBarFillDisplay.style.backgroundColor = '#28a745';
                         }
                     }
                 } else if (lifeDisplayValue) {
                     lifeDisplayValue.textContent='N/A';
                     if (healthBarFillDisplay) {
                          healthBarFillDisplay.style.width = '0%';
-                         healthBarFillDisplay.style.backgroundColor = '#444'; 
+                         healthBarFillDisplay.style.backgroundColor = '#444';
                     }
                 }
 
@@ -1287,7 +1319,9 @@
                     if (medicalDisplayValue) {
                         medicalDisplayValue.textContent = data.cooldowns.medical > 0 ? 'Active' : 'Ready';
                          if (data.cooldowns.medical === 0) {
+                             // No flashing for medical ready
                         } else {
+                            // No flashing for medical active
                         }
                     }
                     if (drugDisplayValue) {
@@ -1302,7 +1336,7 @@
                     }
                 } else {
                     if(boosterDisplayValue) { boosterDisplayValue.textContent = 'N/A'; boosterDisplayValue.classList.remove('flashing'); if(boosterTimerDisplay) boosterTimerDisplay.classList.remove('flashing');}
-                    if(medicalDisplayValue) { medicalDisplayValue.textContent = 'N/A'; medicalDisplayValue.classList.remove('flashing'); if(medicalTimerDisplay) medicalTimerDisplay.classList.remove('flashing');}
+                    if(medicalDisplayValue) { medicalDisplayValue.textContent = 'N/A'; medicalDisplayValue.classList.remove('flashing'); if(medicalTimerDisplay) medicalTimerDisplay.classList.remove('flashing');} // Ensure flashing is removed
                     if(drugDisplayValue) { drugDisplayValue.textContent = 'N/A'; drugDisplayValue.classList.remove('flashing'); if(drugTimerDisplay) drugTimerDisplay.classList.remove('flashing');}
                 }
 
@@ -1328,7 +1362,7 @@
             }
 
             function startTimers(data){
-                clearAllTimers();
+                clearDataDisplayTimers(); // Clear only data specific timers before starting new ones
                 if(data.energy&&typeof data.energy.fulltime!=='undefined'&&energyTimerDisplay)updateTimer('energy',data.energy.fulltime,energyTimerDisplay, 0);else if(energyTimerDisplay){energyTimerDisplay.textContent="N/A";energyTimerDisplay.classList.remove('full')}
                 if(data.nerve&&typeof data.nerve.fulltime!=='undefined'&&nerveTimerDisplay)updateTimer('nerve',data.nerve.fulltime,nerveTimerDisplay, 0);else if(nerveTimerDisplay){nerveTimerDisplay.textContent="N/A";nerveTimerDisplay.classList.remove('full')}
                 if(data.happy&&typeof data.happy.fulltime!=='undefined'&&happinessTimerDisplay)updateTimer('happiness',data.happy.fulltime,happinessTimerDisplay, 0);else if(happinessTimerDisplay){happinessTimerDisplay.textContent="N/A";happinessTimerDisplay.classList.remove('full')}
@@ -1357,6 +1391,7 @@
                         } else {
                             medicalTimerDisplay.textContent = formatSecondsToHMS(userMaxMedicalCooldownSeconds);
                             medicalTimerDisplay.classList.add('full');
+                            // No flashing for medical ready
                             medicalTimerDisplay.dataset.tooltipContent = `Ready\nMax Duration: ${formatSecondsToHMS(userMaxMedicalCooldownSeconds)}`;
                         }
                     } else if (medicalTimerDisplay) {
@@ -1368,7 +1403,7 @@
 
                     if (typeof data.cooldowns.drug !== 'undefined' && drugTimerDisplay) {
                         if (data.cooldowns.drug > 0) {
-                             updateTimer('drug', data.cooldowns.drug, drugTimerDisplay, 0); 
+                             updateTimer('drug', data.cooldowns.drug, drugTimerDisplay, 0);
                         } else {
                             drugTimerDisplay.textContent = 'Ready';
                             drugTimerDisplay.classList.add('full');
@@ -1383,7 +1418,7 @@
                         drugTimerDisplay.dataset.tooltipContent = "Drug: N/A";
                     }
                 }
-                startNewDayTimer();
+                startNewDayTimer(); // This also clears and restarts its own interval
             }
 
             function startNewDayTimer() {
@@ -1395,7 +1430,7 @@
                     const tomorrowUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0, 0));
                     const diffSeconds = Math.floor((tomorrowUTC.getTime() - now.getTime()) / 1000);
 
-                    const isWarningPeriod = diffSeconds < 3600 && diffSeconds >= 0; 
+                    const isWarningPeriod = diffSeconds < 3600 && diffSeconds >= 0;
 
                     if (isWarningPeriod) {
                         newDayTimerDisplay.classList.add('new-day-warning');
@@ -1436,7 +1471,7 @@
 
             function updateTimer(barName, initialSecondsRemaining, displayElement, maxCooldownSeconds) {
                 if (!displayElement) return;
-                if (intervals[barName]) clearTimeout(intervals[barName]); 
+                if (intervals[barName]) clearTimeout(intervals[barName]); // Use clearTimeout for setTimeout
 
                 let secondsRemaining = Number(initialSecondsRemaining);
                 if (isNaN(secondsRemaining)) {
@@ -1444,6 +1479,7 @@
                     displayElement.classList.remove('full', 'flashing');
                     if (barName === 'booster' && boosterDisplayValue) boosterDisplayValue.classList.remove('flashing');
                     if (barName === 'drug' && drugDisplayValue) drugDisplayValue.classList.remove('flashing');
+                    // No flashing for medical
                     displayElement.dataset.tooltipContent = "Error";
                     intervals[barName] = null;
                     return;
@@ -1460,12 +1496,12 @@
                     const now = Date.now();
 
                     if (secondsRemaining <= 0) {
-                        displayElement.classList.add('full'); 
-                        intervals[barName] = null; 
+                        displayElement.classList.add('full');
+                        intervals[barName] = null;
 
                         if ((barName === 'booster' || barName === 'medical' || barName === 'drug')) {
                              if (valueDisplayElement) valueDisplayElement.textContent = 'Ready';
-                             if (barName === 'booster' || barName === 'drug') { 
+                             if (barName === 'booster' || barName === 'drug') { // Medical ready does not flash
                                 if (valueDisplayElement) valueDisplayElement.classList.add('flashing');
                                 displayElement.classList.add('flashing');
                              }
@@ -1475,9 +1511,9 @@
                             displayElement.textContent = formatSecondsToHMS(maxCooldownSeconds);
                             currentTooltipText = `Ready\nMax Duration: ${formatSecondsToHMS(maxCooldownSeconds)}`;
                         } else if (barName === 'drug') {
-                            displayElement.textContent = "Ready"; 
+                            displayElement.textContent = "Ready";
                             currentTooltipText = `Ready`;
-                        } else { 
+                        } else {
                             displayElement.textContent = "Full";
                             currentTooltipText = `Full`;
                         }
@@ -1493,32 +1529,87 @@
                         const endsTimestamp = new Date(now + secondsRemaining * 1000).toLocaleString([], {dateStyle: 'short', timeStyle: 'medium'});
 
                         if ((barName === 'booster' || barName === 'medical') && maxCooldownSeconds > 0) {
-                            displayElement.textContent = formatSecondsToHMS(secondsRemaining); 
+                            displayElement.textContent = formatSecondsToHMS(secondsRemaining);
                             currentTooltipText = `Ends: ${endsTimestamp}\nUsed: ${formatSecondsToHMS(secondsRemaining)}`;
                         } else if (barName === 'drug') {
                             displayElement.textContent = formatSecondsToHMS(secondsRemaining);
                             currentTooltipText = `Ends: ${endsTimestamp}\n(Drug active)`;
-                        } else { 
+                        } else {
                             displayElement.textContent = formatSecondsToHMS(secondsRemaining);
                             currentTooltipText = `Ends: ${endsTimestamp}`;
                         }
                         displayElement.dataset.tooltipContent = currentTooltipText;
                         secondsRemaining--;
-                        intervals[barName] = setTimeout(tick, 1000); 
+                        intervals[barName] = setTimeout(tick, 1000);
                     }
                 }
-                tick(); 
+                tick();
             }
 
-
+            // Clears all intervals and timeouts
             function clearAllTimers(){
                 Object.keys(intervals).forEach(key => {
                     if (intervals[key]) {
-                        clearInterval(intervals[key]); 
-                        clearTimeout(intervals[key]);  
+                        if (key === 'update' || key === 'newDay') { // These are setInterval
+                           clearInterval(intervals[key]);
+                        } else { // Others are setTimeout
+                           clearTimeout(intervals[key]);
+                        }
                         intervals[key] = null;
                     }
                 });
+                // Also clear visual cues like flashing
+                const elementsToClearFlash = [
+                    energyRefillStatus, nerveRefillStatus, newDayTimerDisplay,
+                    boosterDisplayValue, boosterTimerDisplay,
+                    drugDisplayValue, drugTimerDisplay,
+                    medicalDisplayValue, medicalTimerDisplay // Ensure medical flashing is cleared if it was ever added
+                ];
+                elementsToClearFlash.forEach(el => {
+                    if (el) el.classList.remove('flashing', 'new-day-warning');
+                });
+
+                const timersToResetText = [
+                    energyTimerDisplay, nerveTimerDisplay, happinessTimerDisplay,
+                    boosterTimerDisplay, medicalTimerDisplay, drugTimerDisplay,
+                    newDayTimerDisplay
+                ];
+                timersToResetText.forEach(timer => {
+                    if(timer){ timer.textContent='--:--:--'; if(timer.classList) timer.classList.remove('full'); if(timer.dataset) timer.dataset.tooltipContent = "";}
+                });
+
+                 // Reset data display fields to default/loading state
+                if(lifeDisplayValue) lifeDisplayValue.textContent = '--/--';
+                if(healthBarFillDisplay) healthBarFillDisplay.style.width = '0%';
+                if(energyDisplayValue)energyDisplayValue.textContent='--/--';
+                if(nerveDisplayValue)nerveDisplayValue.textContent='--/--';
+                if(happinessDisplayValue)happinessDisplayValue.textContent='--/--';
+                if(boosterDisplayValue)boosterDisplayValue.textContent='--';
+                if(medicalDisplayValue)medicalDisplayValue.textContent='--';
+                if(drugDisplayValue)drugDisplayValue.textContent='--';
+                if(messagesIconDisplay) messagesIconDisplay.innerHTML = mailIconSVG;
+                if(messagesCountDisplay) {messagesCountDisplay.textContent = '--'; messagesIconDisplay.className = 'notification-icon messages-icon green'; messagesCountDisplay.className = 'notification-count messages-count green';}
+                if(eventsIconDisplay) eventsIconDisplay.innerHTML = eventIconSVG;
+                if(eventsCountDisplay) {eventsCountDisplay.textContent = '--'; eventsIconDisplay.className = 'notification-icon events-icon green'; eventsCountDisplay.className = 'notification-count events-count green';}
+                if(energyRefillStatus) energyRefillStatus.textContent = '--';
+                if(nerveRefillStatus) nerveRefillStatus.textContent = '--';
+                if(tokenRefillStatus) tokenRefillStatus.textContent = '--';
+            }
+
+            // Clears only timers related to data display (bars, cooldowns, new day), not the main update interval
+            function clearDataDisplayTimers() {
+                const dataTimerKeys = ['energy', 'nerve', 'happiness', 'booster', 'medical', 'drug', 'newDay'];
+                dataTimerKeys.forEach(key => {
+                    if (intervals[key]) {
+                        if (key === 'newDay') { // newDay is setInterval
+                            clearInterval(intervals[key]);
+                        } else { // Others are setTimeout
+                            clearTimeout(intervals[key]);
+                        }
+                        intervals[key] = null;
+                    }
+                });
+                 // Also clear visual cues like flashing from data elements
                 const elementsToClearFlash = [
                     energyRefillStatus, nerveRefillStatus, newDayTimerDisplay,
                     boosterDisplayValue, boosterTimerDisplay,
@@ -1529,15 +1620,17 @@
                     if (el) el.classList.remove('flashing', 'new-day-warning');
                 });
 
-                const timersToReset = [
+                const timersToResetText = [
                     energyTimerDisplay, nerveTimerDisplay, happinessTimerDisplay,
                     boosterTimerDisplay, medicalTimerDisplay, drugTimerDisplay,
                     newDayTimerDisplay
                 ];
-                timersToReset.forEach(timer => {
+                timersToResetText.forEach(timer => {
                     if(timer){ timer.textContent='--:--:--'; if(timer.classList) timer.classList.remove('full'); if(timer.dataset) timer.dataset.tooltipContent = "";}
                 });
             }
+
+
             function clearErrorMessages(){
                 if(apiErrorMain) apiErrorMain.textContent = '';
                 if(settingsApiError) settingsApiError.textContent = '';
@@ -1552,10 +1645,10 @@
                 localStorage.setItem(GUI_MINIMIZED_STORAGE,isMinimized.toString());
 
                 if (!isMinimized && settingsPanel && settingsPanel.style.display === 'flex') {
-                    settingsPanel.style.display = 'none'; 
+                    settingsPanel.style.display = 'none';
                     resizeWindowToContent();
-                    settingsPanel.style.display = 'flex'; 
-                    resizeWindowToContent(); 
+                    settingsPanel.style.display = 'flex';
+                    resizeWindowToContent();
                 } else {
                      resizeWindowToContent();
                 }
@@ -1575,12 +1668,12 @@
                     localStorage.setItem(API_KEY_STORAGE, apiKey);
                     inputElement.value = '';
                     clearErrorMessages();
-                    switchView(true); 
-                    if(intervals.update) clearInterval(intervals.update); 
-                    fetchData(); 
-                    intervals.update = setInterval(fetchData, UPDATE_INTERVAL_MS); 
+                    switchView(true);
+                    if(intervals.update) clearInterval(intervals.update); // Clear existing before starting new
+                    fetchData(); // Initial fetch with new key
+                    intervals.update = setInterval(fetchData, UPDATE_INTERVAL_MS); // Restart interval
                     if(fromSettings) {
-                        toggleSettingsPanel(); 
+                        toggleSettingsPanel();
                     }
                 } else {
                     errorElement.textContent = "Invalid Key format (16 letters/numbers)";
@@ -1594,27 +1687,29 @@
                     clearInterval(intervals.update);
                     intervals.update = null;
                 }
-                clearAllTimers();
-                updateDisplay({ error: "API Key cleared.", target: 'api_settings' }); 
-                if(settingsApiKeyInput) settingsApiKeyInput.value = ''; 
+                clearAllTimers(); // Clear all display and data timers
+                updateDisplay({ error: "API Key cleared. Enter a new key.", target: 'api_settings' });
+                if(settingsApiKeyInput) settingsApiKeyInput.value = '';
+                // No need to call switchView(false) here as promptClearApiKey is from settings,
+                // and after closing settings, the main view will reflect the no-API-key state.
             }
 
 
             function switchView(showStatus) {
                 if (!apiSetupDiv || !notificationsDiv || !statusDiv || !refillsDiv || !guiContainer || !firstRunAutostartOptionDiv) return;
 
-                if (showStatus && apiKey) { 
+                if (showStatus && apiKey) {
                     notificationsDiv.style.setProperty('display', 'flex', 'important');
                     statusDiv.style.setProperty('display', 'block', 'important');
                     refillsDiv.style.setProperty('display', 'block', 'important');
                     apiSetupDiv.style.setProperty('display', 'none', 'important');
-                    firstRunAutostartOptionDiv.style.display = 'none'; 
-                } else { 
+                    firstRunAutostartOptionDiv.style.display = 'none';
+                } else {
                     apiSetupDiv.style.setProperty('display', 'block', 'important');
                     notificationsDiv.style.setProperty('display', 'none', 'important');
                     statusDiv.style.setProperty('display', 'none', 'important');
                     refillsDiv.style.setProperty('display', 'none', 'important');
-                    firstRunAutostartOptionDiv.style.display = apiKey ? 'none' : 'block';
+                    firstRunAutostartOptionDiv.style.display = apiKey ? 'none' : 'block'; // Show if no API key
                 }
                 if (!(settingsPanel && settingsPanel.style.display === 'flex')) {
                     resizeWindowToContent();
@@ -1666,31 +1761,31 @@
                 apiKey = localStorage.getItem(API_KEY_STORAGE) || null;
                 isMinimized = localStorage.getItem(GUI_MINIMIZED_STORAGE) === 'true';
 
-                cacheGUIElements(); 
+                cacheGUIElements();
                 await initializeAutostart();
-                initializeLinkTypeSettings(); 
-                startNewDayTimer(); 
+                initializeLinkTypeSettings();
+                // startNewDayTimer(); // Moved into startTimers to ensure it runs after initial data or on API key setup
                 checkForUpdates(); // Check for updates on init
 
                 if(!guiContainer) return;
 
-                const requiresApiSetup = !apiKey;
-                if(requiresApiSetup){
-                    if(!isMinimized){ switchView(false); } 
-                    else{ 
+                if(!apiKey){
+                    if(!isMinimized){ switchView(false); }
+                    else{ // Minimized and no API key
                         if(apiSetupDiv) apiSetupDiv.style.setProperty('display','block','important');
                         if(notificationsDiv) notificationsDiv.style.setProperty('display','none','important');
                         if(statusDiv) statusDiv.style.setProperty('display','none','important');
                         if(refillsDiv) refillsDiv.style.setProperty('display','none','important');
                         if(firstRunAutostartOptionDiv) firstRunAutostartOptionDiv.style.display = 'block';
                     }
+                    clearAllTimers(); // Clear everything if no API key on init
                 }
-                else{ 
-                    if(intervals.update) clearInterval(intervals.update);
-                    fetchData(); 
-                    intervals.update=setInterval(fetchData,UPDATE_INTERVAL_MS); 
-                    if(!isMinimized){ switchView(true); } 
-                    else { 
+                else{ // API key exists
+                    if(intervals.update) clearInterval(intervals.update); // Clear any stray interval
+                    fetchData(); // Initial fetch
+                    intervals.update=setInterval(fetchData,UPDATE_INTERVAL_MS); // Start polling
+                    if(!isMinimized){ switchView(true); }
+                    else { // Minimized with API key
                         if(notificationsDiv) notificationsDiv.style.setProperty('display','flex','important');
                         if(statusDiv) statusDiv.style.setProperty('display','block','important');
                         if(refillsDiv) refillsDiv.style.setProperty('display','block','important');

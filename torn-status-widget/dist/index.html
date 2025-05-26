@@ -20,7 +20,7 @@
             padding: 10px !important;
             color: #ddd !important;
             font-size: 13px !important;
-            min-width: 225px !important;
+            min-width: 225px !important; /* Increased min-width slightly */
             box-shadow: 0 2px 15px rgba(0,0,0,0.6) !important;
             user-select: none !important;
             box-sizing: border-box !important;
@@ -89,7 +89,6 @@
         }
         .bar-link:hover, .refill-link:hover, .status-link:hover, .notification-link:hover { background-color: rgba(255, 255, 255, 0.05); }
 
-        /* Corrected and more specific selectors for labels */
         #torn-status-content > div > .status-link > span:first-child,
         #torn-status-content > div > .bar-link > span:first-child,
         #torn-status-refills > div > .refill-link > span:first-child,
@@ -101,8 +100,6 @@
             flex-shrink: 0;
         }
 
-
-        /* General style for value part of a status line (text or bar wrapper) */
         #torn-status-content .value-container,
         #torn-new-day-timer-container .value-container
         {
@@ -113,14 +110,12 @@
             overflow: hidden;
         }
 
-
         #torn-status-content .value {
              display: inline-block !important;
              text-align: right !important;
              margin-right: 5px !important;
              font-weight: bold !important;
         }
-        /* Specific value colors (for --/-- and "Ready"/"Active" text) */
         #torn-status-content .life-value { color: #ff7f7f !important; }
         #torn-status-content .energy-value { color: #99dd99 !important; }
         #torn-status-content .nerve-value { color: #ff6666 !important; }
@@ -129,8 +124,6 @@
         #torn-status-content .medical-value { color: #AFEEEE !important; }
         #torn-status-content .drug-value { color: #DDA0DD !important; }
 
-
-        /* === Health Bar Specific Styles === */
         .life-bar-wrapper {
             position: relative;
             flex-grow: 1;
@@ -177,9 +170,6 @@
             width: auto;
             white-space: nowrap;
         }
-         /* === End Health Bar Styles === */
-
-        /* === New Day Timer Styles === */
         #torn-new-day-timer-container {
             display: flex;
             align-items: center;
@@ -190,11 +180,9 @@
             margin-left: 5px;
         }
         #torn-new-day-timer-container .new-day-timer-value.new-day-warning {
-            color: #ff6666 !important; /* Red for warning */
+            color: #ff6666 !important;
         }
-         /* === End New Day Timer Styles === */
 
-        /* === Flashing Animation === */
         @keyframes flash {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
@@ -202,8 +190,6 @@
         .flashing {
             animation: flash 1s infinite;
         }
-        /* === End Flashing Animation === */
-
 
         #torn-status-notifications {
             display: flex;
@@ -244,7 +230,6 @@
         #torn-status-refills .refill-status.ready { color: #99dd99 !important; }
         #torn-status-refills .refill-status.used { color: #ff6666 !important; }
 
-        /* === Timer Countdown Styles === */
         #torn-status-content .timer {
             font-weight: bold !important;
             margin-left: 5px !important;
@@ -258,7 +243,6 @@
         #torn-status-content .booster-timer { color: #87CEFA !important; }
         #torn-status-content .medical-timer { color: #AFEEEE !important; }
         #torn-status-content .drug-timer { color: #DDA0DD !important; }
-        /* === End Timer Countdown Styles === */
 
         .error { color: #ff6666 !important; font-weight: bold !important; margin-top: 5px !important; }
 
@@ -294,7 +278,6 @@
             margin-right: 8px;
         }
 
-
         .section-divider {
             border-top: 1px dashed #555;
             margin-top: 8px;
@@ -329,19 +312,32 @@
         #widget-version a:hover {
             text-decoration: underline;
         }
+        #update-notification {
+            display: none; /* Hidden by default */
+            margin-left: 5px;
+            font-weight: bold;
+        }
+        #update-notification a {
+            color: #ffc107; /* Yellow/gold for update notice */
+            text-decoration: underline;
+        }
+         #update-notification a:hover {
+            color: #fff;
+        }
+
 
         /* Settings Panel Styles */
         #torn-status-settings-panel {
             position: absolute;
-            top: -10px; 
+            top: -10px;
             left: -10px;
             right: -10px;
             bottom: -10px;
-            background-color: rgba(40, 40, 40, 0.98); 
-            padding: 15px 10px; /* Adjusted: 15px top/bottom, 10px left/right */
-            border-radius: 5px; 
+            background-color: rgba(40, 40, 40, 0.98);
+            padding: 15px 10px;
+            border-radius: 5px;
             z-index: 100;
-            display: none; 
+            display: none;
             flex-direction: column;
             font-size: 13px;
         }
@@ -356,7 +352,7 @@
         .settings-section {
             margin-bottom: 15px;
         }
-         .settings-section:last-of-type { 
+         .settings-section:last-of-type {
             margin-bottom: 10px;
         }
         .settings-section p {
@@ -365,7 +361,7 @@
             color: #ccc;
         }
         .settings-section input[type="text"] {
-            width: calc(100% - 75px); 
+            width: calc(100% - 75px);
             padding: 4px 6px !important;
             border: 1px solid #888 !important;
             border-radius: 3px !important;
@@ -394,34 +390,33 @@
             align-items: center;
             cursor: pointer;
             font-size: 13px;
-            color: #ddd; 
+            color: #ddd;
         }
          #settings-autostart-checkbox {
             margin-right: 8px;
         }
 
         #settings-close-btn-container {
-            margin-top: auto; 
+            margin-top: auto;
             text-align: right;
-            padding-top: 10px; 
-            border-top: 1px solid #555; 
+            padding-top: 10px;
+            border-top: 1px solid #555;
         }
 
-        /* Toggle Switch Styles for Link Preferences */
         .link-preference-item {
             display: flex;
             align-items: center;
-            justify-content: space-between; 
+            justify-content: space-between;
             margin-bottom: 10px;
         }
-        .link-preference-item-label { 
-            min-width: 60px; 
+        .link-preference-item-label {
+            min-width: 60px;
             color: #ddd;
             font-size: 13px;
-            margin-right: 5px; 
-            flex-shrink: 0; 
+            margin-right: 5px;
+            flex-shrink: 0;
         }
-        .toggle-group { 
+        .toggle-group {
             display: flex;
             align-items: center;
         }
@@ -430,10 +425,10 @@
             color: #999;
             cursor: default;
             transition: color 0.3s ease, font-weight 0.3s ease;
-            white-space: nowrap; 
+            white-space: nowrap;
         }
-        .toggle-option-label.personal-label { margin-right: 6px; } 
-        .toggle-option-label.faction-label { margin-left: 6px; } 
+        .toggle-option-label.personal-label { margin-right: 6px; }
+        .toggle-option-label.faction-label { margin-left: 6px; }
 
         .toggle-option-label.active-preference {
             color: #fff;
@@ -443,9 +438,9 @@
         .toggle-switch {
             position: relative;
             display: inline-block;
-            width: 40px; 
-            height: 20px; 
-            flex-shrink: 0; 
+            width: 40px;
+            height: 20px;
+            flex-shrink: 0;
         }
         .toggle-switch input {
             opacity: 0;
@@ -459,30 +454,30 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #777; 
+            background-color: #777;
             transition: .4s;
-            border-radius: 20px; 
+            border-radius: 20px;
         }
         .slider-round:before {
             position: absolute;
             content: "";
-            height: 14px; 
-            width: 14px;  
-            left: 3px;    
-            bottom: 3px;  
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
         }
         input:checked + .slider-round {
-            background-color: #28a745; 
+            background-color: #28a745;
         }
         input:checked + .slider-round:before {
-            transform: translateX(20px); 
+            transform: translateX(20px);
         }
 
     </style>
-  <script type="module" crossorigin src="/assets/index-B2gRgmoA.js"></script>
+  <script type="module" crossorigin src="/assets/index-CHQ-52xy.js"></script>
 </head>
 <body>
     <div id="torn-status-gui">
@@ -688,7 +683,10 @@
                 </div>
             </div>
         </div>
-        <div id="widget-version"></div>
+        <div id="widget-version">
+            <span id="update-notification" style="display:none;"> <a href="#" target="_blank">New version available!</a>
+            </span>
+        </div>
     </div>
     <div id="custom-tooltip" style="display:none;"></div>
 
