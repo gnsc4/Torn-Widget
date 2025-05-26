@@ -1,3 +1,5 @@
+[![GitHub all releases](https://img.shields.io/github/downloads/gnsc4/Torn-Widget/total)](https://github.com/gnsc4/Torn-Widget/releases)
+
 # Torn Status Widget
 
 A desktop widget to monitor your Torn City status, including energy, nerve, happiness, cooldowns, refills, and notifications.
