@@ -1,112 +1,565 @@
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #ffe21c);
-}
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  color: #0f0f0f;
-  background-color: #f6f6f6;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
-
-.container {
+body {
+  font-family: Arial, sans-serif !important;
   margin: 0;
-  padding-top: 10vh;
+  padding: 0;
+  background-color: transparent;
+  overflow: hidden;
+}
+
+#torn-status-gui {
+  background-color: rgba(30, 30, 30, 0.65) !important; 
+  border: 1px solid #999 !important;
+  border-radius: 5px !important;
+  padding: 10px !important;
+  color: #ddd !important;
+  font-size: 13px !important; 
+  min-width: 225px !important;
+  user-select: none !important;
+  box-sizing: border-box !important;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  text-align: center;
+}
+#torn-status-gui.minimized {
+  padding: 0 !important; min-width: 0 !important;
+  width: 35px !important; height: 35px !important;
+  overflow: hidden !important; cursor: pointer !important;
+}
+#torn-status-gui.minimized #torn-status-content-area,
+#torn-status-gui.minimized #torn-status-header h3,
+#torn-status-gui.minimized #torn-status-settings-btn,
+#torn-status-gui.minimized #torn-status-close-btn,
+#torn-status-gui.minimized #widget-version,
+#torn-status-gui.minimized #torn-status-settings-panel
+{ display: none !important; }
+
+#torn-status-gui.minimized #torn-status-header {
+   padding: 0 !important; margin: 0 !important; border-bottom: none !important;
+   min-height: 35px !important; display: flex !important;
+   align-items: center !important; justify-content: center !important;
+}
+#torn-status-gui.minimized #torn-status-minimize-btn {
+   position: static !important; margin: 0 !important; padding: 5px !important;
+   font-size: 17px !important;
+   line-height: 1 !important;
+}
+#torn-status-header {
+  display: flex !important; justify-content: space-between !important;
+  align-items: center !important; border-bottom: 1px solid #666 !important;
+  margin-bottom: 8px !important; padding-bottom: 8px !important;
+  cursor: grab !important;
+}
+#torn-status-header h3 {
+   margin: 0 !important; font-size: 15px !important;
+   font-weight: bold !important; color: #fff !important; flex-grow: 1;
+   pointer-events: none !important;
+}
+.header-button {
+  background: #555 !important; border: 1px solid #777 !important; color: #fff !important;
+  cursor: pointer !important; padding: 3px 6px !important; border-radius: 3px !important;
+  font-weight: bold !important; line-height: 1 !important; margin-left: 5px !important;
+  font-size: 13px;
+}
+.header-button:hover { background: #777 !important; }
+
+#torn-status-content-area {
+  flex-grow: 1;
+  position: relative; /* For positioning settings panel */
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
+#torn-status-notifications,
+#torn-status-content > div, 
+#torn-status-api-setup div, /* This will apply to the API key input div and the ToS div */
+#torn-status-refills > div,
+#torn-new-day-timer-container,
+#torn-travel-status > div, 
+#torn-race-status > div 
+{ margin-bottom: 5px !important; line-height: 1.4 !important; }
+
+/* Specific margin for the API save button container if needed after ToS */
+#api-save-button-container {
+  margin-top: 8px !important; /* Ensure some space above the save button */
 }
 
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
 
-.row {
+.bar-link, .refill-link, .status-link, .notification-link {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  text-decoration: none; color: inherit;
+  cursor: pointer; padding: 2px 0; border-radius: 3px;
+}
+.bar-link:hover, .refill-link:hover, .status-link:hover, .notification-link:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+#torn-status-content > div > .status-link > span:first-child,
+#torn-status-content > div > .bar-link > span:first-child,
+#torn-status-refills > div > .refill-link > span:first-child,
+#torn-new-day-timer-container > span:first-child,
+#torn-travel-status > div > .status-link > span:first-child, 
+#torn-race-status > div > .status-link > span:first-child 
+{
+  display: inline-block !important;
+  min-width: 60px !important;
+  font-weight: bold !important;
+  color: #c4bfbf !important; 
+  text-shadow:
+      -1px -1px 0 #000,
+       1px -1px 0 #000,
+      -1px  1px 0 #000,
+       1px  1px 0 #000,
+       0px 0px 3px rgba(0,0,0,0.8);
+  flex-shrink: 0;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+#torn-status-content .value-container,
+#torn-new-day-timer-container .value-container,
+#torn-travel-status .value-container, 
+#torn-race-status .value-container 
+{
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+  overflow: hidden;
 }
 
-a:hover {
-  color: #535bf2;
+#torn-status-content .value,
+#torn-travel-status .value, 
+#torn-race-status .value 
+{
+   display: inline-block !important;
+   text-align: right !important;
+   margin-right: 5px !important;
+   font-weight: bold !important;
+}
+#torn-status-content .life-value { color: #ff7f7f !important; }
+#torn-status-content .energy-value { color: #99dd99 !important; }
+#torn-status-content .nerve-value { color: #ff6666 !important; }
+#torn-status-content .happy-value { color: #ffff99 !important; }
+#torn-status-content .booster-value { color: #87CEFA !important; }
+#torn-status-content .medical-value { color: #AFEEEE !important; }
+#torn-status-content .drug-value { color: #DDA0DD !important; }
+
+/* Travel and Race specific value/timer styles */
+#torn-travel-status .travel-destination-value,
+#torn-race-status .race-info-value {
+  color: #ADD8E6 !important; /* Light blue for destination/info */
+  text-align: left !important; /* Align left to allow timer to be on right */
+  margin-right: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1; /* Allow it to take available space */
+}
+#torn-travel-status .travel-timer,
+#torn-race-status .race-timer {
+  color: #ADD8E6 !important; /* Light blue for timer */
+  font-weight: bold !important;
+  margin-left: 5px !important;
+  white-space: nowrap;
+}
+#torn-travel-status .travel-timer.soon, 
+#torn-race-status .race-timer.soon { 
+  color: #ffc107 !important; /* Yellow for "soon" */
 }
 
-h1 {
+
+.life-bar-wrapper {
+  position: relative;
+  flex-grow: 1;
+  height: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.health-bar-container {
+  width: 100%;
+  height: 100%;
+  background-color: #444;
+  border: 1px solid #666;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.health-bar-fill {
+  height: 100%;
+  width: 0%;
+  background-color: #28a745;
+  border-radius: 2px;
+  transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.life-value-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff !important;
+  text-shadow:
+      -1px -1px 0 #000,
+       1px -1px 0 #000,
+      -1px  1px 0 #000,
+       1px  1px 0 #000,
+       0px 0px 3px rgba(0,0,0,0.8);
+  font-size: 11px;
+  font-weight: bold;
   text-align: center;
+  z-index: 1;
+  pointer-events: none;
+  margin-right: 0 !important;
+  width: auto;
+  white-space: nowrap;
+}
+#torn-new-day-timer-container {
+  display: flex;
+  align-items: center;
+}
+#torn-new-day-timer-container .new-day-timer-value {
+  font-weight: bold;
+  color: #FFD700;
+  margin-left: 5px;
+}
+#torn-new-day-timer-container .new-day-timer-value.new-day-warning {
+  color: #ff6666 !important;
 }
 
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+@keyframes flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.flashing {
+  animation: flash 1s infinite;
 }
 
-button {
+/* New animation for red flashing labels */
+@keyframes flashRedLabelAnimation {
+  0%, 100% { color: #ff6666; opacity: 1; } /* Red color */
+  50% { opacity: 0.4; }
+}
+
+.label-flash-red {
+  animation: flashRedLabelAnimation 0.5s infinite; /* Faster flash than general .flashing */
+  color: #ff6666 !important; /* Ensure red color during flash */
+}
+
+
+#torn-status-notifications {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.notification-item {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+.notification-item:last-child {
+  margin-right: 0;
+}
+.notification-icon svg {
+  width: 17px;
+  height: 17px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.notification-count {
+  font-weight: bold;
+  font-size: 13px;
+}
+.notification-icon.green, .notification-count.green {
+  fill: #28a745;
+  color: #28a745 !important;
+}
+.notification-icon.red, .notification-count.red {
+  fill: #dc3545;
+  color: #dc3545 !important;
+}
+
+#torn-status-refills .refill-status {
+  display: inline-block !important; min-width: 70px !important;
+  text-align: right !important; margin-right: 5px !important; font-weight: bold !important;
+}
+#torn-status-refills .refill-status.ready { color: #99dd99 !important; }
+#torn-status-refills .refill-status.used { color: #ff6666 !important; }
+
+#torn-status-content .timer {
+  font-weight: bold !important;
+  margin-left: 5px !important;
+  white-space: nowrap;
+}
+#torn-status-content .timer.full { color: #ffff99 !important; }
+
+#torn-status-content .energy-timer { color: #99dd99 !important; }
+#torn-status-content .nerve-timer { color: #ff6666 !important; }
+#torn-status-content .happy-timer { color: #ffff99 !important; }
+#torn-status-content .booster-timer { color: #87CEFA !important; }
+#torn-status-content .medical-timer { color: #AFEEEE !important; }
+#torn-status-content .drug-timer { color: #DDA0DD !important; }
+
+.error { color: #ff6666 !important; font-weight: bold !important; margin-top: 5px !important; }
+
+#torn-status-api-setup { padding-top: 5px !important; }
+#torn-status-api-setup input[type="text"] {
+  padding:4px 6px!important; border:1px solid #888!important; border-radius:3px!important;
+  /* margin-right:5px!important;  Removed to allow button to be on next line if needed */
+  width:100%!important; /* Full width for input */
+  background-color:#fff!important; font-size: 13px;
+  color:#000!important; box-sizing:border-box!important;
+  margin-bottom: 5px; /* Space between input and ToS/button */
+}
+#torn-status-api-setup button {
+  padding:4px 10px!important; border:1px solid #999!important; border-radius:3px!important;
+  background-color:#ccc!important; color:#000!important; cursor:pointer!important;
+  font-weight:bold!important; box-sizing:border-box!important; font-size: 13px;
+  width: auto; /* Allow button to size to content */
+}
+#torn-status-api-setup button:hover { background-color:#ddd!important }
+#torn-status-api-setup button:disabled {
+  background-color: #aaa !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+}
+#torn-status-api-setup p { margin-bottom:8px!important; font-size:12px!important; color:#ccc!important }
+#torn-status-api-setup a { color:#aaa!important; text-decoration:underline!important }
+#torn-status-api-setup a:hover { color:#ccc!important }
+
+/* ToS Section Styles */
+#tos-section {
+  font-size: 12px;
+  color: #ccc;
+  margin-bottom: 8px; /* Space between ToS and Save button */
+}
+.tos-label {
+  display: flex;
+  align-items: center;
   cursor: pointer;
 }
-
-button:hover {
-  border-color: #396cd8;
+#tos-checkbox {
+  margin-right: 8px;
+  vertical-align: middle;
 }
-button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
+#tos-section a {
+  color: #88aaff !important; /* More visible link color */
+  text-decoration: underline !important;
 }
-
-input,
-button {
-  outline: none;
+#tos-section a:hover {
+  color: #aaccff !important;
 }
 
-#greet-input {
+
+#first-run-autostart-option {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed #555;
+  font-size: 12px;
+}
+#first-run-autostart-option label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+#first-run-autostart-checkbox {
+  margin-right: 8px;
+}
+
+.section-divider {
+  border-top: 1px dashed #555;
+  margin-top: 8px;
+  padding-top: 8px;
+}
+#custom-tooltip {
+  position: fixed;
+  display: none;
+  background-color: rgba(10, 10, 10, 0.9);
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 12px;
+  z-index: 100000;
+  pointer-events: none;
+  white-space: pre-line;
+  max-width: 250px;
+}
+#widget-version {
+  font-size: 11px;
+  color: #c4bfbf !important; 
+  text-shadow:
+      -1px -1px 0 #000,
+       1px -1px 0 #000,
+      -1px  1px 0 #000,
+       1px  1px 0 #000,
+       0px 0px 3px rgba(0,0,0,0.8);
+  text-align: center;
+  margin-top: 10px;
+  padding-top: 5px;
+  border-top: 1px solid #444;
+}
+#widget-version a {
+  color: #88aaff;
+  text-decoration: none;
+}
+#widget-version a:hover {
+  text-decoration: underline;
+}
+#update-notification {
+  display: none; /* Hidden by default */
+  margin-left: 5px;
+  font-weight: bold;
+}
+#update-notification a {
+  color: #ffc107; /* Yellow/gold for update notice */
+  text-decoration: underline;
+}
+#update-notification a:hover {
+  color: #fff;
+}
+
+
+/* Settings Panel Styles */
+#torn-status-settings-panel {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background-color: rgba(40, 40, 40, 0.98);
+  padding: 15px 10px;
+  border-radius: 5px;
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  font-size: 13px;
+}
+#torn-status-settings-panel h4 {
+  margin: 0 0 10px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #666;
+  font-size: 15px;
+  color: #fff;
+  text-align: center;
+}
+.settings-section {
+  margin-bottom: 15px;
+}
+.settings-section:last-of-type {
+  margin-bottom: 10px;
+}
+.settings-section p {
+  margin: 0 0 5px 0;
+  font-size: 12px;
+  color: #ccc;
+}
+.settings-section input[type="text"] {
+  width: calc(100% - 75px);
+  padding: 4px 6px !important;
+  border: 1px solid #888 !important;
+  border-radius: 3px !important;
+  margin-right: 5px !important;
+  background-color: #fff !important;
+  color: #000 !important;
+  box-sizing: border-box !important;
+  font-size: 13px;
+}
+.settings-section button {
+  padding: 4px 10px !important;
+  border: 1px solid #999 !important;
+  border-radius: 3px !important;
+  background-color: #ccc !important;
+  color: #000 !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+  box-sizing: border-box !important;
+  font-size: 13px;
+}
+.settings-section button:hover { background-color: #ddd !important; }
+.settings-section .error { margin-top: 5px; font-size: 12px; }
+
+.settings-autostart-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 13px;
+  color: #ddd;
+}
+#settings-autostart-checkbox {
+  margin-right: 8px;
+}
+
+#settings-close-btn-container {
+  margin-top: auto;
+  text-align: right;
+  padding-top: 10px;
+  border-top: 1px solid #555;
+}
+
+.link-preference-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.link-preference-item-label {
+  min-width: 60px;
+  color: #ddd;
+  font-size: 13px;
   margin-right: 5px;
+  flex-shrink: 0;
+}
+.toggle-group {
+  display: flex;
+  align-items: center;
+}
+.toggle-option-label {
+  font-size: 12px;
+  color: #999;
+  cursor: default;
+  transition: color 0.3s ease, font-weight 0.3s ease;
+  white-space: nowrap;
+}
+.toggle-option-label.personal-label { margin-right: 6px; }
+.toggle-option-label.faction-label { margin-left: 6px; }
+
+.toggle-option-label.active-preference {
+  color: #fff;
+  font-weight: bold;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
-  }
-
-  a:hover {
-    color: #24c8db;
-  }
-
-  input,
-  button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
-  }
-  button:active {
-    background-color: #0f0f0f69;
-  }
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider-round {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #777;
+  transition: .4s;
+  border-radius: 20px;
+}
+.slider-round:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+input:checked + .slider-round {
+  background-color: #28a745;
+}
+input:checked + .slider-round:before {
+  transform: translateX(20px);
 }
