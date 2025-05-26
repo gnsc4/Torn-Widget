@@ -14,14 +14,13 @@
         }
 
         #torn-status-gui {
-            background-color: rgba(30, 30, 30, 0.95) !important;
+            background-color: rgba(30, 30, 30, 0.65) !important; 
             border: 1px solid #999 !important;
             border-radius: 5px !important;
             padding: 10px !important;
             color: #ddd !important;
-            font-size: 13px !important;
-            min-width: 225px !important; /* Increased min-width slightly */
-            box-shadow: 0 2px 15px rgba(0,0,0,0.6) !important;
+            font-size: 14px !important;
+            min-width: 225px !important; 
             user-select: none !important;
             box-sizing: border-box !important;
             display: flex;
@@ -96,7 +95,13 @@
             display: inline-block !important;
             min-width: 60px !important;
             font-weight: bold !important;
-            color: #aaa !important;
+            color: #c4bfbf !important;
+            text-shadow:
+                -1px -1px 0 #312c2c,
+                 1px -1px 0 #312c2c,
+                -1px  1px 0 #312c2c,
+                 1px  1px 0 #312c2c,
+                 0px 0px 3px rgba(0,0,0,1.0); 
             flex-shrink: 0;
         }
 
@@ -116,7 +121,7 @@
              margin-right: 5px !important;
              font-weight: bold !important;
         }
-        #torn-status-content .life-value { color: #ff7f7f !important; }
+        #torn-status-content .life-value { color: #f85555 !important; }
         #torn-status-content .energy-value { color: #99dd99 !important; }
         #torn-status-content .nerve-value { color: #ff6666 !important; }
         #torn-status-content .happy-value { color: #ffff99 !important; }
@@ -156,11 +161,11 @@
             transform: translate(-50%, -50%);
             color: #fff !important;
             text-shadow:
-                -1px -1px 0 #000,
-                 1px -1px 0 #000,
-                -1px  1px 0 #000,
-                 1px  1px 0 #000,
-                 0px 0px 3px rgba(0,0,0,0.8);
+                -1px -1px 0 #5a0606,
+                 1px -1px 0 #5a0606,
+                -1px  1px 0 #5a0606,
+                 1px  1px 0 #5a0606,
+                 0px 0px 3px rgba(0,0,0,1.0);
             font-size: 11px;
             font-weight: bold;
             text-align: center;
@@ -695,7 +700,7 @@
 
         (function() {
             'use strict';
-            const SCRIPT_VERSION = "1.0.19"; // Current script version - UPDATED
+            const SCRIPT_VERSION = "1.0.22"; // UPDATED SCRIPT VERSION
             const FORUM_THREAD_URL = "https://www.torn.com/forums.php#/p=threads&f=67&t=16473214&b=0&a=0";
             const AUTHOR_NAME = "GNSC4 [268863]";
             const AUTHOR_URL = "https://www.torn.com/profiles.php?XID=268863";
@@ -715,7 +720,7 @@
             let lifeDisplayValue, energyDisplayValue, nerveDisplayValue, happinessDisplayValue, boosterDisplayValue, medicalDisplayValue, drugDisplayValue;
             let energyTimerDisplay, nerveTimerDisplay, happinessTimerDisplay, boosterTimerDisplay, medicalTimerDisplay, drugTimerDisplay;
             let newDayTimerDisplay;
-            let apiSetupDiv, statusDiv, refillsDiv, notificationsDiv, versionDiv, updateNotificationElement; // Added updateNotificationElement
+            let apiSetupDiv, statusDiv, refillsDiv, notificationsDiv, versionDiv, updateNotificationElement; 
             let energyRefillStatus, nerveRefillStatus, tokenRefillStatus;
             let messagesIconDisplay, messagesCountDisplay, eventsIconDisplay, eventsCountDisplay;
             let closeButton, settingsButton;
@@ -733,7 +738,7 @@
             const itemLinkUrls = {
                 drug: {
                     personal: 'https://www.torn.com/item.php#drugs-items',
-                    faction: 'https://www.torn.com/factions.php?step=your#armoury-drugs',
+                    faction: 'https://www.torn.com/factions.php?step=your&type=1#/tab=armoury&start=0&sub=drugs',
                     elementId: 'drug-cooldown-link',
                     toggleId: 'drug-link-type-toggle',
                     personalLabelId: 'drug-personal-label',
@@ -741,7 +746,7 @@
                 },
                 booster: {
                     personal: 'https://www.torn.com/item.php#energy-d-items',
-                    faction: 'https://www.torn.com/factions.php?step=your#armoury-boosters',
+                    faction: 'https://www.torn.com/factions.php?step=your&type=1#/tab=armoury&start=0&sub=boosters',
                     elementId: 'booster-cooldown-link',
                     toggleId: 'booster-link-type-toggle',
                     personalLabelId: 'booster-personal-label',
@@ -749,23 +754,23 @@
                 },
                 medical: {
                     personal: 'https://www.torn.com/item.php#medical-items',
-                    faction: 'https://www.torn.com/factions.php?step=your#armoury-medical',
+                    faction: 'https://www.torn.com/factions.php?step=your&type=1#/tab=armoury&start=0&sub=medical',
                     elementIds: ['medical-cooldown-link', 'life-link'],
                     toggleId: 'medical-link-type-toggle',
                     personalLabelId: 'medical-personal-label',
                     factionLabelId: 'medical-faction-label'
                 },
-                energyRefill: {
+                energyRefill: { 
                     personal: 'https://www.torn.com/page.php?sid=points',
-                    faction: 'https://www.torn.com/factions.php?step=your#armoury-points',
+                    faction: 'https://www.torn.com/factions.php?step=your&type=1#/tab=armoury&start=0&sub=points',
                     elementId: 'energy-refill-link',
                     toggleId: 'energyRefill-link-type-toggle',
                     personalLabelId: 'energyRefill-personal-label',
                     factionLabelId: 'energyRefill-faction-label'
                 },
-                nerveRefill: {
+                nerveRefill: { 
                     personal: 'https://www.torn.com/page.php?sid=points',
-                    faction: 'https://www.torn.com/factions.php?step=your#armoury-points',
+                    faction: 'https://www.torn.com/factions.php?step=your&type=1#/tab=armoury&start=0&sub=points', 
                     elementId: 'nerve-refill-link',
                     toggleId: 'nerveRefill-link-type-toggle',
                     personalLabelId: 'nerveRefill-personal-label',
@@ -897,7 +902,7 @@
                 settingsButton = document.getElementById('torn-status-settings-btn');
                 customTooltipElement = document.getElementById('custom-tooltip');
                 versionDiv = document.getElementById('widget-version');
-                updateNotificationElement = document.getElementById('update-notification'); // Cache update notification element
+                updateNotificationElement = document.getElementById('update-notification'); 
 
                 apiSetupDiv = document.getElementById('torn-status-api-setup');
                 apiKeyInputMain = document.getElementById('torn-api-key-input-main');
@@ -917,9 +922,8 @@
                 if (!guiContainer) return;
 
                 if (versionDiv) {
-                     // Initial population of versionDiv, update notification will be added if needed
                     versionDiv.innerHTML = `Author: <a href="${AUTHOR_URL}" target="_blank" title="View Author's Profile">${AUTHOR_NAME}</a> | <a href="${FORUM_THREAD_URL}" target="_blank" title="Go to Forum Thread">v${SCRIPT_VERSION}</a><span id="update-notification" style="display:none;"> <a href="#" target="_blank">New version available!</a></span>`;
-                    updateNotificationElement = document.getElementById('update-notification'); // Re-cache after innerHTML rewrite
+                    updateNotificationElement = document.getElementById('update-notification'); 
                 }
 
 
@@ -1147,17 +1151,15 @@
                 customTooltipElement.style.top = `${newY}px`;
             }
 
-            // --- MODIFIED fetchData FUNCTION ---
             async function fetchData(){
                 if(!apiKey){
                     updateDisplay({error:"API Key needed",target:'api_main'});
                     switchView(false);
-                    // Ensure update interval is cleared if no API key
                     if (intervals.update) {
                         clearInterval(intervals.update);
                         intervals.update = null;
                     }
-                    clearDataDisplayTimers(); // Clear only data specific timers
+                    clearDataDisplayTimers(); 
                     return;
                 }
                 const url=`https://api.torn.com/user/?selections=bars,cooldowns,refills,personalstats,notifications&key=${apiKey}&comment=TornStatusWidget_v${SCRIPT_VERSION}`;
@@ -1178,21 +1180,20 @@
                             const errorTarget = (settingsPanel && settingsPanel.style.display === 'flex') ? 'api_settings' : 'api_main';
                             updateDisplay({error:errMessage, target: errorTarget });
 
-                            if(errorData.error.code===2){ // Invalid API key
+                            if(errorData.error.code===2){ 
                                 apiKey=null;
                                 localStorage.removeItem(API_KEY_STORAGE);
                                 if(intervals.update) { clearInterval(intervals.update); intervals.update=null; }
                                 switchView(false);
                                 if(settingsPanel && settingsPanel.style.display === 'flex') toggleSettingsPanel();
-                                clearAllTimers(); // Clear all timers for invalid key
+                                clearAllTimers(); 
                             } else {
-                                // For other API errors, clear data display timers but keep main update interval
                                 clearDataDisplayTimers();
                             }
                         }else{
                             throw new Error(`HTTP error ${response.status}`);
                         }
-                        return; // Return after handling HTTP error with JSON body
+                        return; 
                     }
 
                     const data=await response.json();
@@ -1201,31 +1202,29 @@
                         const errorTarget = (settingsPanel && settingsPanel.style.display === 'flex') ? 'api_settings' : 'api_main';
                         updateDisplay({error:errMessage, target: errorTarget});
 
-                        if(data.error.code===2){ // Invalid API key
+                        if(data.error.code===2){ 
                             apiKey=null;
                             localStorage.removeItem(API_KEY_STORAGE);
                             if(intervals.update) { clearInterval(intervals.update); intervals.update=null; }
                             switchView(false);
                             if(settingsPanel && settingsPanel.style.display === 'flex') toggleSettingsPanel();
-                            clearAllTimers(); // Clear all timers for invalid key
+                            clearAllTimers(); 
                         } else {
-                            // For other API errors from data.error, clear data display timers
                             clearDataDisplayTimers();
                         }
                     }else{
                         updateDisplay(data);
-                        startTimers(data); // This also clears previous data timers
+                        startTimers(data); 
                         clearErrorMessages();
                         if(!isMinimized && !(settingsPanel && settingsPanel.style.display === 'flex')) switchView(true);
                     }
-                }catch(error){ // Catches network errors, aborts, or non-JSON HTTP errors
+                }catch(error){ 
                     clearTimeout(timeoutId);
                     if(error.name==='AbortError'){
                         updateDisplay({error:"Timeout",target:'status'});
                     }else{
                         updateDisplay({error:error.message||"Network Error",target:'status'});
                     }
-                    // For network errors/timeouts, clear data display timers but keep main update interval
                     clearDataDisplayTimers();
                 }
             }
@@ -1243,12 +1242,9 @@
                     if (data.target === 'api_main' && apiErrorMain) errTargetDiv = apiErrorMain;
                     else if (data.target === 'api_settings' && settingsApiError) errTargetDiv = settingsApiError;
                     else if (data.target === 'status' && statusErrDiv) errTargetDiv = statusErrDiv;
-                    else if (currentApiErrorDiv) errTargetDiv = currentApiErrorDiv;
+                    else if (currentApiErrorDiv) errTargetDiv = currentApiErrorDiv; 
 
                     if(errTargetDiv) errTargetDiv.textContent=`Error: ${data.error}`;
-
-                    // Don't reset display elements here if we want them to persist through transient errors
-                    // This will be handled by clearDataDisplayTimers if needed, or overwritten by new data
                     resizeWindowToContent();
                     return;
                 }
@@ -1318,11 +1314,6 @@
                     }
                     if (medicalDisplayValue) {
                         medicalDisplayValue.textContent = data.cooldowns.medical > 0 ? 'Active' : 'Ready';
-                         if (data.cooldowns.medical === 0) {
-                             // No flashing for medical ready
-                        } else {
-                            // No flashing for medical active
-                        }
                     }
                     if (drugDisplayValue) {
                         drugDisplayValue.textContent = data.cooldowns.drug > 0 ? 'Active' : 'Ready';
@@ -1336,7 +1327,7 @@
                     }
                 } else {
                     if(boosterDisplayValue) { boosterDisplayValue.textContent = 'N/A'; boosterDisplayValue.classList.remove('flashing'); if(boosterTimerDisplay) boosterTimerDisplay.classList.remove('flashing');}
-                    if(medicalDisplayValue) { medicalDisplayValue.textContent = 'N/A'; medicalDisplayValue.classList.remove('flashing'); if(medicalTimerDisplay) medicalTimerDisplay.classList.remove('flashing');} // Ensure flashing is removed
+                    if(medicalDisplayValue) { medicalDisplayValue.textContent = 'N/A'; medicalDisplayValue.classList.remove('flashing'); if(medicalTimerDisplay) medicalTimerDisplay.classList.remove('flashing');} 
                     if(drugDisplayValue) { drugDisplayValue.textContent = 'N/A'; drugDisplayValue.classList.remove('flashing'); if(drugTimerDisplay) drugTimerDisplay.classList.remove('flashing');}
                 }
 
@@ -1362,7 +1353,7 @@
             }
 
             function startTimers(data){
-                clearDataDisplayTimers(); // Clear only data specific timers before starting new ones
+                clearDataDisplayTimers(); 
                 if(data.energy&&typeof data.energy.fulltime!=='undefined'&&energyTimerDisplay)updateTimer('energy',data.energy.fulltime,energyTimerDisplay, 0);else if(energyTimerDisplay){energyTimerDisplay.textContent="N/A";energyTimerDisplay.classList.remove('full')}
                 if(data.nerve&&typeof data.nerve.fulltime!=='undefined'&&nerveTimerDisplay)updateTimer('nerve',data.nerve.fulltime,nerveTimerDisplay, 0);else if(nerveTimerDisplay){nerveTimerDisplay.textContent="N/A";nerveTimerDisplay.classList.remove('full')}
                 if(data.happy&&typeof data.happy.fulltime!=='undefined'&&happinessTimerDisplay)updateTimer('happiness',data.happy.fulltime,happinessTimerDisplay, 0);else if(happinessTimerDisplay){happinessTimerDisplay.textContent="N/A";happinessTimerDisplay.classList.remove('full')}
@@ -1391,7 +1382,6 @@
                         } else {
                             medicalTimerDisplay.textContent = formatSecondsToHMS(userMaxMedicalCooldownSeconds);
                             medicalTimerDisplay.classList.add('full');
-                            // No flashing for medical ready
                             medicalTimerDisplay.dataset.tooltipContent = `Ready\nMax Duration: ${formatSecondsToHMS(userMaxMedicalCooldownSeconds)}`;
                         }
                     } else if (medicalTimerDisplay) {
@@ -1418,7 +1408,7 @@
                         drugTimerDisplay.dataset.tooltipContent = "Drug: N/A";
                     }
                 }
-                startNewDayTimer(); // This also clears and restarts its own interval
+                startNewDayTimer(); 
             }
 
             function startNewDayTimer() {
@@ -1471,7 +1461,7 @@
 
             function updateTimer(barName, initialSecondsRemaining, displayElement, maxCooldownSeconds) {
                 if (!displayElement) return;
-                if (intervals[barName]) clearTimeout(intervals[barName]); // Use clearTimeout for setTimeout
+                if (intervals[barName]) clearTimeout(intervals[barName]); 
 
                 let secondsRemaining = Number(initialSecondsRemaining);
                 if (isNaN(secondsRemaining)) {
@@ -1479,7 +1469,6 @@
                     displayElement.classList.remove('full', 'flashing');
                     if (barName === 'booster' && boosterDisplayValue) boosterDisplayValue.classList.remove('flashing');
                     if (barName === 'drug' && drugDisplayValue) drugDisplayValue.classList.remove('flashing');
-                    // No flashing for medical
                     displayElement.dataset.tooltipContent = "Error";
                     intervals[barName] = null;
                     return;
@@ -1501,7 +1490,7 @@
 
                         if ((barName === 'booster' || barName === 'medical' || barName === 'drug')) {
                              if (valueDisplayElement) valueDisplayElement.textContent = 'Ready';
-                             if (barName === 'booster' || barName === 'drug') { // Medical ready does not flash
+                             if (barName === 'booster' || barName === 'drug') { 
                                 if (valueDisplayElement) valueDisplayElement.classList.add('flashing');
                                 displayElement.classList.add('flashing');
                              }
@@ -1546,24 +1535,22 @@
                 tick();
             }
 
-            // Clears all intervals and timeouts
             function clearAllTimers(){
                 Object.keys(intervals).forEach(key => {
                     if (intervals[key]) {
-                        if (key === 'update' || key === 'newDay') { // These are setInterval
+                        if (key === 'update' || key === 'newDay') { 
                            clearInterval(intervals[key]);
-                        } else { // Others are setTimeout
+                        } else { 
                            clearTimeout(intervals[key]);
                         }
                         intervals[key] = null;
                     }
                 });
-                // Also clear visual cues like flashing
                 const elementsToClearFlash = [
                     energyRefillStatus, nerveRefillStatus, newDayTimerDisplay,
                     boosterDisplayValue, boosterTimerDisplay,
                     drugDisplayValue, drugTimerDisplay,
-                    medicalDisplayValue, medicalTimerDisplay // Ensure medical flashing is cleared if it was ever added
+                    medicalDisplayValue, medicalTimerDisplay 
                 ];
                 elementsToClearFlash.forEach(el => {
                     if (el) el.classList.remove('flashing', 'new-day-warning');
@@ -1578,12 +1565,11 @@
                     if(timer){ timer.textContent='--:--:--'; if(timer.classList) timer.classList.remove('full'); if(timer.dataset) timer.dataset.tooltipContent = "";}
                 });
 
-                 // Reset data display fields to default/loading state
-                if(lifeDisplayValue) lifeDisplayValue.textContent = '--/--';
+                if(lifeDisplayValue) lifeDisplayValue.textContent = '-- / --';
                 if(healthBarFillDisplay) healthBarFillDisplay.style.width = '0%';
-                if(energyDisplayValue)energyDisplayValue.textContent='--/--';
-                if(nerveDisplayValue)nerveDisplayValue.textContent='--/--';
-                if(happinessDisplayValue)happinessDisplayValue.textContent='--/--';
+                if(energyDisplayValue)energyDisplayValue.textContent='-- / --';
+                if(nerveDisplayValue)nerveDisplayValue.textContent='-- / --';
+                if(happinessDisplayValue)happinessDisplayValue.textContent='-- / --';
                 if(boosterDisplayValue)boosterDisplayValue.textContent='--';
                 if(medicalDisplayValue)medicalDisplayValue.textContent='--';
                 if(drugDisplayValue)drugDisplayValue.textContent='--';
@@ -1596,20 +1582,18 @@
                 if(tokenRefillStatus) tokenRefillStatus.textContent = '--';
             }
 
-            // Clears only timers related to data display (bars, cooldowns, new day), not the main update interval
             function clearDataDisplayTimers() {
                 const dataTimerKeys = ['energy', 'nerve', 'happiness', 'booster', 'medical', 'drug', 'newDay'];
                 dataTimerKeys.forEach(key => {
                     if (intervals[key]) {
-                        if (key === 'newDay') { // newDay is setInterval
+                        if (key === 'newDay') { 
                             clearInterval(intervals[key]);
-                        } else { // Others are setTimeout
+                        } else { 
                             clearTimeout(intervals[key]);
                         }
                         intervals[key] = null;
                     }
                 });
-                 // Also clear visual cues like flashing from data elements
                 const elementsToClearFlash = [
                     energyRefillStatus, nerveRefillStatus, newDayTimerDisplay,
                     boosterDisplayValue, boosterTimerDisplay,
@@ -1669,9 +1653,9 @@
                     inputElement.value = '';
                     clearErrorMessages();
                     switchView(true);
-                    if(intervals.update) clearInterval(intervals.update); // Clear existing before starting new
-                    fetchData(); // Initial fetch with new key
-                    intervals.update = setInterval(fetchData, UPDATE_INTERVAL_MS); // Restart interval
+                    if(intervals.update) clearInterval(intervals.update); 
+                    fetchData(); 
+                    intervals.update = setInterval(fetchData, UPDATE_INTERVAL_MS); 
                     if(fromSettings) {
                         toggleSettingsPanel();
                     }
@@ -1687,11 +1671,9 @@
                     clearInterval(intervals.update);
                     intervals.update = null;
                 }
-                clearAllTimers(); // Clear all display and data timers
+                clearAllTimers(); 
                 updateDisplay({ error: "API Key cleared. Enter a new key.", target: 'api_settings' });
                 if(settingsApiKeyInput) settingsApiKeyInput.value = '';
-                // No need to call switchView(false) here as promptClearApiKey is from settings,
-                // and after closing settings, the main view will reflect the no-API-key state.
             }
 
 
@@ -1709,14 +1691,13 @@
                     notificationsDiv.style.setProperty('display', 'none', 'important');
                     statusDiv.style.setProperty('display', 'none', 'important');
                     refillsDiv.style.setProperty('display', 'none', 'important');
-                    firstRunAutostartOptionDiv.style.display = apiKey ? 'none' : 'block'; // Show if no API key
+                    firstRunAutostartOptionDiv.style.display = apiKey ? 'none' : 'block'; 
                 }
                 if (!(settingsPanel && settingsPanel.style.display === 'flex')) {
                     resizeWindowToContent();
                 }
             }
 
-            // --- Version Check Functions ---
             function isNewerVersion(latestVersionTag, currentVersion) {
                 const latest = latestVersionTag.replace(/^v/, '').split('.').map(Number);
                 const current = currentVersion.replace(/^v/, '').split('.').map(Number);
@@ -1727,7 +1708,7 @@
                     if (latestPart > currentPart) return true;
                     if (latestPart < currentPart) return false;
                 }
-                return false; // Versions are identical
+                return false; 
             }
 
             async function checkForUpdates() {
@@ -1747,15 +1728,14 @@
                                 updateLink.href = GITHUB_RELEASES_PAGE_URL;
                                 updateLink.textContent = `Update to ${latestVersionTag} available!`;
                             }
-                            updateNotificationElement.style.display = 'inline'; // Show the notification
-                            resizeWindowToContent(); // Adjust window size if notification makes it taller
+                            updateNotificationElement.style.display = 'inline'; 
+                            resizeWindowToContent(); 
                         }
                     }
                 } catch (error) {
                     console.error("Failed to check for updates:", error);
                 }
             }
-            // --- End Version Check Functions ---
 
             async function init() {
                 apiKey = localStorage.getItem(API_KEY_STORAGE) || null;
@@ -1764,28 +1744,27 @@
                 cacheGUIElements();
                 await initializeAutostart();
                 initializeLinkTypeSettings();
-                // startNewDayTimer(); // Moved into startTimers to ensure it runs after initial data or on API key setup
-                checkForUpdates(); // Check for updates on init
+                checkForUpdates(); 
 
                 if(!guiContainer) return;
 
                 if(!apiKey){
                     if(!isMinimized){ switchView(false); }
-                    else{ // Minimized and no API key
+                    else{ 
                         if(apiSetupDiv) apiSetupDiv.style.setProperty('display','block','important');
                         if(notificationsDiv) notificationsDiv.style.setProperty('display','none','important');
                         if(statusDiv) statusDiv.style.setProperty('display','none','important');
                         if(refillsDiv) refillsDiv.style.setProperty('display','none','important');
                         if(firstRunAutostartOptionDiv) firstRunAutostartOptionDiv.style.display = 'block';
                     }
-                    clearAllTimers(); // Clear everything if no API key on init
+                    clearAllTimers(); 
                 }
-                else{ // API key exists
-                    if(intervals.update) clearInterval(intervals.update); // Clear any stray interval
-                    fetchData(); // Initial fetch
-                    intervals.update=setInterval(fetchData,UPDATE_INTERVAL_MS); // Start polling
+                else{ 
+                    if(intervals.update) clearInterval(intervals.update); 
+                    fetchData(); 
+                    intervals.update=setInterval(fetchData,UPDATE_INTERVAL_MS); 
                     if(!isMinimized){ switchView(true); }
-                    else { // Minimized with API key
+                    else { 
                         if(notificationsDiv) notificationsDiv.style.setProperty('display','flex','important');
                         if(statusDiv) statusDiv.style.setProperty('display','block','important');
                         if(refillsDiv) refillsDiv.style.setProperty('display','block','important');
