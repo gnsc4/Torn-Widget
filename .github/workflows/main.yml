@@ -35,10 +35,11 @@ jobs:
       - name: Install frontend dependencies
         working-directory: ./torn-status-widget
         run: npm install
-      - name: Set execute permission for Tauri CLI
+      - name: Set execute permissions for CLIs
         working-directory: ./torn-status-widget
         run: |
-          if [ -f ./node_modules/.bin/tauri ]; then chmod +x ./node_modules/.bin/tauri; fi
+          if [ -f ./node_modules/.bin/tauri ]; then chmod +x ./node_modules/.bin/tauri; echo "Tauri CLI permissions set"; fi
+          if [ -f ./node_modules/.bin/vite ]; then chmod +x ./node_modules/.bin/vite; echo "Vite CLI permissions set"; fi
       - name: Build Tauri application (Linux)
         uses: tauri-apps/tauri-action@v0
         env:
@@ -47,7 +48,7 @@ jobs:
           TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         with:
           projectPath: './torn-status-widget'
-          targets: 'deb,appimage,pacman,updater' # Added updater
+          targets: 'deb,appimage,pacman,updater'
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -75,22 +76,23 @@ jobs:
       - name: Install frontend dependencies
         working-directory: ./torn-status-widget
         run: npm install
-      - name: Set execute permission for Tauri CLI
+      - name: Set execute permissions for CLIs
         working-directory: ./torn-status-widget
         run: |
-          if [ -f ./node_modules/.bin/tauri ]; then chmod +x ./node_modules/.bin/tauri; fi
+          if [ -f ./node_modules/.bin/tauri ]; then chmod +x ./node_modules/.bin/tauri; echo "Tauri CLI permissions set"; fi
+          if [ -f ./node_modules/.bin/vite ]; then chmod +x ./node_modules/.bin/vite; echo "Vite CLI permissions set"; fi
       - name: Build Tauri application (macOS)
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
-          # APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }} # For macOS code signing
+          # APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           # APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           # APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
         with:
           projectPath: './torn-status-widget'
-          targets: 'app,dmg,updater' # 'updater' is already here
+          targets: 'app,dmg,updater'
       - name: Upload macOS Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -117,23 +119,24 @@ jobs:
       - name: Install frontend dependencies
         working-directory: ./torn-status-widget
         run: npm install
-      - name: Set execute permission for Tauri CLI (Git Bash)
+      - name: Set execute permissions for CLIs (Git Bash)
         working-directory: ./torn-status-widget
         shell: bash
         run: |
-          if [ -f ./node_modules/.bin/tauri.cmd ]; then chmod +x ./node_modules/.bin/tauri.cmd; fi
-          if [ -f ./node_modules/.bin/tauri ]; then chmod +x ./node_modules/.bin/tauri; fi
+          if [ -f ./node_modules/.bin/tauri.cmd ]; then chmod +x ./node_modules/.bin/tauri.cmd; echo "Tauri CMD permissions set"; fi
+          if [ -f ./node_modules/.bin/tauri ]; then chmod +x ./node_modules/.bin/tauri; echo "Tauri script permissions set"; fi
+          if [ -f ./node_modules/.bin/vite.cmd ]; then chmod +x ./node_modules/.bin/vite.cmd; echo "Vite CMD permissions set"; fi
+          if [ -f ./node_modules/.bin/vite ]; then chmod +x ./node_modules/.bin/vite; echo "Vite script permissions set"; fi
       - name: Build Tauri application (Windows)
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
-          # TAURI_SIGN_PASSWORD: ${{ secrets.WINDOWS_SIGNING_PFX_PASSWORD }} # For Windows .pfx signing
+          # TAURI_SIGN_PASSWORD: ${{ secrets.WINDOWS_SIGNING_PFX_PASSWORD }}
         with:
           projectPath: './torn-status-widget'
-          targets: 'msi,updater' # 'updater' is already here
-          # For Windows code signing with a .pfx file, you might also need to set:
+          targets: 'msi,updater'
           # tauriSign: true
           # tauriPfx: ${{ secrets.WINDOWS_SIGNING_PFX_BASE64 }}
           # tauriPfxPassword: ${{ secrets.WINDOWS_SIGNING_PFX_PASSWORD }}
@@ -151,53 +154,45 @@ jobs:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     needs: [build-linux, build-macos, build-windows]
-    if: startsWith(github.ref, 'refs/tags/') # Only run on tag pushes
+    if: startsWith(github.ref, 'refs/tags/')
     permissions:
-      contents: write # Required to create releases and upload assets
+      contents: write
 
     steps:
-      - name: Checkout repository (for version info, notes etc. if needed)
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Download all build artifacts
         uses: actions/download-artifact@v4
         with:
-          # No name specified, download all artifacts to their respective directories
-          path: artifacts # All artifacts will be in subdirectories like artifacts/torn-status-widget-linux-builds/
-
+          path: artifacts
       - name: List downloaded artifacts (for debugging)
         run: ls -R artifacts
-
       - name: Generate latest.json for updater
         id: generate_json
         run: |
           echo "Generating latest.json..."
-          VERSION="${{ github.ref_name }}" # e.g., v0.1.0
-          VERSION_NO_V="${VERSION#v}" # 0.1.0
+          VERSION="${{ github.ref_name }}" 
+          VERSION_NO_V="${VERSION#v}" 
           PUB_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           REPO_URL="https://github.com/${{ github.repository }}/releases/download/${VERSION}"
-
-          # Initialize platforms JSON object
           PLATFORMS_JSON=""
 
-          # --- macOS Intel (darwin-x86_64) ---
-          # Assuming universal binary or x86_64 specific build for older Macs
-          # Adjust if you only have universal or aarch64
-          MACOS_X64_UPDATER_TAR_GZ=$(find artifacts/torn-status-widget-macos-builds -name "*.app.tar.gz" -print -quit) # Find first .app.tar.gz
-          if [ -n "$MACOS_X64_UPDATER_TAR_GZ" ]; then
-            MACOS_X64_SIG_FILE="${MACOS_X64_UPDATER_TAR_GZ}.sig"
-            if [ -f "$MACOS_X64_SIG_FILE" ]; then
-              MACOS_X64_SIG_CONTENT=$(cat "$MACOS_X64_SIG_FILE")
-              MACOS_X64_URL="${REPO_URL}/$(basename "$MACOS_X64_UPDATER_TAR_GZ")"
-              PLATFORMS_JSON="$PLATFORMS_JSON \"darwin-x86_64\": {\"signature\": \"$MACOS_X64_SIG_CONTENT\", \"url\": \"$MACOS_X64_URL\"},"
-              # If you have a separate aarch64 build, add it similarly for "darwin-aarch64"
-              # For universal, you might just list it under one, or both if updater handles it.
-              # For simplicity, assuming universal or x86_64 is primary for .app.tar.gz
-               PLATFORMS_JSON="$PLATFORMS_JSON \"darwin-aarch64\": {\"signature\": \"$MACOS_X64_SIG_CONTENT\", \"url\": \"$MACOS_X64_URL\"},"
+          # macOS (assuming universal .app.tar.gz or prioritizing one if multiple arch-specific exist)
+          # Note: If you have separate x86_64 and aarch64 .app.tar.gz, this script needs adjustment
+          # to create two entries: "darwin-x86_64" and "darwin-aarch64".
+          # For now, this finds the first .app.tar.gz and assumes it for both.
+          MACOS_UPDATER_TAR_GZ=$(find artifacts/torn-status-widget-macos-builds -name "*.app.tar.gz" -print -quit)
+          if [ -n "$MACOS_UPDATER_TAR_GZ" ]; then
+            MACOS_SIG_FILE="${MACOS_UPDATER_TAR_GZ}.sig"
+            if [ -f "$MACOS_SIG_FILE" ]; then
+              MACOS_SIG_CONTENT=$(cat "$MACOS_SIG_FILE")
+              MACOS_URL="${REPO_URL}/$(basename "$MACOS_UPDATER_TAR_GZ")"
+              # For simplicity, if one .app.tar.gz is found, assume it's universal or the primary one.
+              # If you build separate x64 and arm64 for Mac, you'll need to find each and add them:
+              PLATFORMS_JSON="$PLATFORMS_JSON \"darwin-aarch64\": {\"signature\": \"$MACOS_SIG_CONTENT\", \"url\": \"$MACOS_URL\"},"
+              PLATFORMS_JSON="$PLATFORMS_JSON \"darwin-x86_64\": {\"signature\": \"$MACOS_SIG_CONTENT\", \"url\": \"$MACOS_URL\"},"
             fi
           fi
           
-          # --- Linux x86_64 (AppImage) ---
           LINUX_APPIMAGE_TAR_GZ=$(find artifacts/torn-status-widget-linux-builds -name "*.AppImage.tar.gz" -print -quit)
           if [ -n "$LINUX_APPIMAGE_TAR_GZ" ]; then
             LINUX_SIG_FILE="${LINUX_APPIMAGE_TAR_GZ}.sig"
@@ -208,7 +203,6 @@ jobs:
             fi
           fi
 
-          # --- Windows x86_64 (MSI) ---
           WINDOWS_MSI_ZIP=$(find artifacts/torn-status-widget-windows-builds -name "*.msi.zip" -print -quit)
           if [ -n "$WINDOWS_MSI_ZIP" ]; then
             WINDOWS_SIG_FILE="${WINDOWS_MSI_ZIP}.sig"
@@ -219,17 +213,12 @@ jobs:
             fi
           fi
 
-          # Remove trailing comma if any
           PLATFORMS_JSON=$(echo "$PLATFORMS_JSON" | sed 's/,$//')
-
-          # Construct the final latest.json content
-          # Notes can be fetched from git commit message or a file if needed
           NOTES="Release notes for version ${VERSION}"
           echo "{\"version\": \"${VERSION_NO_V}\", \"notes\": \"${NOTES}\", \"pub_date\": \"${PUB_DATE}\", \"platforms\": {${PLATFORMS_JSON}}}" > latest.json
           echo "Generated latest.json:"
           cat latest.json
           echo "::set-output name=json_path::$(pwd)/latest.json"
-
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2
         with:
@@ -248,13 +237,11 @@ jobs:
             artifacts/torn-status-widget-linux-builds/*.AppImage.tar.gz
             artifacts/torn-status-widget-linux-builds/*.AppImage.tar.gz.sig
             artifacts/torn-status-widget-macos-builds/*.dmg
-            artifacts/torn-status-widget-macos-builds/*.app # Might need to zip this first for release
             artifacts/torn-status-widget-macos-builds/*.app.tar.gz
             artifacts/torn-status-widget-macos-builds/*.app.tar.gz.sig
             artifacts/torn-status-widget-windows-builds/*.msi
             artifacts/torn-status-widget-windows-builds/*.msi.zip
             artifacts/torn-status-widget-windows-builds/*.msi.zip.sig
-            ${{ steps.generate_json.outputs.json_path }} # Upload the generated latest.json
+            ${{ steps.generate_json.outputs.json_path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
