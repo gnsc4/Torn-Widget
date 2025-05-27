@@ -43,7 +43,7 @@ jobs:
       - name: Build Tauri application (Linux)
         uses: tauri-apps/tauri-action@v0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Removed as this step only builds
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         with:
@@ -84,7 +84,7 @@ jobs:
       - name: Build Tauri application (macOS)
         uses: tauri-apps/tauri-action@v0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Removed as this step only builds
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
           # APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
@@ -130,7 +130,7 @@ jobs:
       - name: Build Tauri application (Windows)
         uses: tauri-apps/tauri-action@v0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Removed as this step only builds
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
           # TAURI_SIGN_PASSWORD: ${{ secrets.WINDOWS_SIGNING_PFX_PASSWORD }}
@@ -177,47 +177,64 @@ jobs:
           PLATFORMS_JSON=""
 
           # macOS (assuming universal .app.tar.gz or prioritizing one if multiple arch-specific exist)
-          # Note: If you have separate x86_64 and aarch64 .app.tar.gz, this script needs adjustment
-          # to create two entries: "darwin-x86_64" and "darwin-aarch64".
-          # For now, this finds the first .app.tar.gz and assumes it for both.
           MACOS_UPDATER_TAR_GZ=$(find artifacts/torn-status-widget-macos-builds -name "*.app.tar.gz" -print -quit)
           if [ -n "$MACOS_UPDATER_TAR_GZ" ]; then
             MACOS_SIG_FILE="${MACOS_UPDATER_TAR_GZ}.sig"
             if [ -f "$MACOS_SIG_FILE" ]; then
-              MACOS_SIG_CONTENT=$(cat "$MACOS_SIG_FILE")
+              MACOS_SIG_CONTENT=$(cat "$MACOS_SIG_FILE" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g') # Escape quotes and newlines for JSON
               MACOS_URL="${REPO_URL}/$(basename "$MACOS_UPDATER_TAR_GZ")"
-              # For simplicity, if one .app.tar.gz is found, assume it's universal or the primary one.
-              # If you build separate x64 and arm64 for Mac, you'll need to find each and add them:
               PLATFORMS_JSON="$PLATFORMS_JSON \"darwin-aarch64\": {\"signature\": \"$MACOS_SIG_CONTENT\", \"url\": \"$MACOS_URL\"},"
               PLATFORMS_JSON="$PLATFORMS_JSON \"darwin-x86_64\": {\"signature\": \"$MACOS_SIG_CONTENT\", \"url\": \"$MACOS_URL\"},"
+            else
+              echo "Warning: Signature file not found for $MACOS_UPDATER_TAR_GZ"
             fi
+          else
+            echo "Warning: macOS updater .app.tar.gz not found."
           fi
           
           LINUX_APPIMAGE_TAR_GZ=$(find artifacts/torn-status-widget-linux-builds -name "*.AppImage.tar.gz" -print -quit)
           if [ -n "$LINUX_APPIMAGE_TAR_GZ" ]; then
             LINUX_SIG_FILE="${LINUX_APPIMAGE_TAR_GZ}.sig"
             if [ -f "$LINUX_SIG_FILE" ]; then
-              LINUX_SIG_CONTENT=$(cat "$LINUX_SIG_FILE")
+              LINUX_SIG_CONTENT=$(cat "$LINUX_SIG_FILE" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g') # Escape quotes and newlines
               LINUX_URL="${REPO_URL}/$(basename "$LINUX_APPIMAGE_TAR_GZ")"
               PLATFORMS_JSON="$PLATFORMS_JSON \"linux-x86_64\": {\"signature\": \"$LINUX_SIG_CONTENT\", \"url\": \"$LINUX_URL\"},"
+            else
+              echo "Warning: Signature file not found for $LINUX_APPIMAGE_TAR_GZ"
             fi
+          else
+            echo "Warning: Linux AppImage updater .tar.gz not found."
           fi
 
           WINDOWS_MSI_ZIP=$(find artifacts/torn-status-widget-windows-builds -name "*.msi.zip" -print -quit)
           if [ -n "$WINDOWS_MSI_ZIP" ]; then
             WINDOWS_SIG_FILE="${WINDOWS_MSI_ZIP}.sig"
             if [ -f "$WINDOWS_SIG_FILE" ]; then
-              WINDOWS_SIG_CONTENT=$(cat "$WINDOWS_SIG_FILE")
+              WINDOWS_SIG_CONTENT=$(cat "$WINDOWS_SIG_FILE" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g') # Escape quotes and newlines
               WINDOWS_URL="${REPO_URL}/$(basename "$WINDOWS_MSI_ZIP")"
               PLATFORMS_JSON="$PLATFORMS_JSON \"windows-x86_64\": {\"signature\": \"$WINDOWS_SIG_CONTENT\", \"url\": \"$WINDOWS_URL\"},"
+            else
+              echo "Warning: Signature file not found for $WINDOWS_MSI_ZIP"
             fi
+          else
+            echo "Warning: Windows MSI updater .zip not found."
           fi
 
-          PLATFORMS_JSON=$(echo "$PLATFORMS_JSON" | sed 's/,$//')
+          PLATFORMS_JSON=$(echo "$PLATFORMS_JSON" | sed 's/,$//') # Remove trailing comma
           NOTES="Release notes for version ${VERSION}"
-          echo "{\"version\": \"${VERSION_NO_V}\", \"notes\": \"${NOTES}\", \"pub_date\": \"${PUB_DATE}\", \"platforms\": {${PLATFORMS_JSON}}}" > latest.json
+          # Ensure notes are properly escaped for JSON if they contain special characters
+          NOTES_ESCAPED=$(echo "$NOTES" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+          
+          JSON_CONTENT="{\"version\": \"${VERSION_NO_V}\", \"notes\": \"${NOTES_ESCAPED}\", \"pub_date\": \"${PUB_DATE}\", \"platforms\": {${PLATFORMS_JSON}}}"
+          echo "$JSON_CONTENT" > latest.json
           echo "Generated latest.json:"
           cat latest.json
+          # Validate JSON (optional but good for debugging)
+          if ! jq . latest.json > /dev/null; then
+            echo "Error: Generated latest.json is invalid!"
+            # cat latest.json # Print again for detailed inspection
+            # exit 1 # Optionally fail the job
+          fi
           echo "::set-output name=json_path::$(pwd)/latest.json"
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2
