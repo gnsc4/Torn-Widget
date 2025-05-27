@@ -7,9 +7,16 @@ on:
     tags:
       - 'v*.*.*' # Triggers on version tags like v1.0.0, v1.2.3
 
+# Add this permissions block at the workflow level
+permissions:
+  contents: write # Allows creating releases and uploading assets
+
 jobs:
   create-release:
     runs-on: ubuntu-latest
+    # If you didn't set permissions at the workflow level, you'd add it here too:
+    # permissions:
+    #   contents: write
     outputs:
       release_id: ${{ steps.create_release.outputs.id }}
     steps:
@@ -19,17 +26,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }} # Uses the tag that triggered the workflow
+          tag_name: ${{ github.ref_name }}
           release_name: "Torn Widget ${{ github.ref_name }}"
-          body: | # You can customize your release notes here
+          body: |
             Official release for Torn Widget version ${{ github.ref_name }}.
             See [CHANGELOG.md](CHANGELOG.md) for details (if you have one).
-          draft: false # Set to true if you want to manually review before publishing
-          prerelease: contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') # Auto-detect prereleases
+          draft: false
+          prerelease: contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha')
 
   build-tauri:
     needs: create-release
     runs-on: ${{ matrix.platform }}
+    # If you didn't set permissions at the workflow level, you'd add it here too:
+    # permissions:
+    #   contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -38,9 +48,7 @@ jobs:
           - platform: ubuntu-latest
             rust_target: x86_64-unknown-linux-gnu
           - platform: macos-latest
-            rust_target: x86_64-apple-darwin # Tauri builds universal .app by default on macOS
-            # For Apple Silicon native builds on M1/M2 runners, you might use aarch64-apple-darwin
-            # and a specific runner type if not building universal.
+            rust_target: x86_64-apple-darwin
           - platform: windows-latest
             rust_target: x86_64-pc-windows-msvc
 
@@ -51,15 +59,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18 # Or your project's Node.js version
+          node-version: 18
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          targets: ${{ matrix.rust_target }} # Install specific Rust target for cross-compilation
+          targets: ${{ matrix.rust_target }}
 
-      # Cache dependencies
       - name: Cache Rust dependencies (Cargo)
         uses: actions/cache@v4
         with:
@@ -68,7 +75,7 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-            torn-status-widget/src-tauri/target/ # Cache Tauri's Rust target dir specifically
+            torn-status-widget/src-tauri/target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('torn-status-widget/src-tauri/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
@@ -85,25 +92,16 @@ jobs:
         working-directory: ./torn-status-widget
         run: npm install
 
-      # Install WebView2 for Windows runners
       - name: Install WebView2 (Windows)
         if: matrix.platform == 'windows-latest'
-        uses: tauri-apps/setup-webview2@v3 # Updated to v3
-        # No `with` block needed for default latest stable installation
+        uses: tauri-apps/setup-webview2@v3
 
       - name: Build Tauri app and Upload to Release
-        uses: tauri-apps/tauri-action@v0 # This uses the latest v0.x.y release of the action
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           projectPath: ./torn-status-widget
-          # tauriScript: 'npm run tauri build' # Default is 'tauri build', this is also fine.
-          # If your build script is just 'tauri build', you can omit tauriScript
-          # and tauri-action will use its default.
-          # If 'npm run tauri build' has specific logic in your package.json, keep it.
           releaseId: ${{ needs.create-release.outputs.release_id }}
-          # target: ${{ matrix.rust_target }} # Optional: if you want to force a specific target for tauri-action
-                                            # By default, tauri-action tries to build for the runner's arch
-                                            # or universal on macOS.
