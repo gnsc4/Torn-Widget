@@ -1,5 +1,5 @@
 # Name of the GitHub Actions workflow
-name: Build Tauri App (Linux)
+name: Build Tauri App (Linux, macOS & Windows)
 
 # Controls when the workflow will run
 on:
@@ -14,95 +14,247 @@ on:
     branches:
       - main # Or your default branch
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build-linux"
   build-linux:
-    # The name that will be displayed on GitHub for this job
     name: Build for Linux
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest # Use the latest Ubuntu runner provided by GitHub
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    runs-on: ubuntu-latest
     steps:
-      # Step 1: Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # Step 2: Set up Node.js environment
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20' # Specify the Node.js version your project uses or a recent LTS
-
-      # Step 3: Install the stable Rust toolchain
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+          node-version: '20'
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable # Explicitly set to stable, though it's the default
-
-      # Step 4: Install necessary Linux dependencies for Tauri
+          toolchain: stable
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libwebkit2gtk-4.1-dev \
-            build-essential \
-            curl \
-            wget \
-            file \
-            libssl-dev \
-            libgtk-3-dev \
-            libayatana-appindicator3-dev \
-            librsvg2-dev \
-            binutils
-
-      # Step 5: Install frontend dependencies using npm
+            libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev \
+            libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev binutils
       - name: Install frontend dependencies
         working-directory: ./torn-status-widget
         run: npm install
-
-      # Step 5.1: Grant execute permissions to the locally installed Tauri CLI
       - name: Set execute permission for Tauri CLI
         working-directory: ./torn-status-widget
         run: |
-          if [ -f ./node_modules/.bin/tauri ]; then
-            chmod +x ./node_modules/.bin/tauri
-            echo "Execute permission set for ./node_modules/.bin/tauri"
-          else
-            echo "Tauri CLI not found at ./node_modules/.bin/tauri. This might be an issue."
-          fi
-
-      # Step 6: Use the official Tauri action to build the application and create a release on tag pushes
-      - name: Build Tauri application and Optionally Create Release
+          if [ -f ./node_modules/.bin/tauri ]; then chmod +x ./node_modules/.bin/tauri; fi
+      - name: Build Tauri application (Linux)
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }} # Uncomment if using Tauri's updater and code signing
-          # TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }} # Uncomment if your private key is password-protected
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         with:
           projectPath: './torn-status-widget'
-          targets: 'deb,appimage,pacman'
-
-          # --- Release Configuration ---
-          # These settings will create a GitHub Release when a tag is pushed.
-          # If not a tag push, tagName will be empty, and no release should be created by tauri-action.
-          tagName: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
-          releaseName: ${{ startsWith(github.ref, 'refs/tags/') && format('Release {0}', github.ref_name) || '' }}
-          releaseBody: ${{ startsWith(github.ref, 'refs/tags/') && format('Automated release for {0}. See assets below for downloads.', github.ref_name) || '' }}
-          releaseDraft: false # Set to true to create a draft release
-          releasePrerelease: ${{ startsWith(github.ref, 'refs/tags/') && (contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc')) || false }}
-
-      # Step 7: Upload the built Linux artifacts (.deb, .AppImage, and .pacman)
-      # This step uploads artifacts for all runs (pushes, PRs, tags) for inspection or other uses.
-      # Tauri-action handles adding these to the GitHub Release directly when a tag is pushed.
+          targets: 'deb,appimage,pacman,updater' # Added updater
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: torn-status-widget-linux-builds # Name of the artifact bundle
+          name: torn-status-widget-linux-builds
           path: |
             ./torn-status-widget/src-tauri/target/release/bundle/deb/*.deb
             ./torn-status-widget/src-tauri/target/release/bundle/appimage/*.AppImage
             ./torn-status-widget/src-tauri/target/release/bundle/pacman/*.pacman
-            ./torn-status-widget/src-tauri/target/release/bundle/pacman/*.pkg.tar.zst # Also include if this format is generated
-          if-no-files-found: error # Fails the step if no files are found at the specified paths
+            ./torn-status-widget/src-tauri/target/release/bundle/pacman/*.pkg.tar.zst
+            ./torn-status-widget/src-tauri/target/release/*.AppImage.tar.gz
+            ./torn-status-widget/src-tauri/target/release/*.AppImage.tar.gz.sig
+          if-no-files-found: error
+
+  build-macos:
+    name: Build for macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+      - name: Install frontend dependencies
+        working-directory: ./torn-status-widget
+        run: npm install
+      - name: Set execute permission for Tauri CLI
+        working-directory: ./torn-status-widget
+        run: |
+          if [ -f ./node_modules/.bin/tauri ]; then chmod +x ./node_modules/.bin/tauri; fi
+      - name: Build Tauri application (macOS)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
+          # APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }} # For macOS code signing
+          # APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          # APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+        with:
+          projectPath: './torn-status-widget'
+          targets: 'app,dmg,updater' # 'updater' is already here
+      - name: Upload macOS Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: torn-status-widget-macos-builds
+          path: |
+            ./torn-status-widget/src-tauri/target/release/bundle/macos/*.app
+            ./torn-status-widget/src-tauri/target/release/bundle/dmg/*.dmg
+            ./torn-status-widget/src-tauri/target/release/*.app.tar.gz
+            ./torn-status-widget/src-tauri/target/release/*.app.tar.gz.sig
+          if-no-files-found: error
+
+  build-windows:
+    name: Build for Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+      - uses: tauri-apps/setup-webview2@v2
+      - name: Install frontend dependencies
+        working-directory: ./torn-status-widget
+        run: npm install
+      - name: Set execute permission for Tauri CLI (Git Bash)
+        working-directory: ./torn-status-widget
+        shell: bash
+        run: |
+          if [ -f ./node_modules/.bin/tauri.cmd ]; then chmod +x ./node_modules/.bin/tauri.cmd; fi
+          if [ -f ./node_modules/.bin/tauri ]; then chmod +x ./node_modules/.bin/tauri; fi
+      - name: Build Tauri application (Windows)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
+          # TAURI_SIGN_PASSWORD: ${{ secrets.WINDOWS_SIGNING_PFX_PASSWORD }} # For Windows .pfx signing
+        with:
+          projectPath: './torn-status-widget'
+          targets: 'msi,updater' # 'updater' is already here
+          # For Windows code signing with a .pfx file, you might also need to set:
+          # tauriSign: true
+          # tauriPfx: ${{ secrets.WINDOWS_SIGNING_PFX_BASE64 }}
+          # tauriPfxPassword: ${{ secrets.WINDOWS_SIGNING_PFX_PASSWORD }}
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: torn-status-widget-windows-builds
+          path: |
+            ./torn-status-widget/src-tauri/target/release/bundle/msi/*.msi
+            ./torn-status-widget/src-tauri/target/release/*.msi.zip
+            ./torn-status-widget/src-tauri/target/release/*.msi.zip.sig
+          if-no-files-found: error
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-linux, build-macos, build-windows]
+    if: startsWith(github.ref, 'refs/tags/') # Only run on tag pushes
+    permissions:
+      contents: write # Required to create releases and upload assets
+
+    steps:
+      - name: Checkout repository (for version info, notes etc. if needed)
+        uses: actions/checkout@v4
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          # No name specified, download all artifacts to their respective directories
+          path: artifacts # All artifacts will be in subdirectories like artifacts/torn-status-widget-linux-builds/
+
+      - name: List downloaded artifacts (for debugging)
+        run: ls -R artifacts
+
+      - name: Generate latest.json for updater
+        id: generate_json
+        run: |
+          echo "Generating latest.json..."
+          VERSION="${{ github.ref_name }}" # e.g., v0.1.0
+          VERSION_NO_V="${VERSION#v}" # 0.1.0
+          PUB_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          REPO_URL="https://github.com/${{ github.repository }}/releases/download/${VERSION}"
+
+          # Initialize platforms JSON object
+          PLATFORMS_JSON=""
+
+          # --- macOS Intel (darwin-x86_64) ---
+          # Assuming universal binary or x86_64 specific build for older Macs
+          # Adjust if you only have universal or aarch64
+          MACOS_X64_UPDATER_TAR_GZ=$(find artifacts/torn-status-widget-macos-builds -name "*.app.tar.gz" -print -quit) # Find first .app.tar.gz
+          if [ -n "$MACOS_X64_UPDATER_TAR_GZ" ]; then
+            MACOS_X64_SIG_FILE="${MACOS_X64_UPDATER_TAR_GZ}.sig"
+            if [ -f "$MACOS_X64_SIG_FILE" ]; then
+              MACOS_X64_SIG_CONTENT=$(cat "$MACOS_X64_SIG_FILE")
+              MACOS_X64_URL="${REPO_URL}/$(basename "$MACOS_X64_UPDATER_TAR_GZ")"
+              PLATFORMS_JSON="$PLATFORMS_JSON \"darwin-x86_64\": {\"signature\": \"$MACOS_X64_SIG_CONTENT\", \"url\": \"$MACOS_X64_URL\"},"
+              # If you have a separate aarch64 build, add it similarly for "darwin-aarch64"
+              # For universal, you might just list it under one, or both if updater handles it.
+              # For simplicity, assuming universal or x86_64 is primary for .app.tar.gz
+               PLATFORMS_JSON="$PLATFORMS_JSON \"darwin-aarch64\": {\"signature\": \"$MACOS_X64_SIG_CONTENT\", \"url\": \"$MACOS_X64_URL\"},"
+            fi
+          fi
+          
+          # --- Linux x86_64 (AppImage) ---
+          LINUX_APPIMAGE_TAR_GZ=$(find artifacts/torn-status-widget-linux-builds -name "*.AppImage.tar.gz" -print -quit)
+          if [ -n "$LINUX_APPIMAGE_TAR_GZ" ]; then
+            LINUX_SIG_FILE="${LINUX_APPIMAGE_TAR_GZ}.sig"
+            if [ -f "$LINUX_SIG_FILE" ]; then
+              LINUX_SIG_CONTENT=$(cat "$LINUX_SIG_FILE")
+              LINUX_URL="${REPO_URL}/$(basename "$LINUX_APPIMAGE_TAR_GZ")"
+              PLATFORMS_JSON="$PLATFORMS_JSON \"linux-x86_64\": {\"signature\": \"$LINUX_SIG_CONTENT\", \"url\": \"$LINUX_URL\"},"
+            fi
+          fi
+
+          # --- Windows x86_64 (MSI) ---
+          WINDOWS_MSI_ZIP=$(find artifacts/torn-status-widget-windows-builds -name "*.msi.zip" -print -quit)
+          if [ -n "$WINDOWS_MSI_ZIP" ]; then
+            WINDOWS_SIG_FILE="${WINDOWS_MSI_ZIP}.sig"
+            if [ -f "$WINDOWS_SIG_FILE" ]; then
+              WINDOWS_SIG_CONTENT=$(cat "$WINDOWS_SIG_FILE")
+              WINDOWS_URL="${REPO_URL}/$(basename "$WINDOWS_MSI_ZIP")"
+              PLATFORMS_JSON="$PLATFORMS_JSON \"windows-x86_64\": {\"signature\": \"$WINDOWS_SIG_CONTENT\", \"url\": \"$WINDOWS_URL\"},"
+            fi
+          fi
+
+          # Remove trailing comma if any
+          PLATFORMS_JSON=$(echo "$PLATFORMS_JSON" | sed 's/,$//')
+
+          # Construct the final latest.json content
+          # Notes can be fetched from git commit message or a file if needed
+          NOTES="Release notes for version ${VERSION}"
+          echo "{\"version\": \"${VERSION_NO_V}\", \"notes\": \"${NOTES}\", \"pub_date\": \"${PUB_DATE}\", \"platforms\": {${PLATFORMS_JSON}}}" > latest.json
+          echo "Generated latest.json:"
+          cat latest.json
+          echo "::set-output name=json_path::$(pwd)/latest.json"
+
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            Automated release for ${{ github.ref_name }}.
+            See assets below for downloads.
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
+          files: |
+            artifacts/torn-status-widget-linux-builds/*.deb
+            artifacts/torn-status-widget-linux-builds/*.AppImage
+            artifacts/torn-status-widget-linux-builds/*.pacman
+            artifacts/torn-status-widget-linux-builds/*.pkg.tar.zst
+            artifacts/torn-status-widget-linux-builds/*.AppImage.tar.gz
+            artifacts/torn-status-widget-linux-builds/*.AppImage.tar.gz.sig
+            artifacts/torn-status-widget-macos-builds/*.dmg
+            artifacts/torn-status-widget-macos-builds/*.app # Might need to zip this first for release
+            artifacts/torn-status-widget-macos-builds/*.app.tar.gz
+            artifacts/torn-status-widget-macos-builds/*.app.tar.gz.sig
+            artifacts/torn-status-widget-windows-builds/*.msi
+            artifacts/torn-status-widget-windows-builds/*.msi.zip
+            artifacts/torn-status-widget-windows-builds/*.msi.zip.sig
+            ${{ steps.generate_json.outputs.json_path }} # Upload the generated latest.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
