@@ -115,7 +115,8 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-      - uses: tauri-apps/setup-webview2@v2
+      - name: Install webview2
+        uses: tauri-apps/setup-webview2@v2.0.0 # Pinned to a specific v2 version
       - name: Install frontend dependencies
         working-directory: ./torn-status-widget
         run: npm install
@@ -222,17 +223,14 @@ jobs:
 
           PLATFORMS_JSON=$(echo "$PLATFORMS_JSON" | sed 's/,$//') # Remove trailing comma
           NOTES="Release notes for version ${VERSION}"
-          # Ensure notes are properly escaped for JSON if they contain special characters
           NOTES_ESCAPED=$(echo "$NOTES" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
           
           JSON_CONTENT="{\"version\": \"${VERSION_NO_V}\", \"notes\": \"${NOTES_ESCAPED}\", \"pub_date\": \"${PUB_DATE}\", \"platforms\": {${PLATFORMS_JSON}}}"
           echo "$JSON_CONTENT" > latest.json
           echo "Generated latest.json:"
           cat latest.json
-          # Validate JSON (optional but good for debugging)
-          if ! jq . latest.json > /dev/null; then
+          if ! jq . latest.json > /dev/null; then # Validate JSON
             echo "Error: Generated latest.json is invalid!"
-            # cat latest.json # Print again for detailed inspection
             # exit 1 # Optionally fail the job
           fi
           echo "::set-output name=json_path::$(pwd)/latest.json"
