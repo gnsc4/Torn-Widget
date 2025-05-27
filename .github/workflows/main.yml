@@ -3,11 +3,13 @@ name: Build Tauri App (Linux)
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push events but only for the main branch
   push:
     branches:
-      - main # Or your default branch, e.g., master
-  # Triggers the workflow on pull request events but only for the main branch
+      - main # For regular builds/tests
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*' # Trigger on semantic version tags like v1.0.0, v1.2.3-alpha
+      - 'v[0-9]+.[0-9]+*'       # Trigger on tags like v1.0, v1.2-beta
+      - 'v[0-9]+*'             # Trigger on tags like v1, v2-rc
   pull_request:
     branches:
       - main # Or your default branch
@@ -39,8 +41,7 @@ jobs:
         with:
           toolchain: stable # Explicitly set to stable, though it's the default
 
-      # Step 4: Install necessary Linux dependencies for Tauri (and webkit2gtk for the webview)
-      # These dependencies should also cover what's needed for pacman packaging by Tauri.
+      # Step 4: Install necessary Linux dependencies for Tauri
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
@@ -54,57 +55,47 @@ jobs:
             libgtk-3-dev \
             libayatana-appindicator3-dev \
             librsvg2-dev \
-            # Arch-specific packaging tools like 'fakeroot' are usually needed for makepkg,
-            # but tauri-bundler might handle its pacman creation differently or have its own deps.
-            # The tauri-action should manage underlying tauri-bundler dependencies.
-            # If pacman build fails due to missing tools, they might need to be added here (e.g. bsdtar for .tar.zst)
-            # For now, we rely on tauri-action and its bundled tauri-cli.
-            binutils # Often needed for stripping binaries, which tauri might do
+            binutils
 
       # Step 5: Install frontend dependencies using npm
-      # This assumes your package.json and package-lock.json are in the 'torn-status-widget' directory
       - name: Install frontend dependencies
-        working-directory: ./torn-status-widget # Set working directory for npm commands
+        working-directory: ./torn-status-widget
         run: npm install
 
       # Step 5.1: Grant execute permissions to the locally installed Tauri CLI
-      # This addresses potential "Permission denied" errors when npm tries to run the tauri script.
       - name: Set execute permission for Tauri CLI
-        working-directory: ./torn-status-widget # Ensure we are in the correct directory
+        working-directory: ./torn-status-widget
         run: |
           if [ -f ./node_modules/.bin/tauri ]; then
             chmod +x ./node_modules/.bin/tauri
             echo "Execute permission set for ./node_modules/.bin/tauri"
           else
             echo "Tauri CLI not found at ./node_modules/.bin/tauri. This might be an issue."
-            # Optionally, you might want to fail the build here if it's critical
-            # exit 1
           fi
 
-      # Step 6: Use the official Tauri action to build the application
-      # This action handles building the frontend (if not already done) and then building the Tauri app.
-      - name: Build Tauri application
-        uses: tauri-apps/tauri-action@v0 # Using v0 for the latest release of the action
+      # Step 6: Use the official Tauri action to build the application and create a release on tag pushes
+      - name: Build Tauri application and Optionally Create Release
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }} # Uncomment if using Tauri's updater and code signing
           # TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }} # Uncomment if your private key is password-protected
         with:
-          # Path to the directory containing your tauri.conf.json and package.json for the widget
           projectPath: './torn-status-widget'
-          # Specify the targets to build, including deb, appimage, and pacman for Arch Linux
           targets: 'deb,appimage,pacman'
 
-          # If you want the action to create a GitHub Release with the artifacts:
-          # tagName: app-v__VERSION__ # __VERSION__ is auto-replaced with app version from tauri.conf.json
-          # releaseName: 'App v__VERSION__'
-          # releaseBody: 'See the assets to download this version of the Torn Status Widget.'
-          # releaseDraft: false # Set to true to create a draft release
-          # releasePrerelease: false # Set to true if this is a pre-release
+          # --- Release Configuration ---
+          # These settings will create a GitHub Release when a tag is pushed.
+          # If not a tag push, tagName will be empty, and no release should be created by tauri-action.
+          tagName: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
+          releaseName: ${{ startsWith(github.ref, 'refs/tags/') && format('Release {0}', github.ref_name) || '' }}
+          releaseBody: ${{ startsWith(github.ref, 'refs/tags/') && format('Automated release for {0}. See assets below for downloads.', github.ref_name) || '' }}
+          releaseDraft: false # Set to true to create a draft release
+          releasePrerelease: ${{ startsWith(github.ref, 'refs/tags/') && (contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc')) || false }}
 
       # Step 7: Upload the built Linux artifacts (.deb, .AppImage, and .pacman)
-      # This step is useful if you are not using the release creation feature of tauri-action directly,
-      # or if you want to access the artifacts for other purposes before a release.
+      # This step uploads artifacts for all runs (pushes, PRs, tags) for inspection or other uses.
+      # Tauri-action handles adding these to the GitHub Release directly when a tag is pushed.
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
         with:

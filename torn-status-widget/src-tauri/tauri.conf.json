@@ -106,7 +106,12 @@
       }
     ],
     "updater": {
-      "active": false
+      "active": true,
+      "dialog": true,
+      "pubkey": "untrusted comment: minisign public key: F8B2D484DFD949E\\nRWSelP1NSC2LD9G08ryBJOsKeuTOxEFJd7OIdoEVRu7ppdQntCoQz9c",
+      "endpoints": [
+        "https://github.com/gnsc4/Torn-Widget/releases/latest/download/latest.json"
+      ]
     },
     "systemTray": {
       "iconPath": "icons/icon.png",

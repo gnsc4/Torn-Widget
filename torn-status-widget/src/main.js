@@ -5,7 +5,7 @@ const invoke = window.__TAURI__.tauri.invoke;
 
 (function() {
     'use strict';
-    const SCRIPT_VERSION = "1.0.31"; // UPDATED SCRIPT VERSION
+    const SCRIPT_VERSION = "1.0.32"; // UPDATED SCRIPT VERSION
     const FORUM_THREAD_URL = "https://www.torn.com/forums.php#/p=threads&f=67&t=16473214&b=0&a=0";
     const AUTHOR_NAME = "GNSC4 [268863]";
     const AUTHOR_URL = "https://www.torn.com/profiles.php?XID=268863";
