@@ -48,7 +48,7 @@ You can download the latest version (v1.0.42) of the Torn Status Widget for your
 
 ### Windows
 
-1.  From the [v1.0.42 release assets](https://github.com/gnsc4/Torn-Widget/releases/), download either:
+1.  From the [latest release assets](https://github.com/gnsc4/Torn-Widget/releases/), download either:
     * `torn-status-widget_0.1.0_x64_en-US.msi` (Microsoft Installer)
     * `torn-status-widget_0.1.0_x64-setup.exe` (NSIS Installer)
 2.  **For the `.msi` file:**
@@ -60,7 +60,7 @@ You can download the latest version (v1.0.42) of the Torn Status Widget for your
 
 ### macOS (Apple Silicon)
 
-1.  From the [v1.0.42 release assets](https://github.com/gnsc4/Torn-Widget/releases/), download either:
+1.  From the [latest release assets](https://github.com/gnsc4/Torn-Widget/releases/), download either:
     * `torn-status-widget_0.1.0_aarch64.dmg`
     * `torn-status-widget_aarch64.app.tar.gz`
 2.  **For the `.dmg` file:**
@@ -74,7 +74,7 @@ You can download the latest version (v1.0.42) of the Torn Status Widget for your
 
 ### Linux
 
-1.  From the [v1.0.42 release assets](https://github.com/gnsc4/Torn-Widget/releases/), download the appropriate installer for your distribution:
+1.  From the [latest release assets](https://github.com/gnsc4/Torn-Widget/releases/), download the appropriate installer for your distribution:
     * `torn-status-widget_0.1.0_amd64.AppImage` (Recommended for most distributions)
     * `torn-status-widget_0.1.0_amd64.deb` (For Debian/Ubuntu-based systems)
     * `torn-status-widget-0.1.0-1.x86_64.rpm` (For Fedora/openSUSE-based systems)
