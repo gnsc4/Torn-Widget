@@ -58,7 +58,7 @@ jobs:
           pwd
           ls -la
           if [ "$RUNNER_OS" == "Windows" ]; then dir; fi
-          cd .. # Go back to root for next steps if they don't use working-directory
+          cd .. 
         shell: bash
 
       - name: Setup Node.js
@@ -80,16 +80,22 @@ jobs:
 
       - name: Install frontend dependencies (npm)
         run: npm install
-        working-directory: ./torn-status-widget # Run npm install in the subdirectory
+        working-directory: ./torn-status-widget
+
+      - name: Set execute permissions for Tauri CLI (Linux/macOS)
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: chmod +x ./torn-status-widget/node_modules/.bin/tauri
+        # working-directory: ./torn-status-widget # Not needed as path is relative from root
 
       - name: Build and Upload Release Assets with tauri-action
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v0 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          # TAURI_SIGNING_PASSWORD: ${{ secrets.TAURI_SIGNING_PASSWORD }} # Kept commented for empty password
+          # TAURI_SIGNING_PASSWORD: ${{ secrets.TAURI_SIGNING_PASSWORD }}
         with:
-          projectPath: ./torn-status-widget # Specify the path to your Tauri project
+          projectPath: ./torn-status-widget 
           tagName: ${{ github.ref_name }} 
           releaseId: ${{ needs.create-release-tag.outputs.release_id }}
-          # tauriScript: 'cd torn-status-widget && npm run tauri build' # Alternative if projectPath doesn't cover all CLI calls internally
+          # The tauri-action will use the "tauri" script from your package.json
+          # which is "npx tauri build"
