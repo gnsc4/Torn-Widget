@@ -6,13 +6,14 @@ on:
       - 'v*' # Trigger on tags like v0.1.0, v1.0.0, etc.
 
 jobs:
-  create-release-tag:
+  create-release-tag: # This job creates the GitHub Release entry
     runs-on: ubuntu-latest
 
     outputs:
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
       app_version: ${{ steps.get_version.outputs.version }}
       release_id: ${{ steps.create_release.outputs.id }}
+
 
     steps:
       - name: Checkout code
@@ -28,14 +29,17 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ steps.get_version.outputs.version }}
-          body: "Automated release for version ${{ steps.get_version.outputs.version }}."
+          # body_path: CHANGELOG.md # Removed this line
+          # The body will now default to the tag's annotation/message, or be empty.
+          # Alternatively, you can provide static text here using the 'body:' input.
+          body: "Automated release for version ${{ steps.get_version.outputs.version }}"
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-tauri:
-    needs: create-release-tag
+    needs: create-release-tag # Run after the release draft/tag info is available
     strategy:
       fail-fast: false
       matrix:
@@ -46,30 +50,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: List files in checkout directory (Root & Subdirectory)
+      - name: List files in checkout directory # DEBUGGING STEP
         run: |
-          echo "--- Root directory ( ${{ github.workspace }} ) ---"
           pwd
           ls -la
-          if [ "$RUNNER_OS" == "Windows" ]; then dir; fi
-          
-          echo "--- Subdirectory ( ${{ github.workspace }}/torn-status-widget ) ---"
-          cd torn-status-widget || exit 1 # Exit if cd fails
-          pwd
-          ls -la
-          if [ "$RUNNER_OS" == "Windows" ]; then dir; fi
-          cd .. # Go back to root for next steps if they don't use working-directory
-        shell: bash
+          # For Windows, use dir
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            dir
+          fi
+        shell: bash # Ensure ls -la works, or use powershell for Windows specific listing
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '18' # Or your preferred Node.js version
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
+          toolchain: stable # Or your specific Rust version
           components: ${{ matrix.platform == 'windows-latest' && 'rustfmt, clippy' || '' }}
 
       - name: Setup MSVC for Windows
@@ -80,16 +79,15 @@ jobs:
 
       - name: Install frontend dependencies (npm)
         run: npm install
-        working-directory: ./torn-status-widget # Run npm install in the subdirectory
+        # If package.json is in a subdirectory, e.g., 'frontend':
+        # working-directory: ./frontend
 
       - name: Build and Upload Release Assets with tauri-action
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v0 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          # TAURI_SIGNING_PASSWORD: ${{ secrets.TAURI_SIGNING_PASSWORD }} # Kept commented for empty password
+          # TAURI_SIGNING_PASSWORD: ${{ secrets.TAURI_SIGNING_PASSWORD }}
         with:
-          projectPath: ./torn-status-widget # Specify the path to your Tauri project
           tagName: ${{ github.ref_name }} 
           releaseId: ${{ needs.create-release-tag.outputs.release_id }}
-          # tauriScript: 'cd torn-status-widget && npm run tauri build' # Alternative if projectPath doesn't cover all CLI calls internally
