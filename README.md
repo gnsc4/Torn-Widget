@@ -1,4 +1,4 @@
-[![GitHub all releases](https://img.shields.io/github/downloads/gnsc4/Torn-Widget/total)](https://github.com/gnsc4/Torn-Widget/releases)
+[![GitHub all releases](https://img.shields.io/github/downloads/gnsc4/Torn-Widget/total)](https://github.com/gnsc4/Torn-Widget/releases) [![Release Tauri App](https://github.com/gnsc4/Torn-Widget/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/gnsc4/Torn-Widget/actions/workflows/main.yml)
 
 # Torn Status Widget
 
