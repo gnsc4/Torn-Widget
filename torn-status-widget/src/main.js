@@ -92,7 +92,7 @@ const PROBE_STORE_FILE_NAME = 'probestore.dat'; // Filename for testing Store fu
     }
 
     // ===== Constants =====
-    const SCRIPT_VERSION = "1.0.41";
+    const SCRIPT_VERSION = "1.0.42";
     const FORUM_THREAD_URL = "https://www.torn.com/forums.php#/p=threads&f=67&t=16473214&b=0&a=0";
     const AUTHOR_NAME = "GNSC4 [268863]";
     const AUTHOR_URL = "https://www.torn.com/profiles.php?XID=268863";
