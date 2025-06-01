@@ -82,10 +82,12 @@ jobs:
         run: npm install
         working-directory: ./torn-status-widget
 
-      - name: Set execute permissions for Tauri CLI (Linux/macOS)
+      - name: Set execute permissions for CLI tools (Linux/macOS)
         if: runner.os == 'Linux' || runner.os == 'macOS'
-        run: chmod +x ./torn-status-widget/node_modules/.bin/tauri
-        # working-directory: ./torn-status-widget # Not needed as path is relative from root
+        run: |
+          chmod +x ./torn-status-widget/node_modules/.bin/tauri
+          chmod +x ./torn-status-widget/node_modules/.bin/vite
+        working-directory: ${{ github.workspace }} # Run chmod from the workspace root
 
       - name: Build and Upload Release Assets with tauri-action
         uses: tauri-apps/tauri-action@v0 
@@ -97,5 +99,3 @@ jobs:
           projectPath: ./torn-status-widget 
           tagName: ${{ github.ref_name }} 
           releaseId: ${{ needs.create-release-tag.outputs.release_id }}
-          # The tauri-action will use the "tauri" script from your package.json
-          # which is "npx tauri build"
