@@ -2,7 +2,7 @@
 
 # Torn Status Widget
 
-A sleek, real-time desktop widget to monitor your Torn City status. Stay updated on energy, nerve, happiness, cooldowns, refills, travel, races, and notifications directly on your desktop. Built with Tauri v2.
+A sleek, real-time desktop widget to monitor your Torn City status. Stay updated on energy, nerve, happiness, cooldowns, refills, travel, races, and notifications directly on your desktop. Built with Tauri.
 
 ## Key Features
 
@@ -44,70 +44,67 @@ Before using the Torn Status Widget, you are required to accept the [Terms of Se
 
 ## Installation
 
-You can download the latest version (v1.0.42) of the Torn Status Widget for your operating system from the [**Releases page**](https://github.com/gnsc4/Torn-Widget/releases/) on GitHub.
+You can download the latest version of the Torn Status Widget for your operating system from the [**Releases page**](https://github.com/gnsc4/Torn-Widget/releases/) on GitHub.
 
 ### Windows
 
 1.  From the [latest release assets](https://github.com/gnsc4/Torn-Widget/releases/), download either:
-    * `torn-status-widget_0.1.0_x64_en-US.msi` (Microsoft Installer)
-    * `torn-status-widget_0.1.0_x64-setup.exe` (NSIS Installer)
+    * `torn-status-widget_x.y.z_x64_en-US.msi` (Microsoft Installer - replace x.y.z with the version number)
+    * `torn-status-widget_x.y.z_x64-setup.exe` (NSIS Installer - replace x.y.z with the version number)
 2.  **For the `.msi` file:**
     * Double-click the downloaded `.msi` file.
     * Follow the on-screen instructions in the installation wizard.
 3.  **For the `.exe` file:**
     * Double-click the downloaded `.exe` file.
     * Follow the on-screen instructions.
+    * You might see a Windows SmartScreen warning because the application is from an independent developer. Click "More info" and then "Run anyway" to proceed.
 
-### macOS (Apple Silicon)
+### macOS (Universal - Intel & Apple Silicon)
 
-1.  From the [latest release assets](https://github.com/gnsc4/Torn-Widget/releases/), download either:
-    * `torn-status-widget_0.1.0_aarch64.dmg`
-    * `torn-status-widget_aarch64.app.tar.gz`
-2.  **For the `.dmg` file:**
-    * Double-click the downloaded `.dmg` file to mount it.
-    * Drag the `torn-status-widget.app` icon into your `Applications` folder.
-3.  **For the `.app.tar.gz` file:**
-    * Extract the `torn-status-widget.app` file from the downloaded `.tar.gz` archive.
-    * Drag the extracted `torn-status-widget.app` icon into your `Applications` folder.
-4.  You can now launch the application from your `Applications` folder or Launchpad. (Note: On first launch, you may need to right-click and select "Open" if Gatekeeper shows a warning).
-    *Note: These files are for Apple Silicon (aarch64) Macs. If you have an Intel-based Mac, these may run via Rosetta 2, or you may need to await a specific x64 build if one becomes available.*
+1.  From the [latest release assets](https://github.com/gnsc4/Torn-Widget/releases/), download the `.dmg` file (e.g., `torn-status-widget_x.y.z_universal.dmg` - replace x.y.z with the version number).
+2.  Double-click the downloaded `.dmg` file to mount it.
+3.  Drag the `torn-status-widget.app` icon into your `Applications` folder.
+4.  **Important: Opening the app for the first time:**
+    * Because the application is not signed with an Apple Developer ID, Gatekeeper (macOS security feature) will show a warning.
+    * To open the app:
+        1.  Locate `torn-status-widget.app` in your `Applications` folder.
+        2.  **Right-click (or Control-click) the app icon.**
+        3.  Select **"Open"** from the context menu.
+        4.  A dialog will appear asking if you are sure you want to open it. Click **"Open"** again.
+    * You should only need to do this the first time you launch the app. Subsequent launches can be done normally from the Applications folder or Launchpad.
 
 ### Linux
 
-1.  From the [latest release assets](https://github.com/gnsc4/Torn-Widget/releases/), download the appropriate installer for your distribution:
-    * `torn-status-widget_0.1.0_amd64.AppImage` (Recommended for most distributions)
-    * `torn-status-widget_0.1.0_amd64.deb` (For Debian/Ubuntu-based systems)
-    * `torn-status-widget-0.1.0-1.x86_64.rpm` (For Fedora/openSUSE-based systems)
-2.  **For `.AppImage` files:**
+1.  From the [latest release assets](https://github.com/gnsc4/Torn-Widget/releases/), download the appropriate file for your system:
+    * `torn-status-widget_x.y.z_amd64.AppImage` (Recommended for most distributions - replace x.y.z with the version number)
+    * `torn-status-widget_x.y.z_amd64.deb` (For Debian/Ubuntu-based systems - replace x.y.z with the version number)
+2.  **For `.AppImage` files (Recommended):**
+    * This format is designed to run on most Linux distributions without installation.
+    * Open your terminal and navigate to the directory where you downloaded the AppImage.
     * Make the file executable:
         ```bash
-        chmod +x torn-status-widget_0.1.0_amd64.AppImage
+        chmod +x torn-status-widget_x.y.z_amd64.AppImage
         ```
     * Run the application:
         ```bash
-        ./torn-status-widget_0.1.0_amd64.AppImage
+        ./torn-status-widget_x.y.z_amd64.AppImage
         ```
-    * You might consider using a tool like "AppImageLauncher" to integrate it into your system.
-3.  **For `.deb` files:**
+    * **Note on `libfuse2`:** Some systems might require `libfuse2` to run AppImages. If you encounter issues, try installing it. For example, on Debian/Ubuntu: `sudo apt-get update && sudo apt-get install libfuse2`. For Fedora: `sudo dnf install fuse-libs`.
+    * You might consider using a tool like "AppImageLauncher" to integrate it better into your system (optional).
+3.  **For `.deb` files (Debian/Ubuntu-based systems):**
     * You can usually install it by double-clicking the file or using the command line:
         ```bash
-        sudo dpkg -i torn-status-widget_0.1.0_amd64.deb
+        sudo dpkg -i torn-status-widget_x.y.z_amd64.deb
         sudo apt-get install -f # To install any missing dependencies
         ```
-4.  **For `.rpm` files:**
-    * Install using your system's package manager:
-        ```bash
-        sudo rpm -i torn-status-widget-0.1.0-1.x86_64.rpm
-        # Or, for systems using dnf (like Fedora):
-        # sudo dnf install torn-status-widget-0.1.0-1.x86_64.rpm
-        ```
+    * After installation, you should find the application in your system's application menu.
 
 ## Usage
 
 1.  **Launch the Application:**
     * **Windows:** Find "Torn Status Widget" in your Start Menu or use the desktop shortcut.
-    * **macOS:** Open from your `Applications` folder.
-    * **Linux:** Launch from your applications menu or by running the AppImage/installed application.
+    * **macOS:** Open from your `Applications` folder (following the first-launch instructions above if needed).
+    * **Linux:** Launch from your applications menu (if installed via `.deb`) or by running the AppImage.
 
 2.  **Initial Setup (API Key & ToS):**
     * On first launch, or if no API key is configured, you'll be prompted to enter your Torn API Key. Obtain this from Torn City: [Preferences -> API Key](https://www.torn.com/preferences.php#tab=api).
@@ -142,29 +139,30 @@ You can download the latest version (v1.0.42) of the Torn Status Widget for your
 
 ## Development
 
-Built with Tauri v2. If you wish to contribute or run the application from source:
+Built with Tauri v2.5. If you wish to contribute or run the application from source:
 
 ### Prerequisites
 
 * [Node.js](https://nodejs.org/) (LTS recommended, includes npm)
 * [Rust](https://www.rust-lang.org/tools/install) (stable toolchain)
 * [Tauri CLI v2 prerequisites](https://v2.tauri.app/start/prerequisites/) for your specific OS (WebView2 for Windows, WebKitGTK for Linux, Xcode Command Line Tools for macOS).
-* Tauri CLI v2:
+* Tauri CLI v2.5 (or compatible beta):
     ```bash
-    npm install -g @tauri-apps/cli@next
+    # Ensure you are using a Tauri CLI version compatible with @tauri-apps/api@^2.5.0
+    # For example, if using a beta:
+    npm install -g @tauri-apps/cli@^2.5.0
     # or
-    yarn global add @tauri-apps/cli@next
+    yarn global add @tauri-apps/cli@^2.5.0
     # or
-    cargo install tauri-cli --version "^2.0.0-beta" 
+    cargo install tauri-cli --version "^2.5.0" 
     ```
-    (Ensure you are using a Tauri CLI version compatible with `@tauri-apps/api@^2.5.0`, e.g., `@tauri-apps/cli@^2.5.0` or the latest beta if specified by the project.)
 
 ### Running in Development Mode
 
 1.  Clone the repository:
     ```bash
     git clone [https://github.com/gnsc4/Torn-Widget.git](https://github.com/gnsc4/Torn-Widget.git)
-    cd Torn-Widget/torn-status-widget 
+    cd Torn-Widget/torn-status-widget
     ```
 2.  Install frontend dependencies:
     ```bash
@@ -191,9 +189,15 @@ Built with Tauri v2. If you wish to contribute or run the application from sourc
 ### Generating Signer Keys (Optional for Contributors)
 If you need to generate your own update signing keys (the project already has one for its official releases):
 ```bash
-npm run generate-keys
+# For Tauri v2, the command might be slightly different, refer to official v2 docs.
+# A common approach for v1 was:
+# tauri signer generate -w ~/.tauri/keys 
+# For v2, it might be:
+tauri signer generate 
+# And then manage keys typically in src-tauri/keys or a path you specify.
+# Follow the prompts. You'll need to update the updater.pubkey in src-tauri/tauri.conf.json
+# and set TAURI_PRIVATE_KEY and TAURI_KEY_PASSWORD environment variables if you use your own key for a fork.
 ```
-Follow the prompts. You'll need to update the `updater.pubkey` in `src-tauri/tauri.conf.json` if you use your own key for a fork.
 
 ## Contributing
 
