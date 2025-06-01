@@ -32,7 +32,7 @@ jobs:
           # body_path: CHANGELOG.md # Removed this line
           # The body will now default to the tag's annotation/message, or be empty.
           # Alternatively, you can provide static text here using the 'body:' input.
-          # body: "Automated release for version ${{ steps.get_version.outputs.version }}"
+          body: "Automated release for version ${{ steps.get_version.outputs.version }}"
           draft: false
           prerelease: false
         env:
@@ -50,6 +50,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: List files in checkout directory # DEBUGGING STEP
+        run: |
+          pwd
+          ls -la
+          # For Windows, use dir
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            dir
+          fi
+        shell: bash # Ensure ls -la works, or use powershell for Windows specific listing
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -59,32 +69,25 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable # Or your specific Rust version
-          components: ${{ matrix.platform == 'windows-latest' && 'rustfmt, clippy' || '' }} # Example components
+          components: ${{ matrix.platform == 'windows-latest' && 'rustfmt, clippy' || '' }}
 
       - name: Setup MSVC for Windows
         if: matrix.platform == 'windows-latest'
-        uses: microsoft/setup-msbuild@v1.1 # Using v1.1, check for latest stable
+        uses: microsoft/setup-msbuild@v1.1 
         with:
           msbuild-architecture: x64
 
       - name: Install frontend dependencies (npm)
         run: npm install
+        # If package.json is in a subdirectory, e.g., 'frontend':
+        # working-directory: ./frontend
 
       - name: Build and Upload Release Assets with tauri-action
-        uses: tauri-apps/tauri-action@v0 # Consider pinning to a specific v0.x.x version for stability
+        uses: tauri-apps/tauri-action@v0 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          # TAURI_SIGNING_PASSWORD: ${{ secrets.TAURI_SIGNING_PASSWORD }} # Kept commented for empty password
+          # TAURI_SIGNING_PASSWORD: ${{ secrets.TAURI_SIGNING_PASSWORD }}
         with:
-          tagName: ${{ github.ref_name }} # Use the full tag like v0.1.0
+          tagName: ${{ github.ref_name }} 
           releaseId: ${{ needs.create-release-tag.outputs.release_id }}
-          
-          # If tauri-action were creating the release, you'd modify its body here:
-          # releaseName: 'App Release __TAG__'
-          # releaseBody: 'Automated release for version __TAG__.' # Changed from CHANGELOG.md
-          # releaseDraft: false
-          # prerelease: false
-          
-          # Since softprops/action-gh-release is creating the release entry,
-          # tauri-action will just upload assets to it. The body is controlled by the create-release-tag job.
