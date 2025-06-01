@@ -7,8 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "tauri": "tauri",
-    "generate-keys": "tauri signer generate"
+    "tauri": "npx tauri",
+    "generate-keys": "npx tauri signer generate"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.5.0",
