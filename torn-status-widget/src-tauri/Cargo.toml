@@ -2,26 +2,44 @@
 name = "torn-status-widget"
 version = "0.1.0"
 description = "A Tauri App"
-authors = ["you"]
+authors = ["GNSC4"]
 license = ""
 repository = ""
 edition = "2021"
-rust-version = "1.60"
+# MSRV updated to align with current Tauri v2 plugin ecosystem requirements.
+rust-version = "1.77.2" # Ensure your Rust toolchain is at least this version
 
 [build-dependencies]
-tauri-build = { version = "1.5", features = [] }
+# tauri-build version ~2.2.0 is compatible and recommended for Tauri 2.5.x.
+tauri-build = { version = "~2.2.0", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.6", features = [ "updater", "window-start-dragging", "window-show", "window-set-size", "window-set-position", "window-set-always-on-top", "window-hide", "window-close", "macos-private-api", "window-set-skip-taskbar", "shell-open", "fs-read-file", "fs-write-file", "fs-exists", "path-all", "dialog-message", "system-tray" ] }
-window-vibrancy = "0.4.3" # Changed to a Tauri v1 compatible version
 
-# Using the official tauri-plugin-autostart from the v1 branch of the plugins-workspace
-# Explicitly specifying the package name within the workspace.
-tauri-plugin-autostart = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", package = "tauri-plugin-autostart" }
+# Using ~2.5.0 to allow for patch updates like 2.5.1.
+tauri = { version = "~2.5.0", features = [
+    "image-png",         # For Tauri's internal PNG handling if used.
+    "image-ico",         # For Tauri's internal ICO handling if used.
+    "macos-private-api", # For macOS specific private APIs (e.g., window vibrancy).
+    "tray-icon"          # For system tray functionality.
+] }
 
+# image crate for robust decoding of PNGs (and other formats) from bytes.
+# Retained for direct control over tray icon decoding as currently implemented in main.rs.
+image = { version = "0.25", features = ["png"] }
 
-[features]
-default = ["custom-protocol"]
-custom-protocol = ["tauri/custom-protocol"]
+# Tauri Plugins - Updated to latest recommended 2.x versions
+# Ensure to check plugin changelogs for any breaking changes after updating.
+tauri-plugin-updater = { version = "~2.7.1" }    # Or latest compatible ^2.0.0
+tauri-plugin-dialog = { version = "~2.2.2" }
+tauri-plugin-fs = { version = "~2.3.0" }
+tauri-plugin-shell = { version = "~2.2.1" }
+tauri-plugin-autostart = { version = "~2.3.0" }
+tauri-plugin-store = { version = "~2.2.0" }
+
+# window-vibrancy for platform-specific window visual effects.
+window-vibrancy = "0.6.0" # Version seems current and compatible.
+
+# The [features] section for custom-protocol is removed as asset serving is
+# configured in tauri.conf.json in Tauri v2 (app.security.assetProtocol).

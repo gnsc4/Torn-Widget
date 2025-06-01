@@ -1,100 +1,18 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "identifier": "com.torn.status.widget",
+  "productName": "torn-status-widget",
+  "version": "0.1.0",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:5173",
-    "distDir": "../dist",
-    "withGlobalTauri": true
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173"
   },
-  "package": {
-    "productName": "torn-status-widget",
-    "version": "0.1.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      },
-      "fs": {
-        "all": false,
-        "readFile": true,
-        "writeFile": true,
-        "exists": true,
-        "scope": [
-          "$APPCONFIG/*"
-        ]
-      },
-      "path": {
-        "all": true
-      },
-      "window": {
-        "all": false,
-        "create": false,
-        "center": false,
-        "requestUserAttention": false,
-        "setResizable": false,
-        "setMinimizable": false,
-        "setMaximizable": false,
-        "setClosable": false,
-        "setTitle": false,
-        "maximize": false,
-        "unmaximize": false,
-        "minimize": false,
-        "unminimize": false,
-        "show": true,
-        "hide": true,
-        "close": true,
-        "setDecorations": false,
-        "setAlwaysOnTop": true,
-        "setSize": true,
-        "setMinSize": false,
-        "setMaxSize": false,
-        "setPosition": true,
-        "setFullscreen": false,
-        "setFocus": false,
-        "setIcon": false,
-        "setSkipTaskbar": true,
-        "setCursorGrab": false,
-        "setCursorVisible": false,
-        "setCursorIcon": false,
-        "setCursorPosition": false,
-        "setIgnoreCursorEvents": false,
-        "startDragging": true,
-        "print": false
-      },
-      "dialog": {
-        "all": false,
-        "message": true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "com.torn.status.widget",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "windows": {
-        "wix": null,
-        "nsis": {
-          "installerIcon": "icons/icon.ico"
-        }
-      }
-    },
-    "security": {
-      "csp": null
-    },
+  "app": {
     "windows": [
       {
-        "fullscreen": false,
-        "resizable": false,
+        "label": "main",
         "title": "Torn Status Widget",
         "width": 220,
         "height": 150,
@@ -102,21 +20,74 @@
         "transparent": true,
         "alwaysOnTop": true,
         "skipTaskbar": true,
-        "visible": true
+        "visible": true,
+        "fullscreen": false,
+        "resizable": false
       }
     ],
+    "security": {
+      "csp": {
+        "default-src": ["'self'", "asset:", "tauri:"],
+        "connect-src": [
+          "ipc: http://ipc.localhost",
+          "https://api.torn.com",
+          "https://api.github.com"
+        ],
+        "script-src": ["'self'", "asset:", "tauri:"],
+        "style-src": ["'self'", "asset:", "tauri:", "'unsafe-inline'"],
+        "img-src": ["'self'", "asset:", "tauri:", "data:"],
+        "font-src": ["'self'", "asset:", "tauri:"]
+      },
+      "capabilities": [
+        {
+          "identifier": "default",
+          "description": "Default capabilities for the Torn Status Widget main window.",
+          "windows": ["main"],
+          "webviews": ["main"],
+          "permissions": [
+            "core:app:default",
+            "core:window:default",
+            "core:window:allow-start-dragging",
+            "core:window:allow-set-size",
+            "core:window:allow-set-always-on-top",
+            "core:window:allow-close",
+            "core:event:default",
+            "core:tray:default",
+            "core:menu:default",
+            "autostart:default",
+            "store:default",
+            "dialog:default",
+            {
+              "identifier": "shell:allow-open",
+              "allow": ["^http://", "^https://", "^mailto:", "^tel:"]
+            },
+            "shell:deny-execute",
+            "updater:default"
+          ]
+        }
+      ]
+    },
+    "macOSPrivateApi": true
+  },
+  "bundle": {
+    "active": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "targets": "all"
+  },
+  "plugins": {
     "updater": {
       "active": true,
       "dialog": true,
-      "pubkey": "untrusted comment: minisign public key: F8B2D484DFD949E\\nRWSelP1NSC2LD9G08ryBJOsKeuTOxEFJd7OIdoEVRu7ppdQntCoQz9c",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM3ODkzNkZCMDk3N0IxNUUKUldSZXNYY0oremFKTi9oOHFDMXp4Rm5jeXFHUmRMaU9kMms0ajlKaEdVTGhBN05ya0pKWGFmMUoK",
       "endpoints": [
         "https://github.com/gnsc4/Torn-Widget/releases/latest/download/latest.json"
       ]
-    },
-    "systemTray": {
-      "iconPath": "icons/icon.png",
-      "iconAsTemplate": true
-    },
-    "macOSPrivateApi": true
+    }
   }
 }
