@@ -78,7 +78,27 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": "all"
+    "targets": ["appimage", "deb", "dmg"], 
+    "macOS": {
+      "minimumSystemVersion": "10.15", 
+      "exceptionDomain": "",
+      "frameworks": []
+    },
+    "linux": {
+      "deb": {
+        "depends": [
+          "libwebkit2gtk-4.1-0",
+          "libgtk-3-0",
+          "librsvg2-common",
+          "libayatana-appindicator3-1",
+          "libfuse2"
+        ],
+        "files": {}
+      },
+      "appimage": {
+        "bundleMediaFramework": false
+      }
+    }
   },
   "plugins": {
     "updater": {

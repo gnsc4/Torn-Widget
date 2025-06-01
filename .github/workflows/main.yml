@@ -8,12 +8,10 @@ on:
 jobs:
   create-release-tag:
     runs-on: ubuntu-latest
-
     outputs:
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
       app_version: ${{ steps.get_version.outputs.version }}
       release_id: ${{ steps.create_release.outputs.id }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,7 +38,6 @@ jobs:
       fail-fast: false
       matrix:
         platform: [macos-latest, ubuntu-latest, windows-latest]
-
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout code
@@ -64,19 +61,44 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '18' # Or a newer LTS like '20' if your project supports it.
 
       - name: Install Linux dependencies (GTK, WebKit, AppIndicator, etc.)
         if: matrix.platform == 'ubuntu-latest'
+        # ubuntu-latest (currently 22.04) provides a good baseline for glibc compatibility.
+        # Targeting significantly older distros might require an older runner (e.g., ubuntu-20.04).
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev librsvg2-dev pkg-config libappindicator3-dev
+          # Ensure all necessary build-time and runtime dependencies are listed.
+          # This list is fairly comprehensive for a typical Tauri app with a tray icon.
+          sudo apt-get install -y \
+            libgtk-3-dev \
+            libwebkit2gtk-4.1-dev \
+            librsvg2-dev \
+            pkg-config \
+            libappindicator3-dev \
+            libayatana-appindicator3-dev \
+            libgtk-3-0 \
+            libwebkit2gtk-4.1-0 \
+            librsvg2-common \
+            libappindicator3-1 \
+            libayatana-appindicator3-1 \
+            libfuse2 # Often needed for users to run AppImages
 
-      - name: Install Rust toolchain
+      - name: Install Rust toolchain (macOS - for universal builds)
+        if: matrix.platform == 'macos-latest'
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          components: ${{ matrix.platform == 'windows-latest' && 'rustfmt, clippy' || '' }}
+          targets: "x86_64-apple-darwin,aarch64-apple-darwin" # For universal .app
+          components: rustfmt, clippy
+
+      - name: Install Rust toolchain (Linux/Windows)
+        if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'windows-latest'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
 
       - name: Setup MSVC for Windows
         if: matrix.platform == 'windows-latest'
@@ -85,7 +107,7 @@ jobs:
           msbuild-architecture: x64
 
       - name: Install frontend dependencies (npm)
-        run: npm install
+        run: npm ci # 'npm ci' is generally preferred for CI for faster, more reliable builds.
         working-directory: ./torn-status-widget
 
       - name: Set execute permissions for CLI tools (Linux/macOS)
@@ -93,15 +115,28 @@ jobs:
         run: |
           chmod +x ./torn-status-widget/node_modules/.bin/tauri
           chmod +x ./torn-status-widget/node_modules/.bin/vite
-        working-directory: ${{ github.workspace }} # Run chmod from the workspace root
+        working-directory: ${{ github.workspace }}
 
       - name: Build and Upload Release Assets with tauri-action
+        # Consider pinning to a specific version of tauri-action for more stable builds, e.g., tauri-apps/tauri-action@v0.5.6
         uses: tauri-apps/tauri-action@v0 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          # TAURI_SIGNING_PASSWORD: ${{ secrets.TAURI_SIGNING_PASSWORD }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }} # Used for signing updates
+          # TAURI_SIGNING_PASSWORD: ${{ secrets.TAURI_SIGNING_PASSWORD }} # Password for TAURI_PRIVATE_KEY if it's encrypted
+
+          # macOS Code Signing & Notarization (CRITICAL for macOS apps to run)
+          # APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }} 
+          # APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          # APPLE_ID: ${{ secrets.APPLE_ID }} 
+          # APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }} 
+          # APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }} 
+          # APPLE_API_KEY_CONTENT: ${{ secrets.APPLE_API_KEY_CONTENT }}
+          
+          # Optional: Explicitly set macOS deployment target if needed, should align with tauri.conf.json's minimumSystemVersion
+          # MACOSX_DEPLOYMENT_TARGET: "10.15" 
         with:
           projectPath: ./torn-status-widget 
           tagName: ${{ github.ref_name }} 
           releaseId: ${{ needs.create-release-tag.outputs.release_id }}
+          args: ${{ matrix.platform == 'macos-latest' && '--target universal-apple-darwin' || '' }}
