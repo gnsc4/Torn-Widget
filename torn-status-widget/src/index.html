@@ -166,87 +166,270 @@
 
             <div id="torn-status-settings-panel" style="display: none;">
                 <h4>Settings</h4>
-                <div class="settings-section">
-                    <p>API Key Management:</p>
-                    <input type="text" id="torn-api-key-input-settings" placeholder="Enter new API Key (optional)">
-                    <button id="torn-api-key-save-btn-settings">Save Key</button>
-                    <button id="torn-api-key-clear-btn-settings" style="margin-left: 5px; background-color: #d44a4a !important;">Clear Key</button>
-                    <div class="error api-error-settings"></div>
-                </div>
 
-                <div class="settings-section" id="link-preferences-section">
-                    <p style="margin: 0 0 10px 0; font-size: 13px; color: #eee; font-weight:bold;">Item Link Destinations:</p>
-
-                    <div class="link-preference-item">
-                        <span class="link-preference-item-label">Drugs:</span>
-                        <div class="toggle-group">
-                            <span class="toggle-option-label personal-label" id="drug-personal-label">Personal</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="drug-link-type-toggle">
-                                <span class="slider-round"></span>
-                            </label>
-                            <span class="toggle-option-label faction-label" id="drug-faction-label">Faction</span>
-                        </div>
-                    </div>
-
-                    <div class="link-preference-item">
-                        <span class="link-preference-item-label">Boosters:</span>
-                        <div class="toggle-group">
-                            <span class="toggle-option-label personal-label" id="booster-personal-label">Personal</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="booster-link-type-toggle">
-                                <span class="slider-round"></span>
-                            </label>
-                            <span class="toggle-option-label faction-label" id="booster-faction-label">Faction</span>
-                        </div>
-                    </div>
-
-                    <div class="link-preference-item">
-                        <span class="link-preference-item-label">Medical:</span>
-                        <div class="toggle-group">
-                            <span class="toggle-option-label personal-label" id="medical-personal-label">Personal</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="medical-link-type-toggle">
-                                <span class="slider-round"></span>
-                            </label>
-                            <span class="toggle-option-label faction-label" id="medical-faction-label">Faction</span>
-                        </div>
-                    </div>
-
-                    <div class="link-preference-item">
-                        <span class="link-preference-item-label">E Refill:</span>
-                        <div class="toggle-group">
-                            <span class="toggle-option-label personal-label" id="energyRefill-personal-label">Personal</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="energyRefill-link-type-toggle">
-                                <span class="slider-round"></span>
-                            </label>
-                            <span class="toggle-option-label faction-label" id="energyRefill-faction-label">Faction</span>
-                        </div>
-                    </div>
-
-                    <div class="link-preference-item">
-                        <span class="link-preference-item-label">N Refill:</span>
-                        <div class="toggle-group">
-                            <span class="toggle-option-label personal-label" id="nerveRefill-personal-label">Personal</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="nerveRefill-link-type-toggle">
-                                <span class="slider-round"></span>
-                            </label>
-                            <span class="toggle-option-label faction-label" id="nerveRefill-faction-label">Faction</span>
-                        </div>
+                <div class="settings-category">
+                    <button class="settings-category-header" data-target-section="api-key-settings-section">API Key Management</button>
+                    <div id="api-key-settings-section" class="settings-category-content" style="display: none;">
+                        <p>API Key:</p>
+                        <input type="text" id="torn-api-key-input-settings" placeholder="Enter new API Key (optional)">
+                        <button id="torn-api-key-save-btn-settings">Save Key</button>
+                        <button id="torn-api-key-clear-btn-settings" style="margin-left: 5px; background-color: #d44a4a !important;">Clear Key</button>
+                        <div class="error api-error-settings"></div>
                     </div>
                 </div>
-                <div class="settings-section">
-                    <label class="settings-checkbox-label"> <input type="checkbox" id="settings-autostart-checkbox">
-                        Start widget on system boot
-                    </label>
+
+                <div class="settings-category">
+                    <button class="settings-category-header" data-target-section="link-prefs-settings-section">Item Link Destinations</button>
+                    <div id="link-prefs-settings-section" class="settings-category-content" style="display: none;">
+                        <div class="link-preference-item">
+                            <span class="link-preference-item-label">Drugs:</span>
+                            <div class="toggle-group">
+                                <span class="toggle-option-label personal-label" id="drug-personal-label">Personal</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="drug-link-type-toggle">
+                                    <span class="slider-round"></span>
+                                </label>
+                                <span class="toggle-option-label faction-label" id="drug-faction-label">Faction</span>
+                            </div>
+                        </div>
+                        <div class="link-preference-item">
+                            <span class="link-preference-item-label">Boosters:</span>
+                            <div class="toggle-group">
+                                <span class="toggle-option-label personal-label" id="booster-personal-label">Personal</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="booster-link-type-toggle">
+                                    <span class="slider-round"></span>
+                                </label>
+                                <span class="toggle-option-label faction-label" id="booster-faction-label">Faction</span>
+                            </div>
+                        </div>
+                        <div class="link-preference-item">
+                            <span class="link-preference-item-label">Medical:</span>
+                            <div class="toggle-group">
+                                <span class="toggle-option-label personal-label" id="medical-personal-label">Personal</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="medical-link-type-toggle">
+                                    <span class="slider-round"></span>
+                                </label>
+                                <span class="toggle-option-label faction-label" id="medical-faction-label">Faction</span>
+                            </div>
+                        </div>
+                        <div class="link-preference-item">
+                            <span class="link-preference-item-label">E Refill:</span>
+                            <div class="toggle-group">
+                                <span class="toggle-option-label personal-label" id="energyRefill-personal-label">Personal</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="energyRefill-link-type-toggle">
+                                    <span class="slider-round"></span>
+                                </label>
+                                <span class="toggle-option-label faction-label" id="energyRefill-faction-label">Faction</span>
+                            </div>
+                        </div>
+                        <div class="link-preference-item">
+                            <span class="link-preference-item-label">N Refill:</span>
+                            <div class="toggle-group">
+                                <span class="toggle-option-label personal-label" id="nerveRefill-personal-label">Personal</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="nerveRefill-link-type-toggle">
+                                    <span class="slider-round"></span>
+                                </label>
+                                <span class="toggle-option-label faction-label" id="nerveRefill-faction-label">Faction</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="settings-section">
-                    <label class="settings-checkbox-label"> <input type="checkbox" id="settings-always-on-top-checkbox">
-                        Always on Top
-                    </label>
+                
+                <div class="settings-category">
+                    <button class="settings-category-header" data-target-section="app-behavior-settings-section">Application Behavior</button>
+                    <div id="app-behavior-settings-section" class="settings-category-content" style="display: none;">
+                        <div class="settings-section">
+                             <label class="settings-checkbox-label"> <input type="checkbox" id="settings-autostart-checkbox">
+                                Start widget on system boot
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label"> <input type="checkbox" id="settings-always-on-top-checkbox">
+                                Always on Top
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label"> <input type="checkbox" id="settings-close-to-tray-checkbox">
+                                Close button minimizes to tray
+                            </label>
+                        </div>
+                        <div class="settings-section"> <label class="settings-checkbox-label"> <input type="checkbox" id="settings-desktop-notifications-checkbox">
+                                Enable Desktop Notifications
+                            </label>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="settings-category">
+                    <button class="settings-category-header" data-target-section="notification-settings-section">Notification Settings</button>
+                    <div id="notification-settings-section" class="settings-category-content" style="display: none;">
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-voice-notifications-checkbox">
+                                Enable Voice Notifications (Read Aloud)
+                            </label>
+                        </div>
+                        <hr class="settings-hr">
+                        <p class="settings-subheader">Cooldowns:</p>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-booster-ready-checkbox">
+                                Notify when Booster cooldown complete
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-medical-ready-checkbox">
+                                Notify when Medical cooldown complete
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-drug-ready-checkbox">
+                                Notify when Drug cooldown complete
+                            </label>
+                        </div>
+                        <hr class="settings-hr">
+                        <p class="settings-subheader">Energy & Nerve:</p>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-energy-full-checkbox">
+                                Notify when Energy is full
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-nerve-full-checkbox">
+                                Notify when Nerve is full
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label" for="settings-notify-energy-custom-checkbox">
+                                <input type="checkbox" id="settings-notify-energy-custom-checkbox">
+                                Notify when Energy reaches:
+                            </label>
+                            <input type="number" id="settings-notify-energy-custom-value" min="0" value="25" class="settings-input-short">
+                        </div>
+                        <hr class="settings-hr">
+                        <p class="settings-subheader">Life:</p>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-life-down-checkbox">
+                                Notify when Life decreases
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-life-max-checkbox">
+                                Notify when Life is at maximum
+                            </label>
+                        </div>
+                        <hr class="settings-hr">
+                        <p class="settings-subheader">New Day:</p>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-new-day-checkbox">
+                                Notify on New Day
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-new-day-soon-checkbox">
+                                Notify 1 hour before New Day
+                            </label>
+                        </div>
+                        <hr class="settings-hr">
+                        <p class="settings-subheader">Travel:</p>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-travel-landing-soon-checkbox">
+                                Notify 2 minutes before travel landing
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-travel-arrival-checkbox">
+                                Notify on travel arrival
+                            </label>
+                        </div>
+                        <hr class="settings-hr">
+                        <p class="settings-subheader">Racing:</p>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-race-starting-checkbox">
+                                Notify when race is starting
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-notify-race-finished-checkbox">
+                                Notify when race has finished
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-category">
+                    <button class="settings-category-header" data-target-section="flashing-label-settings-section">UI Element Flashing</button>
+                    <div id="flashing-label-settings-section" class="settings-category-content" style="display: none;">
+                        <p class="settings-subheader">Enable flashing for ready/full status:</p>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-flash-energy-full-checkbox">
+                                Energy Full
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-flash-nerve-full-checkbox">
+                                Nerve Full
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-flash-happy-full-checkbox">
+                                Happiness Full
+                            </label>
+                        </div>
+                        <hr class="settings-hr">
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-flash-booster-ready-checkbox">
+                                Booster Ready
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-flash-medical-ready-checkbox">
+                                Medical Ready
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-flash-drug-ready-checkbox">
+                                Drug Ready
+                            </label>
+                        </div>
+                         <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-flash-travel-arrived-checkbox">
+                                Travel Arrived (Label Flash)
+                            </label>
+                        </div>
+                        <div class="settings-section">
+                            <label class="settings-checkbox-label">
+                                <input type="checkbox" id="settings-flash-race-finished-checkbox">
+                                Race Finished (Label Flash)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+
                  <div id="settings-close-btn-container">
                     <button id="settings-panel-close-btn">Close</button>
                 </div>

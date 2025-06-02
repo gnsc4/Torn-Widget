@@ -1,7 +1,7 @@
 [package]
 name = "torn-status-widget"
-version = "0.1.0"
-description = "A Tauri App"
+version = "1.0.50"
+description = "A Tauri App that displays Information from Torn API and creates notifications."
 authors = ["GNSC4"]
 license = ""
 repository = ""
@@ -19,27 +19,21 @@ serde = { version = "1.0", features = ["derive"] }
 
 # Using ~2.5.0 to allow for patch updates like 2.5.1.
 tauri = { version = "~2.5.0", features = [
-    "image-png",         # For Tauri's internal PNG handling if used.
-    "image-ico",         # For Tauri's internal ICO handling if used.
-    "macos-private-api", # For macOS specific private APIs (e.g., window vibrancy).
-    "tray-icon"          # For system tray functionality.
+    "image-png",
+    "image-ico",
+    "macos-private-api",
+    "tray-icon"
 ] }
 
-# image crate for robust decoding of PNGs (and other formats) from bytes.
-# Retained for direct control over tray icon decoding as currently implemented in main.rs.
 image = { version = "0.25", features = ["png"] }
 
-# Tauri Plugins - Updated to latest recommended 2.x versions
-# Ensure to check plugin changelogs for any breaking changes after updating.
-tauri-plugin-updater = { version = "~2.7.1" }    # Or latest compatible ^2.0.0
+# Tauri Plugins
+tauri-plugin-updater = { version = "~2.7.1" }
 tauri-plugin-dialog = { version = "~2.2.2" }
 tauri-plugin-fs = { version = "~2.3.0" }
 tauri-plugin-shell = { version = "~2.2.1" }
-tauri-plugin-autostart = { version = "~2.3.0" }
-tauri-plugin-store = { version = "~2.2.0" }
+tauri-plugin-autostart = { version = "~2.3.0" } 
+tauri-plugin-store = { version = "~2.2.0" }  
+tauri-plugin-notification = "2" # Corrected to an available version
 
-# window-vibrancy for platform-specific window visual effects.
-window-vibrancy = "0.6.0" # Version seems current and compatible.
-
-# The [features] section for custom-protocol is removed as asset serving is
-# configured in tauri.conf.json in Tauri v2 (app.security.assetProtocol).
+window-vibrancy = "0.6.0" 

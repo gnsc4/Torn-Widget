@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "identifier": "com.torn.status.widget",
   "productName": "torn-status-widget",
-  "version": "0.1.0",
+  "version": "1.0.50",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
@@ -14,15 +14,15 @@
       {
         "label": "main",
         "title": "Torn Status Widget",
-        "width": 220,
-        "height": 150,
+        "width": 250,
+        "height": 450,
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": true,
-        "skipTaskbar": true,
+        "skipTaskbar": false,
         "visible": true,
         "fullscreen": false,
-        "resizable": false
+        "resizable": true
       }
     ],
     "security": {
@@ -57,6 +57,7 @@
             "autostart:default",
             "store:default",
             "dialog:default",
+            "notification:default",
             {
               "identifier": "shell:allow-open",
               "allow": ["^http://", "^https://", "^mailto:", "^tel:"]
@@ -78,9 +79,9 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": ["appimage", "deb", "dmg"], 
+    "targets": ["appimage", "deb", "dmg"],
     "macOS": {
-      "minimumSystemVersion": "10.15", 
+      "minimumSystemVersion": "10.15",
       "exceptionDomain": "",
       "frameworks": []
     },

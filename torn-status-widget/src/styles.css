@@ -3,26 +3,55 @@ body {
   margin: 0;
   padding: 0;
   background-color: transparent;
-  overflow: hidden;
+  overflow: hidden; /* Prevent body from ever showing scrollbars */
 }
+
+/* Custom Scrollbar Styles (WebKit-based browsers) */
+::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+  height: 8px; /* Height of the scrollbar for horizontal scroll */
+}
+
+::-webkit-scrollbar-track {
+  background: #2c2c2c; /* Dark track background */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #555; /* Dark thumb color */
+  border-radius: 4px;
+  border: 2px solid #2c2c2c; /* Creates padding around thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #777; /* Darker thumb on hover */
+}
+
+::-webkit-scrollbar-corner {
+  background: #2c2c2c; /* Background of the scrollbar corner */
+}
+
 
 #torn-status-gui {
   background-color: rgba(30, 30, 30, 0.65) !important; 
   border: 1px solid #999 !important;
   border-radius: 5px !important;
-  padding: 10px !important;
+  padding: 5px !important;
   color: #ddd !important;
   font-size: 13px !important; 
-  min-width: 225px !important;
+  min-width: 275px !important;
+  max-width: 400px; /* Optional: Add a max-width to prevent settings from becoming too wide */
   user-select: none !important;
   box-sizing: border-box !important;
   display: flex;
   flex-direction: column;
+  /* overflow: hidden;  Let child elements handle their own overflow */
 }
 #torn-status-gui.minimized {
   padding: 0 !important; min-width: 0 !important;
   width: 35px !important; height: 35px !important;
   overflow: hidden !important; cursor: pointer !important;
+  max-width: 35px; /* Ensure minimized state respects this */
 }
 #torn-status-gui.minimized #torn-status-content-area,
 #torn-status-gui.minimized #torn-status-header h3,
@@ -47,6 +76,7 @@ body {
   align-items: center !important; border-bottom: 1px solid #666 !important;
   margin-bottom: 8px !important; padding-bottom: 8px !important;
   cursor: grab !important;
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 #torn-status-header h3 {
    margin: 0 !important; font-size: 15px !important;
@@ -58,26 +88,30 @@ body {
   cursor: pointer !important; padding: 3px 6px !important; border-radius: 3px !important;
   font-weight: bold !important; line-height: 1 !important; margin-left: 5px !important;
   font-size: 13px;
+  flex-shrink: 0; /* Prevent buttons from shrinking */
 }
 .header-button:hover { background: #777 !important; }
 
 #torn-status-content-area {
   flex-grow: 1;
-  position: relative; /* For positioning settings panel */
+  position: relative; 
+  overflow-y: auto; /* Primary scroll for content area if settings panel is too tall */
+  overflow-x: hidden; /* Prevent horizontal scroll on content area */
+  display: flex; /* Allow settings panel to fill this area */
+  flex-direction: column;
 }
 
 #torn-status-notifications,
 #torn-status-content > div, 
-#torn-status-api-setup div, /* This will apply to the API key input div and the ToS div */
+#torn-status-api-setup div, 
 #torn-status-refills > div,
 #torn-new-day-timer-container,
 #torn-travel-status > div, 
 #torn-race-status > div 
 { margin-bottom: 5px !important; line-height: 1.4 !important; }
 
-/* Specific margin for the API save button container if needed after ToS */
 #api-save-button-container {
-  margin-top: 8px !important; /* Ensure some space above the save button */
+  margin-top: 8px !important; 
 }
 
 
@@ -138,27 +172,26 @@ body {
 #torn-status-content .medical-value { color: #AFEEEE !important; }
 #torn-status-content .drug-value { color: #DDA0DD !important; }
 
-/* Travel and Race specific value/timer styles */
 #torn-travel-status .travel-destination-value,
 #torn-race-status .race-info-value {
-  color: #ADD8E6 !important; /* Light blue for destination/info */
-  text-align: left !important; /* Align left to allow timer to be on right */
+  color: #ADD8E6 !important; 
+  text-align: left !important; 
   margin-right: 5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex-grow: 1; /* Allow it to take available space */
+  flex-grow: 1; 
 }
 #torn-travel-status .travel-timer,
 #torn-race-status .race-timer {
-  color: #ADD8E6 !important; /* Light blue for timer */
+  color: #ADD8E6 !important; 
   font-weight: bold !important;
   margin-left: 5px !important;
   white-space: nowrap;
 }
 #torn-travel-status .travel-timer.soon, 
 #torn-race-status .race-timer.soon { 
-  color: #ffc107 !important; /* Yellow for "soon" */
+  color: #ffc107 !important; 
 }
 
 
@@ -229,15 +262,14 @@ body {
   animation: flash 1s infinite;
 }
 
-/* New animation for red flashing labels */
 @keyframes flashRedLabelAnimation {
-  0%, 100% { color: #ff6666; opacity: 1; } /* Red color */
+  0%, 100% { color: #ff6666; opacity: 1; } 
   50% { opacity: 0.4; }
 }
 
 .label-flash-red {
-  animation: flashRedLabelAnimation 0.5s infinite; /* Faster flash than general .flashing */
-  color: #ff6666 !important; /* Ensure red color during flash */
+  animation: flashRedLabelAnimation 0.5s infinite; 
+  color: #ff6666 !important; 
 }
 
 
@@ -299,17 +331,16 @@ body {
 #torn-status-api-setup { padding-top: 5px !important; }
 #torn-status-api-setup input[type="text"] {
   padding:4px 6px!important; border:1px solid #888!important; border-radius:3px!important;
-  /* margin-right:5px!important;  Removed to allow button to be on next line if needed */
-  width:100%!important; /* Full width for input */
+  width:100%!important; 
   background-color:#fff!important; font-size: 13px;
   color:#000!important; box-sizing:border-box!important;
-  margin-bottom: 5px; /* Space between input and ToS/button */
+  margin-bottom: 5px; 
 }
 #torn-status-api-setup button {
   padding:4px 10px!important; border:1px solid #999!important; border-radius:3px!important;
   background-color:#ccc!important; color:#000!important; cursor:pointer!important;
   font-weight:bold!important; box-sizing:border-box!important; font-size: 13px;
-  width: auto; /* Allow button to size to content */
+  width: auto; 
 }
 #torn-status-api-setup button:hover { background-color:#ddd!important }
 #torn-status-api-setup button:disabled {
@@ -321,11 +352,10 @@ body {
 #torn-status-api-setup a { color:#aaa!important; text-decoration:underline!important }
 #torn-status-api-setup a:hover { color:#ccc!important }
 
-/* ToS Section Styles */
 #tos-section {
   font-size: 12px;
   color: #ccc;
-  margin-bottom: 8px; /* Space between ToS and Save button */
+  margin-bottom: 8px; 
 }
 .tos-label {
   display: flex;
@@ -337,7 +367,7 @@ body {
   vertical-align: middle;
 }
 #tos-section a {
-  color: #88aaff !important; /* More visible link color */
+  color: #88aaff !important; 
   text-decoration: underline !important;
 }
 #tos-section a:hover {
@@ -392,6 +422,7 @@ body {
   margin-top: 10px;
   padding-top: 5px;
   border-top: 1px solid #444;
+  flex-shrink: 0; /* Prevent version from shrinking */
 }
 #widget-version a {
   color: #88aaff;
@@ -401,12 +432,12 @@ body {
   text-decoration: underline;
 }
 #update-notification {
-  display: none; /* Hidden by default */
+  display: none; 
   margin-left: 5px;
   font-weight: bold;
 }
 #update-notification a {
-  color: #ffc107; /* Yellow/gold for update notice */
+  color: #ffc107; 
   text-decoration: underline;
 }
 #update-notification a:hover {
@@ -417,93 +448,207 @@ body {
 /* Settings Panel Styles */
 #torn-status-settings-panel {
   position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  background-color: rgba(40, 40, 40, 0.98);
-  padding: 15px 10px;
-  border-radius: 5px;
+  top: 0; /* Aligned with content-area */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(35, 35, 35, 0.98); /* Slightly different bg for distinction */
+  padding: 10px; /* Consistent padding */
+  border-radius: 0; /* No border radius, it's inside content-area */
   z-index: 100;
-  display: none;
+  display: none; 
   flex-direction: column;
   font-size: 13px;
+  overflow-y: auto; /* THIS is where the scrollbar for settings content will appear */
+  box-sizing: border-box;
 }
 #torn-status-settings-panel h4 {
-  margin: 0 0 10px 0;
-  padding-bottom: 8px;
+  margin: 0 0 15px 0; 
+  padding-bottom: 10px; 
   border-bottom: 1px solid #666;
-  font-size: 15px;
+  font-size: 16px; 
   color: #fff;
   text-align: center;
+  flex-shrink: 0; /* Prevent title from shrinking */
 }
-.settings-section {
-  margin-bottom: 15px;
+
+.settings-category {
+  margin-bottom: 12px; /* Spacing between categories */
+  border: 1px solid #484848; 
+  border-radius: 4px;
+  background-color: rgba(55, 55, 55, 0.6); 
 }
-.settings-section:last-of-type {
-  margin-bottom: 10px; /* Adjusted for potentially more sections */
+.settings-category:last-of-type {
+    margin-bottom: 0;
+}
+
+.settings-category-header {
+  background-color: #3a3a3a; 
+  color: #e0e0e0;
+  padding: 10px 12px; /* Increased padding */
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #484848; /* Separator if content is visible */
+  text-align: left;
+  font-size: 13px; /* Slightly smaller to fit better */
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 3px 3px 0 0; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+.settings-category-header:hover {
+  background-color: #4f4f4f;
+}
+.settings-category-header.open {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.settings-category-header::after { 
+  content: '▼'; 
+  font-size: 10px;
+  margin-left: 8px;
+  transition: transform 0.2s ease-out; /* Smoother transition */
+}
+.settings-category-header.open::after {
+  transform: rotate(-180deg); 
+}
+
+.settings-category-content {
+  padding: 12px; /* Increased padding */
+  /* display: none; is set by default in HTML and toggled by JS */
+  background-color: rgba(45, 45, 45, 0.4); /* Slight background for content area */
+  border-top: none; /* Header has bottom border */
+  border-radius: 0 0 3px 3px;
+}
+
+
+.settings-section { 
+  margin-bottom: 10px; /* Spacing for items within a category */
+}
+.settings-section:last-child {
+  margin-bottom: 0; 
 }
 .settings-section p {
-  margin: 0 0 5px 0;
+  margin: 0 0 6px 0; 
   font-size: 12px;
   color: #ccc;
 }
 .settings-section input[type="text"] {
-  width: calc(100% - 75px);
-  padding: 4px 6px !important;
-  border: 1px solid #888 !important;
+  width: calc(100% - 88px); 
+  padding: 6px 8px !important; 
+  border: 1px solid #777 !important; 
   border-radius: 3px !important;
-  margin-right: 5px !important;
-  background-color: #fff !important;
-  color: #000 !important;
+  margin-right: 8px !important; 
+  background-color: #2c2c2c !important; 
+  color: #eee !important; 
   box-sizing: border-box !important;
   font-size: 13px;
 }
-.settings-section button {
-  padding: 4px 10px !important;
-  border: 1px solid #999 !important;
+
+/* Styles for the new notification settings elements */
+.settings-subheader {
+  font-size: 12px;
+  font-weight: bold;
+  color: #bbb;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #555;
+}
+
+.settings-hr {
+  border: 0;
+  height: 1px;
+  background-color: #555;
+  margin: 12px 0;
+}
+
+.settings-input-short {
+  width: 60px !important; /* Override general input width for this specific case */
+  padding: 5px 7px !important;
+  border: 1px solid #777 !important;
   border-radius: 3px !important;
-  background-color: #ccc !important;
-  color: #000 !important;
+  background-color: #2c2c2c !important;
+  color: #eee !important;
+  box-sizing: border-box !important;
+  font-size: 13px;
+  margin-left: 8px; /* Space it from the label */
+  text-align: right;
+}
+/* End of new notification settings styles */
+
+
+.settings-section button {
+  padding: 6px 12px !important; 
+  border: 1px solid #555 !important; /* Darker border */
+  border-radius: 3px !important;
+  background-color: #4a4a4a !important; 
+  color: #eee !important;
   cursor: pointer !important;
   font-weight: bold !important;
   box-sizing: border-box !important;
   font-size: 13px;
+  transition: background-color 0.2s ease;
 }
-.settings-section button:hover { background-color: #ddd !important; }
-.settings-section .error { margin-top: 5px; font-size: 12px; }
+.settings-section button:hover { background-color: #5a5a5a !important; }
+.settings-section button#torn-api-key-clear-btn-settings {
+    background-color: #c82333 !important; /* Red for clear */
+    border-color: #bd2130 !important;
+}
+.settings-section button#torn-api-key-clear-btn-settings:hover {
+    background-color: #a71d2a !important; 
+}
 
-/* Unified class for checkbox labels in settings */
+.settings-section .error { margin-top: 6px; font-size: 12px; }
+
 .settings-checkbox-label {
   display: flex;
   align-items: center;
   cursor: pointer;
   font-size: 13px;
   color: #ddd;
+  padding: 4px 0; /* Adjusted padding for checkbox labels */
 }
-.settings-checkbox-label input[type="checkbox"] { /* Target checkbox within this label */
-  margin-right: 8px;
+.settings-checkbox-label input[type="checkbox"] { 
+  margin-right: 10px; 
+  transform: scale(1.1); 
+  accent-color: #007bff; 
 }
 
 
 #settings-close-btn-container {
-  margin-top: auto;
+  margin-top: 20px; 
   text-align: right;
-  padding-top: 10px;
+  padding-top: 12px; 
   border-top: 1px solid #555;
+  flex-shrink: 0; /* Prevent this container from shrinking */
 }
+#settings-panel-close-btn { 
+    padding: 8px 18px !important; 
+    background-color: #007bff !important; 
+    color: white !important;
+    border: none !important;
+}
+#settings-panel-close-btn:hover {
+    background-color: #0056b3 !important;
+}
+
 
 .link-preference-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 12px; 
+  padding: 5px 0;
 }
 .link-preference-item-label {
-  min-width: 60px;
+  min-width: 55px; /* Reduced from 70px */
   color: #ddd;
   font-size: 13px;
-  margin-right: 5px;
+  margin-right: 5px; /* Reduced from 8px */
   flex-shrink: 0;
 }
 .toggle-group {
@@ -560,7 +705,10 @@ body {
   border-radius: 50%;
 }
 input:checked + .slider-round {
-  background-color: #28a745;
+  background-color: #28a745; /* Green when active */
+}
+input[type="checkbox"]:checked + .slider-round { /* Specific for toggle switch */
+    background-color: #007bff; /* Blue for toggle switch active state */
 }
 input:checked + .slider-round:before {
   transform: translateX(20px);

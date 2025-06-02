@@ -63,6 +63,17 @@ jobs:
         with:
           node-version: '18' # Or a newer LTS like '20' if your project supports it.
 
+      - name: Ensure Tauri Notification Plugin is configured
+        # This step runs `npm run tauri -- add notification` which uses the 'tauri' script 
+        # from your project's package.json.
+        # This is generally a one-time setup command. Adding it here might be redundant
+        # if the plugin is already fully integrated in your committed code.
+        # Consider using 'continue-on-error: true' if this command might fail or warn
+        # when the plugin is already properly configured, to prevent CI failure.
+        run: npm run tauri -- add notification 
+        working-directory: ./torn-status-widget
+        # continue-on-error: true # Uncomment if necessary
+
       - name: Install Linux dependencies (GTK, WebKit, AppIndicator, etc.)
         if: matrix.platform == 'ubuntu-latest'
         # ubuntu-latest (currently 22.04) provides a good baseline for glibc compatibility.
@@ -108,7 +119,7 @@ jobs:
 
       - name: Install frontend dependencies (npm)
         run: npm ci # 'npm ci' is generally preferred for CI for faster, more reliable builds.
-        working-directory: ./torn-status-widget
+        working-directory: ./torn-status-widget 
 
       - name: Set execute permissions for CLI tools (Linux/macOS)
         if: runner.os == 'Linux' || runner.os == 'macOS'

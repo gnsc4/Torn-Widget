@@ -12,7 +12,7 @@ A sleek, real-time desktop widget to monitor your Torn City status. Stay updated
     * Nerve (with timer to full)
     * Happiness (with timer to full)
     * Travel Status (destination, time remaining, arrival flash)
-    * Latest Race Status (track info, time to start/end, completion flash)
+    * Latest Race Status (track info including track names, time to start/end, completion flash)
     * New Day Countdown Timer
 * **Cooldown Timers:**
     * Booster (with timer, flashing when ready)
@@ -22,19 +22,27 @@ A sleek, real-time desktop widget to monitor your Torn City status. Stay updated
     * Energy Refill (ready/used, flashes near new day if ready)
     * Nerve Refill (ready/used, flashes near new day if ready)
     * Token Refill (ready/used, flashes near new day if ready)
-* **Notifications:**
-    * New Messages (count and icon indicator)
-    * New Events (count and icon indicator)
+* **Advanced Notifications:**
+    * **System Notifications:** Desktop pop-up notifications for new messages, events, and various configurable in-game events (see Settings Panel).
+    * **Voice Notifications:** Option to have notifications read aloud.
+    * **In-Widget Indicators:**
+        * New Messages (count and icon indicator)
+        * New Events (count and icon indicator)
 * **Customizable Interface & Experience:**
     * **Minimize Widget:** Shrink to a compact icon.
     * **Always on Top:** Keep the widget visible over other windows.
+    * **Close to Tray:** Option to minimize the application to the system tray when the close button is clicked.
     * **Transparent Background:** (Platform-dependent, vibrancy effect on macOS).
     * **Tray Icon:**
         * Show/Hide widget with a left-click.
-        * Menu with "Show Widget" and "Quit" options.
+        * Right-click menu with "Show Widget" and "Quit" options.
     * **Item Link Preferences:** Choose whether item links (Drugs, Boosters, Medical, Energy/Nerve Refills) point to your personal items or faction armoury.
+    * **UI Element Flashing:** Configurable flashing for various ready/full status labels (see Settings Panel).
+    * **Informative Tooltips:** Hover over timers to see detailed end times or additional information.
 * **Autostart Option:** Configure the widget to launch automatically when your system boots.
-* **Automatic Updates:** The widget checks for new versions on GitHub and notifies you.
+* **Automatic Updates:**
+    * The widget checks for new versions on GitHub on startup (system dialog).
+    * Periodic checks for updates every 15 minutes with an in-app notification.
 * **Secure API Key Integration:** Connects to your Torn account using your API key, stored locally.
 * **Terms of Service:** Requires acceptance of Terms of Service before use.
 
@@ -110,13 +118,13 @@ You can download the latest version of the Torn Status Widget for your operating
     * On first launch, or if no API key is configured, you'll be prompted to enter your Torn API Key. Obtain this from Torn City: [Preferences -> API Key](https://www.torn.com/preferences.php#tab=api).
     * You must also check the box to accept the [Terms of Service](https://gnsc4.org/TornWidgetToS.html).
     * Enter your key, accept the ToS, and click "Save".
-    * You can also toggle the "Start widget on system boot" option during this initial setup.
+    * You can also toggle the "Start widget on system boot" option during this initial setup if it's your first time setting up the API key.
 
 3.  **Interacting with the Widget:**
     * **Header Buttons:**
         * **⚙️ (Settings):** Opens the settings panel.
         * **−/□ (Minimize/Maximize):** Toggles between full and compact icon view.
-        * **× (Close):** Closes the widget. (It can be reopened via the tray icon).
+        * **× (Close):** Closes the widget (behavior depends on "Close to Tray" setting).
     * **Dragging:** Click and drag the header area to move the widget.
     * **Links:** Most status items and notification icons are clickable, taking you to relevant Torn.com pages.
     * **Tooltips:** Hover over timers (e.g., energy, cooldowns) to see detailed end times.
@@ -125,17 +133,57 @@ You can download the latest version of the Torn Status Widget for your operating
         * **Right-click (or single click on some systems):** Opens a menu to "Show Widget" or "Quit" the application entirely.
 
 4.  **Settings Panel:**
+    The settings panel is organized into collapsible categories:
     * **API Key Management:**
-        * Enter a new API key and click "Save Key".
-        * Click "Clear Key" to remove the saved API key (this will require re-setup).
-    * **Item Link Preferences:** For Drugs, Boosters, Medical items, Energy Refill, and Nerve Refill, toggle the destination of their respective links between your "Personal" items page or your "Faction" armoury page.
-    * **Autostart:** Check/uncheck "Start widget on system boot".
-    * **Always on Top:** Check/uncheck to keep the widget above other windows.
-    * Click "Close" to exit the settings panel.
+        * **API Key Input:** Enter a new API Key if you need to change it.
+        * **Save Key Button:** Saves the newly entered API key.
+        * **Clear Key Button:** Removes the currently saved API key. This will require you to go through the initial API key setup again.
+    * **Item Link Destinations:**
+        * Customize where links for certain items take you. For each item type (Drugs, Boosters, Medical, E Refill, N Refill), you can toggle between:
+            * **Personal:** Links to your personal items page on Torn.com.
+            * **Faction:** Links to the respective item section in your faction's armoury.
+    * **Application Behavior:**
+        * **Start widget on system boot:** Toggle whether the widget launches automatically when your computer starts.
+        * **Always on Top:** Toggle whether the widget stays above all other windows.
+        * **Close button minimizes to tray:** Toggle whether clicking the '×' button closes the application or minimizes it to the system tray.
+        * **Enable Desktop Notifications:** A master switch to enable or disable all desktop pop-up notifications from the widget.
+    * **Notification Settings:** (Requires "Enable Desktop Notifications" to be active for system pop-ups)
+        * **Enable Voice Notifications (Read Aloud):** A master switch to enable or disable spoken notifications.
+        * **Cooldowns:**
+            * Notify when Booster cooldown complete
+            * Notify when Medical cooldown complete
+            * Notify when Drug cooldown complete
+        * **Energy & Nerve:**
+            * Notify when Energy is full
+            * Notify when Nerve is full
+            * Notify when Energy reaches: [Value] (Set a custom energy level for notification)
+        * **Life:**
+            * Notify when Life decreases
+            * Notify when Life is at maximum
+        * **New Day:**
+            * Notify on New Day
+            * Notify 1 hour before New Day
+        * **Travel:**
+            * Notify 2 minutes before travel landing
+            * Notify on travel arrival
+        * **Racing:**
+            * Notify when race is starting
+            * Notify when race has finished
+    * **UI Element Flashing:**
+        * Configure which UI elements flash to indicate a ready or full status:
+            * Energy Full
+            * Nerve Full
+            * Happiness Full
+            * Booster Ready
+            * Medical Ready
+            * Drug Ready
+            * Travel Arrived (Label Flash)
+            * Race Finished (Label Flash)
+    * Click "Close" at the bottom of the settings panel to save any changes and return to the main widget view.
 
 5.  **Automatic Updates:**
-    * The widget automatically checks for new versions from GitHub.
-    * If an update is available, a notification will appear at the bottom of the widget with a link to the releases page.
+    * The widget automatically checks for new versions from GitHub on startup (system dialog).
+    * It also checks every 15 minutes and displays an in-app notification if a new version is available.
 
 ## Development
 
@@ -154,7 +202,7 @@ Built with Tauri v2.5. If you wish to contribute or run the application from sou
     # or
     yarn global add @tauri-apps/cli@^2.5.0
     # or
-    cargo install tauri-cli --version "^2.5.0" 
+    cargo install tauri-cli --version "^2.5.0"
     ```
 
 ### Running in Development Mode
@@ -191,9 +239,9 @@ If you need to generate your own update signing keys (the project already has on
 ```bash
 # For Tauri v2, the command might be slightly different, refer to official v2 docs.
 # A common approach for v1 was:
-# tauri signer generate -w ~/.tauri/keys 
+# tauri signer generate -w ~/.tauri/keys
 # For v2, it might be:
-tauri signer generate 
+tauri signer generate
 # And then manage keys typically in src-tauri/keys or a path you specify.
 # Follow the prompts. You'll need to update the updater.pubkey in src-tauri/tauri.conf.json
 # and set TAURI_PRIVATE_KEY and TAURI_KEY_PASSWORD environment variables if you use your own key for a fork.
