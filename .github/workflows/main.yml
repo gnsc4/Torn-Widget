@@ -72,12 +72,10 @@ jobs:
             libwebkit2gtk-4.1-dev \
             librsvg2-dev \
             pkg-config \
-            libappindicator3-dev \
             libayatana-appindicator3-dev \
             libgtk-3-0 \
             libwebkit2gtk-4.1-0 \
             librsvg2-common \
-            libappindicator3-1 \
             libayatana-appindicator3-1 \
             libfuse2
 
