@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "identifier": "com.torn.status.widget",
   "productName": "torn-status-widget",
-  "version": "1.0.50",
+  "version": "0.1.0",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
@@ -79,7 +79,7 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": ["appimage", "deb", "dmg"],
+    "targets": ["appimage", "deb", "dmg", "msi", "nsis"],
     "macOS": {
       "minimumSystemVersion": "10.15",
       "exceptionDomain": "",
